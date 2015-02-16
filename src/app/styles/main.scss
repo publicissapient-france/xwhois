@@ -37,7 +37,6 @@ p:last-child {
   @include border-left-radius(.3em);
   @include border-right-radius(.3em);
   margin: auto;
-  padding: 1em;
   border: 1px solid black;
   background-color: $dark-gray;
   margin: {
@@ -49,17 +48,23 @@ p:last-child {
 }
 
 .header {
+  padding: .5em;
+
   ul {
     li {
       @include border-left-radius(.3em);
       @include border-right-radius(.3em);
       display: inline-block;
       border: 1px solid white;
-
+      background-color: $light-gray;
       a {
         display: inline-block;
         padding: .5em;
       }
     }
   }
+}
+
+.footer {
+  padding: 1em;
 }
