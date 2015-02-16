@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html ng-app="app.xwhois">
+
+<head>
+    <title>XWhois</title>
+    <meta name="description" content="XWhois"/>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link href="styles.css" rel="stylesheet" type="text/css"/>
+    <script type="text/javascript" src="libs/vendors.js"></script>
+    <script type="text/javascript" src="app.final.js"></script>
+</head>
+
+<body>
+<header class="header">
+    <ul id="navigation-menu">
+        <li><a href="#{{ 'home' | routeSegmentUrl }}">Home</a></li>
+        <li><a href="#{{ 'error' | routeSegmentUrl }}">Error</a></li>
+    </ul>
+</header>
+<section class="container" ng-controller="HomeController">
+    <div class="large-column" app-view-segment="0"></div>
+    <div class="small-column">
+        Menu ?
+    </div>
+</section>
+<footer class="footer">
+    <ul>
+        <li><a href="">&copy; 2015 - Xebia</a></li>
+    </ul>
+</footer>
+</body>
+
+</html>
