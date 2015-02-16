@@ -71,7 +71,7 @@ task 'compile:sass', [], ->
             paths.bower + '/neat/app/assets/stylesheets'
             paths.web + '/**/*.scss'
         ]
-    .pipe $.sourcemaps.write debug: args.debug
+    .pipe $.if !args.compressed, -> $.sourcemaps.write debug: args.debug
     .pipe $.concat 'styles.css'
     .pipe $.if args.compressed, css.minify
     .pipe $.size title: 'styles'
