@@ -29,3 +29,4 @@ bower_components
 
 # Meta-datas
 .idea
+*.iml
