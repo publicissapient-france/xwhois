@@ -1,5 +1,11 @@
 
 @import "bourbon";
+
+// remove deprecation warning
+@mixin box-sizing($box) {
+  @include prefixer(box-sizing, $box, webkit moz spec);
+}
+
 @import "bitters/base";
 @import "neat";
 @import "main";
