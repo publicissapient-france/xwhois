@@ -202,6 +202,21 @@ task 'test', ['build'], (cb) ->
         singleRun: true
     , cb
 
+task 'test:loop', ['build'], (done) ->
+    gulp.watch ['src/app/**/*.js'], ['build:ng-app']
+    karma.start
+        configFile: __dirname + '/test/karma.conf.js',
+        files: bowerFiles({includeDev: true, filter: /.+\.js/}).concat([
+            'build/exploded/conf.js'
+            'build/exploded/templates.js'
+            'test/unit/**/*.js'
+            'src/app/*.js'
+            'src/app/**/*.js'
+        ]),
+        reporters: ['dots', 'junit','coverage']
+        singleRun: true
+    , done
+
 
 # development tasks
 
