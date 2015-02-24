@@ -67,7 +67,7 @@ task 'compile:sass', [], ->
     .pipe css.compile
         errLogToConsole: args.debug
         includePaths: [
-            paths.bower + '/bourbon/dist'
+            paths.bower + '/bourbon/app/assets/stylesheets'
             paths.bower + '/neat/app/assets/stylesheets'
             paths.web + '/**/*.scss'
         ]
