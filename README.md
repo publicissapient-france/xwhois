@@ -28,4 +28,9 @@ Then go to [http://localhost:4000](http://localhost:4000)
 $ gulp test
 ```
 
+For tests driven development :
+
+```
+$ gulp test:loop
+```
 
