@@ -36,6 +36,7 @@ paths =
     bower: 'src/vendors/bower_components'
     web: 'src/app'
     conf: 'src/conf'
+    assets: 'src/assets'
     build: 'build'
     exploded: 'build/exploded'
     test: 'test'
@@ -88,8 +89,14 @@ task 'build:statics-root-files', ->
     ]
     .pipe to paths.build
 
+task 'build:statics-images', ->
+    from "#{ paths.assets }/images/**/*"
+    .pipe $.size title: 'images'
+    .pipe to paths.build + '/assets/images'
+
 task 'build:statics', (cb) ->
-    sequence ['build:statics-root-files'], cb
+    sequence ['build:statics-root-files', 'build:statics-images'], cb
+
 
 task 'build:vendors', [], ->
     vendorsFiles = do bowerFiles
@@ -213,7 +220,7 @@ task 'test:loop', ['build'], (done) ->
             'src/app/*.js'
             'src/app/**/*.js'
         ]),
-        reporters: ['dots', 'junit','coverage']
+        reporters: ['dots', 'junit', 'coverage']
         singleRun: true
     , done
 

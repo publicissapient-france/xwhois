@@ -23,7 +23,6 @@ $base-spacing: $base-line-height * 1em;
 $base-z-index: 0;
 
 // Colors
-$blue: #477DCA;
 $dark-gray: #333;
 $medium-gray: #999;
 $light-gray: #DDD;
@@ -36,7 +35,8 @@ $base-background-color: white;
 
 // Font Colors
 $base-font-color: $dark-gray;
-$base-accent-color: $blue;
+$base-color: #7D26CD;
+$base-accent-color: $base-color;
 
 // Link Colors
 $base-link-color: $base-accent-color;
