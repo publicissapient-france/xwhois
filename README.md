@@ -38,3 +38,11 @@ For tests driven development :
 $ gulp test:loop
 ```
 
+
+### Routes ###
+
+File 'src/app/conf/routes.yml' contains all routes.
+
+Each root route contains one template that will be injected in the '<... app-view-segment="0">' dom element.
+Each sub-route template will be injected in a 'app-view-segment="1"' dom element found in the root template.
+Etc.
