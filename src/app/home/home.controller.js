@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('app.xwhois')
-    .controller('HomeController', function () {
+    .controller('HomeController', function ($log, mode) {
 
-        console.log('blah');
+        $log.info('env: ', mode);
 
     });
