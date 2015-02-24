@@ -63,9 +63,18 @@ p:last-child {
 .header {
   padding: .5em;
 
+  #logo {
+    width: 50px;
+    height: 50px;
+    background: no-repeat url('../assets/images/logo.png') center center;
+    background-size: 50px 50px;
+    float: left;
+  }
+
   ul {
     li {
       display: inline-block;
+      margin: .2em;
       a {
         @include border-left-radius(.3em);
         @include border-right-radius(.3em);

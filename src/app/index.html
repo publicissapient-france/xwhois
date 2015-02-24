@@ -13,15 +13,16 @@
 
 <body>
 <header class="header">
+    <div id="logo"></div>
     <ul id="navigation-menu">
         <li><a href="#{{ 'home' | routeSegmentUrl }}">Home</a></li>
-        <li><a href="#{{ 'error' | routeSegmentUrl }}">Error</a></li>
+        <li><a href="#{{ 'match' | routeSegmentUrl }}">Match</a></li>
     </ul>
 </header>
-<section class="container" ng-controller="HomeController">
+<section class="container">
     <div class="large-column" app-view-segment="0"></div>
     <div class="small-column">
-        Menu ?
+        Build with &lt;3 by Xebia
     </div>
 </section>
 <footer class="footer">

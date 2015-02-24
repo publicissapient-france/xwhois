@@ -8,6 +8,12 @@ routes:
     templateUrl: home/home.html
     controller: HomeController
 
+  match:
+    default: true
+    url: /match
+    templateUrl: home/match/match.html
+    controller: MatchController
+
   error:
     url: /error
     templateUrl: error/error.html
