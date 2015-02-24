@@ -168,7 +168,7 @@ task 'package:ng', [], ->
 
 task 'clean', ['clean:before-build'], (cb) ->
     rm [
-        '*.log'
+        '*.log', 'logs'
     ], cb
 
 task 'clean:before-build', (cb) ->
@@ -188,12 +188,17 @@ task 'clean:after-build', ->
 
 # tests tasks
 
-task 'test', [], (cb) ->
+task 'test', ['build'], (cb) ->
     karma.start
-        configFile: __dirname + '/test/karma.conf.coffee',
-        files: [
-
-        ],
+        configFile: __dirname + '/test/karma.conf.js',
+        files: bowerFiles({includeDev: true, filter: /.+\.js/}).concat([
+            'build/exploded/conf.js'
+            'build/exploded/templates.js'
+            'test/unit/**/*.js'
+            'src/app/*.js'
+            'src/app/**/*.js'
+        ]),
+        reporters: ['spec', 'junit', 'coverage']
         singleRun: true
     , cb
 
