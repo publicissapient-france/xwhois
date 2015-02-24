@@ -1,7 +1,11 @@
 Please go to [wiki page](https://github.com/xebia-france/xwhois/wiki).
 
+### Overview ###
 
-### Technical Overview ###
+--
+
+
+### Technical stack ###
 
 - templates : Jade (http://jade-lang.com/)
 - styles : Sass (http://sass-lang.com/), Bourbon (Neat, Bitters) (http://bourbon.io/)
