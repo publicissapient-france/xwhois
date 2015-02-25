@@ -3,30 +3,37 @@ var server = require("../server");
 var http = require("http");
 
 
-describe('Array', function(){
-    
-    before(function () {
-        server.listen(8080);
-    });
-    
-    
-    describe('#indexOf()', function () {
-        it('should get first question', function (done) {
-            http.get('http://localhost:8080', function (res) {
-                assert.equal(200, res.statusCode);
-                var data = "";
-                res.on('data', function (chunk) {
-                    data +=  chunk;
-                });
-                res.on('end', function () {
-                    assert.equal("{ firstQuestion: 'oui'}", data);
-                    done();
-                });
+describe('API Test', function () {
+    it('should return 200 and a message', function (done) {
+        http.get('http://localhost:8080', function (res) {
+            assert.equal(200, res.statusCode);
+            var data = "";
+            res.on('data', function (chunk) {
+                data += chunk;
+            });
+            res.on('end', function () {
+                assert.equal("Salut tout le monde !", data);
+                done();
             });
         });
     });
-    
-    after(function () {
-        server.close();
-    })
+
+    it('should get a challenge', function (done) {
+        http.get('http://localhost:8080/api/challenge', function (res) {
+            assert.equal(200, res.statusCode);
+            var data = '';
+            res.on('data', function (chunk) {
+                data += chunk;
+            });
+
+            res.on('end', function () {
+                var jsonData = JSON.parse(data);
+                assert.equal("Sébastian Le Merdy", jsonData.firstImage);
+                assert.equal("Antoine Michaud", jsonData.secondImage);
+                assert.equal("Sébastian Le Merdy", jsonData.name);
+                assert.equal("firstImage", jsonData.answer);
+                done();
+            });
+        });
+    });
 });
