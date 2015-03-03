@@ -1,5 +1,5 @@
 var assert = require("assert");
-var challengeModule = require('../src/api/challenge.js');
+var challengeModule = require("../../../src/api/challenge");
 
 describe("Challenge Module Test", function () {
     it('should create a challenge', function () {

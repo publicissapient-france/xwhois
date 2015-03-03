@@ -20,7 +20,6 @@ exports.createChallenge =  function (){
         },
         "createChallenge" : function() {
             first = !first;
-            console.log(first);
             if(first){
                 return challenge1;
             }else {
