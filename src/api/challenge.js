@@ -1,22 +1,22 @@
-var challenge1 = {
-    firstImage: '/images/Sebastian Le Merdy.jpg',
-    secondImage: '/images/Antoine Michaud.jpg',
-    name: 'Sébastian Le Merdy',
-    answer: "firstImage"
-};
-var challenge2 = {
-    firstImage: '/images/Sebastian Le Merdy.jpg',
-    secondImage: '/images/Antoine Michaud.jpg',
-    name: 'Antoine Michaud',
-    answer: "secondImage"
-};
+var fs = require('fs');
 
-module.exports = function () {
+module.exports = function (imagesPath, publicPath) {
+    var photos = fs.readdirSync(imagesPath);
     var first = false;
     return {
         "createChallenge": function () {
             first = !first;
-            return first ? challenge1 : challenge2;
+            return first ? {
+                firstImage: publicPath + '/' + photos[1],
+                secondImage: publicPath + '/' + photos[0],
+                name: 'Sébastian Le Merdy',
+                answer: "firstImage"
+            } : {
+                firstImage: publicPath + '/' + photos[1],
+                secondImage: publicPath + '/' + photos[0],
+                name: 'Antoine Michaud',
+                answer: "secondImage"
+            };
         }
     };
 };

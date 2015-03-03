@@ -28,8 +28,8 @@ describe('API Test', function () {
 
             res.on('end', function () {
                 var jsonData = JSON.parse(data);
-                assert.equal("/images/Sebastian Le Merdy.jpg", jsonData.firstImage);
-                assert.equal("/images/Antoine Michaud.jpg", jsonData.secondImage);
+                assert.equal("/assets/images/xebians/Sebastian Le Merdy.jpg", jsonData.firstImage);
+                assert.equal("/assets/images/xebians/Antoine Michaud.jpg", jsonData.secondImage);
                 assert.equal("Sébastian Le Merdy", jsonData.name);
                 assert.equal("firstImage", jsonData.answer);
                 done();

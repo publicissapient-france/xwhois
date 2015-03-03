@@ -9,7 +9,7 @@ app.get("/", function (req, res) {
 });
 
 app.get("/api/challenge", function (req, res) {
-    res.send(challengeModule().createChallenge());
+    res.send(challengeModule('./src/assets/images/xebians', '/assets/images/xebians').createChallenge());
 });
 
 app.listen(8080);
