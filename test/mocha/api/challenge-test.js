@@ -3,7 +3,7 @@ var challengeModule = require("../../../src/api/challenge");
 
 describe("Challenge Module Test", function () {
     it('should create a challenge', function () {
-        var challenge = challengeModule.createChallenge().reinit().createChallenge();
+        var challenge = challengeModule().reinit().createChallenge();
 
         assert.equal(challenge.firstImage, "/images/Sebastian Le Merdy.jpg");
         assert.equal(challenge.secondImage, "/images/Antoine Michaud.jpg");
@@ -12,7 +12,7 @@ describe("Challenge Module Test", function () {
     });
 
     it('should have two different challenges', function () {
-        var challenge = challengeModule.createChallenge().reinit();
+        var challenge = challengeModule().reinit();
         var challenge1 = challenge.createChallenge();
         var challenge2 = challenge.createChallenge();
 

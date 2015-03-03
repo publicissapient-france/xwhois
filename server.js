@@ -9,7 +9,7 @@ app.get("/", function (req, res) {
 });
 
 app.get("/api/challenge", function (req, res) {
-    res.send(challengeModule.createChallenge().reinit().createChallenge());
+    res.send(challengeModule().reinit().createChallenge());
 });
 
 app.listen(8080);

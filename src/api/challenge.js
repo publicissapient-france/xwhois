@@ -12,7 +12,7 @@ var challenge2 = {
     answer: "secondImage"
 };
 
-exports.createChallenge = function () {
+module.exports = function () {
     return {
         "reinit": function () { // TODO this is for test puprose only : see how to remove it
             first = false;
