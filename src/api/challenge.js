@@ -16,11 +16,7 @@ module.exports = function () {
     return {
         "createChallenge": function () {
             first = !first;
-            if (first) {
-                return challenge1;
-            } else {
-                return challenge2;
-            }
+            return first ? challenge1 : challenge2;
         }
     };
 };
