@@ -9,6 +9,7 @@ $.if = require 'gulp-if-else'
 rm = require 'del'
 sequence = require 'run-sequence'
 karma = (require 'karma').server
+mocha = require 'gulp-mocha'
 css =
     minify: (require 'gulp-minify-css')
     compile: $.sass
@@ -224,6 +225,12 @@ task 'test:loop', ['build'], (done) ->
         singleRun: true
     , done
 
+task 'test:mocha', ->
+    gulp
+        .src './test/mocha/**/*.js'
+        .pipe mocha()
+        .once 'end', ->
+            process.exit()
 
 # development tasks
 

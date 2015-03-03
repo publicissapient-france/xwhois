@@ -30,7 +30,7 @@ Then go to [http://localhost:4000](http://localhost:4000)
 
 ```
 $ gulp test
-$ npm test
+$ gulp test:mocha
 ```
 
 For tests driven development :
