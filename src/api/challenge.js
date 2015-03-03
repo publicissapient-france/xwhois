@@ -1,4 +1,3 @@
-var first = false;
 var challenge1 = {
     firstImage: '/images/Sebastian Le Merdy.jpg',
     secondImage: '/images/Antoine Michaud.jpg',
@@ -13,11 +12,8 @@ var challenge2 = {
 };
 
 module.exports = function () {
+    var first = false;
     return {
-        "reinit": function () { // TODO this is for test puprose only : see how to remove it
-            first = false;
-            return this;
-        },
         "createChallenge": function () {
             first = !first;
             if (first) {
