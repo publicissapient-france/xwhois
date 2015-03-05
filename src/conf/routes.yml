@@ -10,7 +10,7 @@ routes:
 
   match:
     default: true
-    url: /match
+    url: /play
     templateUrl: home/match/match.html
     controller: MatchController
 
