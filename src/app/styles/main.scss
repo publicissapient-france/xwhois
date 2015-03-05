@@ -24,7 +24,9 @@ body {
 a {
   text-decoration: none;
   color: white;
-  &:hover {
+  transform: none;
+  transition: none;
+  &:hover, &:link, &:visited, &:active {
     color: white;
   }
 }
@@ -78,12 +80,35 @@ p:last-child {
     background: transparent no-repeat url('../assets/images/logo.png') center center;
     background-size: 753px 236px;
   }
+
+  #play {
+    @include border-top-radius(.5em);
+    @include border-bottom-radius(.5em);
+    border: 3px dashed white;
+    background-color: #800080;
+    font-size: 5em;
+    width: 400px;
+    margin: auto;
+    margin-top: 1em;
+    text-align: center;
+    line-height: 1em;
+
+    &:hover {
+      background-color: darken(#800080, 5%);
+    }
+
+    a {
+      display: inline-block;
+      padding: .3em;
+      padding-top: .2em;
+    }
+  }
 }
 
 .footer {
   position: fixed;
   @include border-top-radius(.3em);
-  border: 2px dashed white;
+  border: 3px dashed white;
   border-bottom: none;
   padding: 1em;
 
