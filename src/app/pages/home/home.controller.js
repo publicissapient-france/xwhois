@@ -7,7 +7,7 @@ angular.module('app.xwhois')
             $rootScope.starting = true;
             $timeout(function() {
                 $location.path('/play');
-            }, 800);
+            }, 600);
         };
 
         $rootScope.starting = false;

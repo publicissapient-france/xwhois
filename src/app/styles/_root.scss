@@ -72,10 +72,10 @@ table td {
 
 .header, .footer {
   position: fixed;
-  border: 3px dashed white;
   padding: 1em;
   margin: auto;
-  background-color: transparent;
+  background-color: rgba(103, 0, 102, .4);
+  border: 3px dashed white;
 }
 
 .header {

@@ -17,9 +17,9 @@
 }
 
 .header {
-  @include animation(on-load-game 1s ease-in-out);
+  @include animation(on-load-game .6s ease-in-out);
   &.slide-out {
-    @include animation(on-leave-game 1s ease-in-out);
+    @include animation(on-leave-game .6s ease-in-out);
   }
   ul {
     text-align: right;

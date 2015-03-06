@@ -10,11 +10,11 @@ angular.module('app.xwhois')
             statusBar.addClass('slide-out');
             $timeout(function() {
                 $location.path('/');
-            }, 500);
+            }, 600);
         };
 
         $timeout(function() {
             $match.start();
-        }, 100);
+        });
 
     });
