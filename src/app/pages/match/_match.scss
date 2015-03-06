@@ -18,7 +18,7 @@
 
 @include keyframes(on-load-game) {
   0% {
-    margin-top: -1100px;
+    margin-top: 2000px;
   }
   100% {
     margin-top: -300px;
@@ -27,10 +27,10 @@
 
 @include keyframes(on-leave-game) {
   0% {
-    margin-top: -1100px;
+    margin-top: -300px;
   }
   100% {
-    margin-top: -300px;
+    margin-top: 2000px;
   }
 }
 
@@ -49,7 +49,12 @@
 }
 
 .game {
-  @include animation(on-load-game .6s ease-in-out);
+  @include animation(on-load-game .8s ease-in-out);
+  @include animation-fill-mode(forwards);
+  &.slide-out {
+    @include animation(on-leave-game .8s ease-in-out);
+  }
+
   @include border-top-radius(1em);
   @include border-bottom-radius(1em);
   position: absolute;

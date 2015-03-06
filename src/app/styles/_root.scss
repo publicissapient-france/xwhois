@@ -26,6 +26,8 @@ body {
   &.slide-out {
     background-position: center -200px;
   }
+
+  overflow: hidden;
 }
 
 a {

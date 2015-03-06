@@ -3,7 +3,7 @@ div.header
         li
             a(href='', ng-click='giveUp()') Surrend
 
-div.game
+div.game(ng-class="{'slide-out': stopping}")
     div.game-area
         img(src="http://www.obsessedwithconformity.com/wp-content/uploads/keyser-soze11.jpg")
     div.game-area

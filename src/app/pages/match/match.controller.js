@@ -6,6 +6,7 @@ angular.module('app.xwhois')
         var statusBar = angular.element(document.querySelector('.header'));
 
         $scope.giveUp = function() {
+            $rootScope.stopping = true;
             $match.kill();
             statusBar.addClass('slide-out');
             $timeout(function() {
@@ -16,5 +17,8 @@ angular.module('app.xwhois')
         $timeout(function() {
             $match.start();
         });
+
+        $rootScope.stopping = false;
+        $rootScope.starting = true;
 
     });
