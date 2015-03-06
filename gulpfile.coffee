@@ -84,10 +84,15 @@ task 'compile:sass', [], ->
 # build tasks
 
 task 'build:statics-root-files', ->
+    jadeFilter = $.filter '**/*.jade'
     from [
         paths.web + '/*.html'
+        paths.web + '/*.jade'
         paths.web + '/*.ico'
     ]
+    .pipe jadeFilter
+    .pipe $.jade pretty: true
+    .pipe do jadeFilter.restore
     .pipe to paths.build
 
 task 'build:statics-images', ->
@@ -255,7 +260,7 @@ task 'serve', ['build'], ->
     watch [
         "#{ paths.web }/**/*.html"
         "#{ paths.web }/**/*.jade"
-    ], ['build:ng-templates', reload]
+    ], ['build:statics-root-files', 'build:ng-templates', reload]
     watch "#{ paths.web }/**/*.js", ['build:ng-app', reload]
     watch "#{ paths.conf }/*.yml", ['build:ng-conf', reload]
     watch "#{ paths.exploded }/*.js", ['package:ng', reload]
