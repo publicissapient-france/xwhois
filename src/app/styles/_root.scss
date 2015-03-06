@@ -1,4 +1,5 @@
 
+$base-color: darken(#800080, 5%);
 $body-background-color: lighten($base-color, 20%);
 $container-background-color: #DDD;
 
@@ -41,6 +42,16 @@ p:last-child {
   margin-bottom: 0;
 }
 
+table, tr, td {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+table td {
+  padding: 0;
+}
+
 .container {
   @include outer-container;
 
@@ -60,19 +71,15 @@ p:last-child {
 }
 
 .header, .footer {
-  @include outer-container;
   position: fixed;
   border: 3px dashed white;
   padding: 1em;
   margin: auto;
   background-color: transparent;
-  margin: {
-    left: auto;
-    right: auto;
-  }
 }
 
 .header {
+  @include outer-container;
   @include border-bottom-radius(.3em);
   border-top: none;
   top: 0;
@@ -81,9 +88,9 @@ p:last-child {
 }
 
 .footer {
-  @include border-top-radius(.3em);
+  @include border-top-radius(.5em);
   border-bottom: none;
+  border-right: none;
   bottom: 0;
-  left: 1em;
-  right: 1em;
+  right: 0em;
 }

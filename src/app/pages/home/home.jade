@@ -1,4 +1,19 @@
 div(ng-class="{'slide-out': starting}").splash-screen
     div#logo
+    div.slogan Le jeu des petits bonshommes violets
+    div.informations
+        div.avatar
+            img(src="https://fr.gravatar.com/userimage/80232426/a5e97654a15843fa94bc523e14f0525e.jpeg")
+        div.scores
+            div.me M. Boule Qui-est-ce
+            table
+                tr
+                    td Last score
+                    td 10/15
+                    td You're fired
+                tr
+                    td Best score
+                    td 20/21
+                    td Could be better
     div#play
         a(href='' ng-click='play()') PLAY
