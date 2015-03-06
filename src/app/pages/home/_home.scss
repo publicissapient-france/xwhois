@@ -17,9 +17,8 @@
 }
 
 .splash-screen {
-  margin-top: 50px;
   @include animation(on-load-splash 1s ease-in-out);
-
+  @include animation-fill-mode(forwards);
   &.slide-out {
     @include animation(on-click-play 1s ease-in-out);
   }
