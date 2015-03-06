@@ -1,4 +1,4 @@
-div.splash-screen
+div(ng-class='{playing: playing}').splash-screen
     div#logo
     div#play
-        a(href='') PLAY
+        a(href='' ng-click='play()') PLAY

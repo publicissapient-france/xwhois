@@ -17,8 +17,13 @@ html, body {
 
 body {
   color: white;
-  background: repeat url('../assets/images/background.jpg') center center;
+  background: repeat url('../assets/images/background.jpg') center 0px fixed;
   font-family: "Emulogic", Courier;
+  @include transition(background .8s ease-in-out);
+
+  &.slide-out {
+    background-position: center -200px;
+  }
 }
 
 a {
@@ -73,6 +78,12 @@ p:last-child {
 
 .splash-screen {
   margin-top: 50px;
+  @include transition(all 1s ease-in-out);
+
+  &.playing {
+    margin-top: -100%;
+  }
+
   #logo {
     margin: auto;
     width: 753px;
