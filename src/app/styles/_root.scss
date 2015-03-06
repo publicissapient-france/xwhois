@@ -1,0 +1,89 @@
+
+$body-background-color: lighten($base-color, 20%);
+$container-background-color: #DDD;
+
+@mixin clear-margins() {
+  margin: 0;
+  padding: 0;
+}
+
+@font-face {
+  font-family: "Emulogic";
+  src: url('../assets/fonts/emulogic.ttf');
+}
+
+html, body {
+  @include clear-margins;
+}
+
+body {
+  color: white;
+  background: repeat url('../assets/images/background.jpg') center 0px fixed;
+  font-family: "Emulogic", Courier;
+  @include transition(background .8s ease-in-out);
+
+  &.slide-out {
+    background-position: center -200px;
+  }
+}
+
+a {
+  text-decoration: none;
+  color: white;
+  transform: none;
+  transition: none;
+  &:hover, &:link, &:visited, &:active {
+    color: white;
+  }
+}
+
+p:last-child {
+  margin-bottom: 0;
+}
+
+.container {
+  @include outer-container;
+
+  .column {
+    padding: em(15);
+  }
+
+  .large-column {
+    @extend .column;
+    @include span-columns(18 of 24);
+  }
+
+  .small-column {
+    @extend .column;
+    @include span-columns(6 of 24);
+  }
+}
+
+.header, .footer {
+  @include outer-container;
+  position: fixed;
+  border: 3px dashed white;
+  padding: 1em;
+  margin: auto;
+  background-color: transparent;
+  margin: {
+    left: auto;
+    right: auto;
+  }
+}
+
+.header {
+  @include border-bottom-radius(.3em);
+  border-top: none;
+  top: 0;
+  left: 1em;
+  right: 1em;
+}
+
+.footer {
+  @include border-top-radius(.3em);
+  border-bottom: none;
+  bottom: 0;
+  left: 1em;
+  right: 1em;
+}

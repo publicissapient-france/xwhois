@@ -63,7 +63,7 @@ log 'Paths are :\n', paths
 
 task 'compile:sass', [], ->
     from [
-        paths.web + '/styles/style.scss'
+        paths.web + '/style.scss'
     ]
     .pipe do $.sourcemaps.init
     .pipe css.compile
@@ -71,7 +71,8 @@ task 'compile:sass', [], ->
         includePaths: [
             paths.bower + '/bourbon/app/assets/stylesheets'
             paths.bower + '/neat/app/assets/stylesheets'
-            paths.web + '/**/*.scss'
+            paths.web + 'pages/**/*.scss'
+            paths.web + 'styles/**/*.scss'
         ]
     .pipe $.if !args.compressed, -> $.sourcemaps.write debug: args.debug
     .pipe $.concat 'styles.css'
@@ -134,6 +135,8 @@ task 'build:ng-conf', [], ->
 task 'build:ng-templates', [], ->
     jadeFilter = $.filter '**/*.jade'
     from [
+        "#{ paths.web }/pages/**/*.html"
+        "#{ paths.web }/pages/**/*.jade"
         "#{ paths.web }/**/*.html"
         "#{ paths.web }/**/*.jade"
     ]

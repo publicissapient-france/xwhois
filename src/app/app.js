@@ -14,6 +14,8 @@ angular.module('app.xwhois',
 
     })
 
-    .run(function () {
+    .run(function ($log, mode) {
+
+        $log.info('env:', mode);
 
     });

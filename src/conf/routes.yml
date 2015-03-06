@@ -11,7 +11,7 @@ routes:
   match:
     default: true
     url: /play
-    templateUrl: home/match/match.html
+    templateUrl: match/match.html
     controller: MatchController
 
   error:

@@ -22,6 +22,7 @@
   "predef": {
     "angular": false,
     "_": true,
+    "document": true,
     "$": true
   }
 }

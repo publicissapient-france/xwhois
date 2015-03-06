@@ -10,9 +10,10 @@ html(ng-app='app.xwhois')
         script(type='text/javascript', src='libs/vendors.js')
         script(type='text/javascript', src='app.final.js')
 
-    body(ng-class="{'slide-out': playing}")
+    body(ng-class="{'slide-out': starting}")
         section.container(app-view-segment='0')
         footer.footer
             ul
                 li
-                    a(href='') &copy; 2015 - Xebia
+                    | &copy; 2015 -&nbsp;
+                    a(href='http://xebia.fr') Xebia
