@@ -64,8 +64,22 @@
   color: $base-color;
 
   .game-area {
-    @include span-columns(18 of 24);
-    border-right: 3px dashed $base-color;
-    height: 470px;
+    @include span-columns(12 of 24);
+    margin: 0;
+    padding: 0;
+    height: 400px;
+    &:first-child {
+      border-right: 3px dashed $base-color;
+    }
+    text-align: center;
+    img {
+      width: 340px;
+    }
+  }
+
+  .who-am-i {
+    clear: both;
+    padding: 30px;
+    text-align: center;
   }
 }
