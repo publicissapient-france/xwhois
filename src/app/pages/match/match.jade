@@ -15,12 +15,13 @@ div.leave(ng-if='modal')
 div.game(ng-class="{'slide-out': stopping}")
     div(ng-if='question')
         div.game-area.firstImage
-            span
+            span(ng-click="chooseImage('firstImage')")
                 img(ng-if="question.firstImage" src="{{ question.firstImage }}")
         div.game-area.secondImage
-            span
+            span(ng-click="chooseImage('secondImage')")
                 img(ng-if="question.secondImage" src="{{ question.secondImage }}")
         div.who-am-i
-            | Who is "{{ question.name | normalize }}" ?
+            span(ng-if="result === null") Who is "{{ question.name | normalize }}" ?
+            span(ng-if="result !== null" ng-style="{color: result ? 'green': 'red'}") {{ result ? "CORRECT !" : "WRONG !" }}
 
 audio(autoplay=true, loop=true src="http://grayscale.scene.pl/msx/404error.mp3")

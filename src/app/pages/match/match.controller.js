@@ -8,6 +8,13 @@ angular.module('app.xwhois')
         $scope.question = null;
         $scope.modal = false;
 
+        function nextImage() {
+            $match.nextChallenge().then(function(question) {
+                $scope.result = null;
+                $scope.question = question;
+            });
+        }
+
         $scope.giveUp = function () {
             $scope.modal = false;
             $rootScope.stopping = true;
@@ -26,12 +33,19 @@ angular.module('app.xwhois')
             $scope.modal = false;
         };
 
+        $scope.chooseImage = function(answer) {
+            if ($scope.result !== null) {
+                return;
+            }
+            $scope.result = $match.tryToAnswer(answer);
+            $timeout(function() {
+                nextImage();
+            }, 2000);
+        };
+
         $match.start();
 
-        $match.nextChallenge().then(function(question) {
-            console.log(question);
-            $scope.question = question;
-        });
+        nextImage();
 
         $rootScope.stopping = false;
         $rootScope.starting = true;
