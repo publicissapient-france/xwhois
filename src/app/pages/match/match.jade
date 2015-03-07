@@ -1,6 +1,8 @@
 div.header
     ul
         li
+            loader(loading=true)
+        li
             a(href='', ng-click='giveUp()') Surrend
 
 div.game(ng-class="{'slide-out': stopping}")

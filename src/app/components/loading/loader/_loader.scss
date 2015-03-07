@@ -1,0 +1,14 @@
+$loader-height: 10px;
+
+.loader {
+  border: 3px solid white;
+  width: 205px;
+  height: $loader-height + 6px;
+  .loader-tag {
+    position: absolute;
+    background-color: rgba(255, 255, 255, .5);
+    height: $loader-height;
+    width: 50px;
+    border: none;
+  }
+}
