@@ -40,7 +40,7 @@ angular.module('app.xwhois')
                 return;
             }
             $scope.totalTry++;
-            if ($scope.result = $match.tryToAnswer(answer)) {
+            if (($scope.result = $match.tryToAnswer(answer)) === true) {
                 $scope.score++;
             }
             $timeout(function() {

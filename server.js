@@ -6,6 +6,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var errorHandler = require('errorhandler');
 var methodOverride = require('method-override');
+var favicon = require('serve-favicon');
 
 var root = __dirname;
 var port = process.argv[2] || 8080;
@@ -16,6 +17,7 @@ var app = module.exports = express();
     app.use(bodyParser.json());
     app.use(cookieParser());
     app.use(methodOverride('_method'));
+    app.use(favicon(path.join(root, './build/favicon.ico')));
     if (app.get('env') === 'development') {
         app.use(logger('dev'));
         app.use(errorHandler());
