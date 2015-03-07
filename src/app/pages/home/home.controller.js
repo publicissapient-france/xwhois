@@ -10,6 +10,7 @@ angular.module('app.xwhois')
             }, 600);
         };
 
+        $rootScope.stopping = false;
         $rootScope.starting = false;
 
     });

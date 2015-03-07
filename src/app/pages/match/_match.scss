@@ -35,10 +35,9 @@
 }
 
 .header {
-  @include animation(on-load-header .6s ease-in-out);
+  @include animation(on-load-header .6s ease-in-out forwards);
   &.slide-out {
-    @include animation-fill-mode(forwards);
-    @include animation(on-leave .6s ease-in-out);
+    @include animation(on-leave .6s ease-in-out forwards);
   }
   ul {
     text-align: right;
@@ -49,10 +48,9 @@
 }
 
 .game {
-  @include animation(on-load-game .8s ease-in-out);
-  @include animation-fill-mode(forwards);
+  @include animation(on-load-game .8s ease-in-out forwards);
   &.slide-out {
-    @include animation(on-leave-game .8s ease-in-out);
+    @include animation(on-leave-game .8s ease-in-out forwards);
   }
 
   @include border-top-radius(1em);

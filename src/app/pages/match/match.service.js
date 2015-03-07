@@ -1,7 +1,9 @@
 'use strict';
 
 angular.module('app.xwhois')
-    .factory('$match', function ($rootScope, $location, $log) {
+    .factory('$match', function ($rootScope, $location, $http, $log, api) {
+
+        var currentChallenge = null;
 
         function startMatch() {
             if ($rootScope.playing) {
@@ -9,6 +11,24 @@ angular.module('app.xwhois')
                 return;
             }
             $rootScope.playing = true;
+        }
+
+        function nextChallenge() {
+            return $http.get(api.challenge.get).then(function (challenge) {
+                return (currentChallenge = challenge);
+            }, function () {
+                $log.warn('something goes wrong on the server');
+            });
+        }
+
+        function tryToAnswer(answer) {
+            // put this code on the server to protect game
+            if (currentChallenge && currentChallenge.answer === answer) {
+                // server call
+                $log.info('server call to POST /api/challenge {', answer, '}');
+                return true;
+            }
+            return false;
         }
 
         function killMatch() {
@@ -21,7 +41,9 @@ angular.module('app.xwhois')
 
         return {
             start: startMatch,
-            kill : killMatch
+            kill: killMatch,
+            nextChallenge: nextChallenge,
+            tryToAnswer: tryToAnswer
         };
 
     });

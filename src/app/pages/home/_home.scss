@@ -17,10 +17,9 @@
 }
 
 .splash-screen {
-  @include animation(on-load-splash 1s ease-in-out);
-  @include animation-fill-mode(forwards);
+  @include animation(on-load-splash 1s ease-in-out forwards);
   &.slide-out {
-    @include animation(on-click-play 1s ease-in-out);
+    @include animation(on-click-play 1s ease-in-out forwards);
   }
 
   .slogan {
