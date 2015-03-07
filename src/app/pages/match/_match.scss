@@ -47,6 +47,31 @@
   }
 }
 
+.leave {
+  z-index: 200;
+  position: fixed;
+  background-color: rgba(255, 255, 255, .7);
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  .leave-modal {
+    @include center(300px, 100px);
+    background-color: rgba(255, 255, 255, .8);
+    border: 3px dashed $base-color;
+    color: $base-color;
+    text-align: center;
+    padding: 20px;
+
+    a {
+      color: $base-color;
+      &:hover {
+        color: black;
+      }
+    }
+  }
+}
+
 .game {
   @include animation(on-load-game .8s ease-in-out forwards);
   &.slide-out {
@@ -65,6 +90,7 @@
   top: 50%;
   left: 50%;
   color: $base-color;
+  box-shadow: 0px 5px 20px 0px rgba(0, 0, 0, 0.8);
 
   .game-area {
     @include span-columns(12 of 24);

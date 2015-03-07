@@ -3,7 +3,14 @@ div.header
         li
             loader(loading=true)
         li
-            a(href='', ng-click='giveUp()') Surrend
+            a(href='', ng-click='openModal()') Surrend
+
+div.leave(ng-if='modal')
+    div.leave-modal
+        | Are you sure ?
+        a(href='' ng-click='giveUp()') Yes
+        | &nbsp;/&nbsp;
+        a(href='' ng-click='closeModal()') No
 
 div.game(ng-class="{'slide-out': stopping}")
     div(ng-if='question')
