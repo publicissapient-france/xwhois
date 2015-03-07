@@ -1,6 +1,8 @@
 div.header
     ul
         li
+            | {{ score }} / {{ totalTry }}
+        li
             loader(loading=true)
         li
             a(href='', ng-click='openModal()') Surrend
