@@ -14,6 +14,11 @@ routes:
     templateUrl: match/match.html
     controller: MatchController
 
+  credits:
+    default: true
+    url: /credits
+    templateUrl: credits.html
+
   error:
     url: /error
     templateUrl: error/error.html
