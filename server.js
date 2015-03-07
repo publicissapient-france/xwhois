@@ -13,11 +13,11 @@ var challengeModule = require('./src/api/challenge');
 var app = module.exports = express();
 
 { // configure server with error handlers, etc.
-    app.use(logger('dev'));
     app.use(bodyParser.json());
     app.use(cookieParser());
     app.use(methodOverride('_method'));
     if (app.get('env') === 'development') {
+        app.use(logger('dev'));
         app.use(errorHandler());
     }
 }
