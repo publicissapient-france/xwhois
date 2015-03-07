@@ -75,8 +75,28 @@
       border-right: 3px dashed $base-color;
     }
     text-align: center;
-    img {
+    span {
+      display: inline-block;
+      img {
+        @include filter(grayscale(1));
+        image-rendering: pixelated;
+        width: 340px;
+
+        &:hover {
+          @include filter(none);
+          image-rendering: auto;
+        }
+      }
+      height: 400px;
       width: 340px;
+      border: 3px solid $base-color;
+      overflow: hidden;
+
+      &:hover {
+        border-color: red;
+        cursor: pointer;
+        cursor: hand;
+      }
     }
   }
 
@@ -84,5 +104,6 @@
     clear: both;
     padding: 30px;
     text-align: center;
+    background-color: white;
   }
 }

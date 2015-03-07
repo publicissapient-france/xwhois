@@ -6,11 +6,14 @@ div.header
             a(href='', ng-click='giveUp()') Surrend
 
 div.game(ng-class="{'slide-out': stopping}")
-    div.game-area
-        img(src="http://www.obsessedwithconformity.com/wp-content/uploads/keyser-soze11.jpg")
-    div.game-area
-        img(src="http://www.metroactive.com/papers/metro/05.29.97/gifs/brassed-off2-9722.jpg")
-    div.who-am-i
-        | Who is Kaiser Soze ?
+    div(ng-if='question')
+        div.game-area.firstImage
+            span
+                img(ng-if="question.firstImage" src="{{ question.firstImage }}")
+        div.game-area.secondImage
+            span
+                img(ng-if="question.secondImage" src="{{ question.secondImage }}")
+        div.who-am-i
+            | Who is "{{ question.name | normalize }}" ?
 
 audio(autoplay=true, loop=true src="http://grayscale.scene.pl/msx/404error.mp3")

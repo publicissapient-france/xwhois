@@ -15,7 +15,7 @@ angular.module('app.xwhois')
 
         function nextChallenge() {
             return $http.get(api.challenge.get).then(function (challenge) {
-                return (currentChallenge = challenge);
+                return (currentChallenge = challenge.data);
             }, function () {
                 $log.warn('something goes wrong on the server');
             });

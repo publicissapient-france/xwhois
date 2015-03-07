@@ -5,17 +5,22 @@ angular.module('app.xwhois')
 
         var statusBar = angular.element(document.querySelector('.header'));
 
-        $scope.giveUp = function() {
+        $scope.question = null;
+
+        $scope.giveUp = function () {
             $rootScope.stopping = true;
             $match.kill();
             statusBar.addClass('slide-out');
-            $timeout(function() {
+            $timeout(function () {
                 $location.path('/');
             }, 600);
         };
 
-        $timeout(function() {
-            $match.start();
+        $match.start();
+
+        $match.nextChallenge().then(function(question) {
+            console.log(question);
+            $scope.question = question;
         });
 
         $rootScope.stopping = false;
