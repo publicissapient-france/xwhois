@@ -12,10 +12,10 @@ angular.module('app.xwhois')
 
                 var clearInterval = false;
                 var step = 10;
+                $scope.percent = 0;
 
                 $scope.$watch('loading', function(loading) {
                     if (loading) {
-                        $scope.percent = 0;
                         clearInterval = $interval(function() {
                             if (($scope.percent += step) === 100 || $scope.percent === 0) {
                                 step = -step;

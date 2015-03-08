@@ -1,9 +1,9 @@
 div.header(ng-class="{'slide-out': $navigation.leaving}")
     ul
         li
-            | {{ score }} / {{ totalTry }}
+            | {{ $match.current().score }} / {{ $match.current().totalTry }}
         li
-            loader(loading=true)
+            loader(loading="result === null")
         li
             a(href='', ng-click='openModal()') Surrend
 

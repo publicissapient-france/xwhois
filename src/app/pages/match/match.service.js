@@ -4,6 +4,9 @@ angular.module('app.xwhois')
     .factory('$match', function ($rootScope, $location, $http, $log, api) {
 
         var currentChallenge = null;
+        var currentMatch = {
+            score: 0, totalTry: 0
+        };
 
         function startMatch() {
             if ($rootScope.playing) {
@@ -22,8 +25,10 @@ angular.module('app.xwhois')
         }
 
         function tryToAnswer(answer) {
+            currentMatch.totalTry++;
             // put this code on the server to protect game
             if (currentChallenge && currentChallenge.answer === answer) {
+                currentMatch.score++;
                 // server call
                 $log.info('server call to POST /api/challenge {', answer, '}');
                 return true;
@@ -42,6 +47,9 @@ angular.module('app.xwhois')
         return {
             start: startMatch,
             kill: killMatch,
+            current: function() {
+                return angular.copy(currentMatch);
+            },
             nextChallenge: nextChallenge,
             tryToAnswer: tryToAnswer,
             results: [
