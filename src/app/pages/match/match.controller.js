@@ -36,10 +36,7 @@ angular.module('app.xwhois')
             if ($scope.result !== null) {
                 return;
             }
-            $scope.totalTry++;
-            if (($scope.result = $match.tryToAnswer(answer)) === true) {
-                $scope.score++;
-            }
+            $scope.result = $match.tryToAnswer(answer);
             $timeout(function() {
                 nextImage();
             }, 2000);
