@@ -3,8 +3,6 @@
 angular.module('app.xwhois')
     .controller('MatchController', function ($rootScope, $scope, $location, $timeout, $match, $navigation) {
 
-        var statusBar = angular.element(document.querySelector('.header'));
-
         $scope.question = null;
         $scope.modal = false;
         $scope.totalTry = 0;
@@ -20,7 +18,6 @@ angular.module('app.xwhois')
         $scope.giveUp = function () {
             $scope.modal = false;
             $match.kill();
-            statusBar.addClass('slide-out');
             $navigation.to('home', 600);
         };
 
