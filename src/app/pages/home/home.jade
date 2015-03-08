@@ -18,4 +18,12 @@ div(ng-class="{'slide-out': $navigation.leaving}").splash-screen
     div#play
         a(href='' ng-click="$navigation.to('match', 600)") PLAY
 
+footer.footer(ng-class="{'slide-out': $navigation.leaving}")
+    ul
+        li
+            | &copy; 2015 -&nbsp;
+            a(href='', ng-click="$navigation.to('credits', 600)") Credits
+            | &nbsp;-&nbsp;
+            a(href='http://xebia.fr') Xebia
+
 audio(ng-if="env == 'production'" autoplay=true, loop=true src="http://grayscale.scene.pl/msx/synthy_g.mp3")
