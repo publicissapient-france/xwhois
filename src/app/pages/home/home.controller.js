@@ -1,6 +1,6 @@
 'use strict';
 
 angular.module('app.xwhois')
-    .controller('HomeController', function ($rootScope) {
-
+    .controller('HomeController', function ($navigation) {
+        $navigation.leavingHome = false;
     });

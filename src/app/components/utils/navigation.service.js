@@ -5,13 +5,15 @@ angular.module('app.xwhois')
 
         var navigation = {
             to: function to(route, time) {
+                navigation.leavingHome = (route !== 'home');
                 navigation.leaving = true;
                 $timeout(function () {
                     $location.path($routeSegment.getSegmentUrl(route));
                     navigation.leaving = false;
                 }, time);
             },
-            leaving: false
+            leaving: false,
+            leavingHome: true
         };
 
         return navigation;
