@@ -1,4 +1,4 @@
-div.header
+div.header(ng-class="{'slide-out': $navigation.leaving}")
     ul
         li
             | {{ score }} / {{ totalTry }}
@@ -14,7 +14,7 @@ div.leave(ng-if='modal')
         | &nbsp;/&nbsp;
         a(href='' ng-click='closeModal()') No
 
-div.game(ng-class="{'slide-out': stopping}")
+div.game(ng-class="{'slide-out': $navigation.leaving}")
     div(ng-if='question')
         div.game-area.firstImage
             span(ng-click="chooseImage('firstImage')")
@@ -26,4 +26,4 @@ div.game(ng-class="{'slide-out': stopping}")
             span(ng-if="result === null") Who is "{{ question.name | normalize }}" ?
             span(ng-if="result !== null" ng-style="{color: result ? 'green': 'red'}") {{ result ? "CORRECT !" : "WRONG !" }}
 
-audio(autoplay=true, loop=true src="http://grayscale.scene.pl/msx/404error.mp3")
+audio(ng-if="env == 'production'", autoplay=true, loop=true src="http://grayscale.scene.pl/msx/404error.mp3")

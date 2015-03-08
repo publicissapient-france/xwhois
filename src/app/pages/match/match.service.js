@@ -43,7 +43,15 @@ angular.module('app.xwhois')
             start: startMatch,
             kill: killMatch,
             nextChallenge: nextChallenge,
-            tryToAnswer: tryToAnswer
+            tryToAnswer: tryToAnswer,
+            results: [
+                {score: 10, totalTry: 15, comment: 'You\'re Fired'},
+                {score: 20, totalTry: 21, comment: 'Could be Better'}
+            ]
         };
 
+    })
+
+    .run(function($match, $rootScope) {
+        $rootScope.$match = $match;
     });

@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('app.xwhois')
-    .controller('MatchController', function ($rootScope, $scope, $location, $timeout, $match) {
+    .controller('MatchController', function ($rootScope, $scope, $location, $timeout, $match, $navigation) {
 
         var statusBar = angular.element(document.querySelector('.header'));
 
@@ -19,12 +19,9 @@ angular.module('app.xwhois')
 
         $scope.giveUp = function () {
             $scope.modal = false;
-            $rootScope.stopping = true;
             $match.kill();
             statusBar.addClass('slide-out');
-            $timeout(function () {
-                $location.path('/');
-            }, 600);
+            $navigation.to('home', 600);
         };
 
         $scope.openModal = function() {
@@ -51,8 +48,5 @@ angular.module('app.xwhois')
         $match.start();
 
         nextImage();
-
-        $rootScope.stopping = false;
-        $rootScope.starting = true;
 
     });

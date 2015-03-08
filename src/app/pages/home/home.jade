@@ -1,21 +1,17 @@
-div(ng-class="{'slide-out': starting}").splash-screen
+div(ng-class="{'slide-out': $navigation.leaving}").splash-screen
     div#logo
     div.slogan Le jeu des petits bonshommes violets
     div.informations
         div.avatar
             img(src="https://fr.gravatar.com/userimage/80232426/a5e97654a15843fa94bc523e14f0525e.jpeg")
         div.scores
-            div.me M. Boule Qui-est-ce
+            div.me Level 1 - M. Boule Qui-est-ce
             table
-                tr
-                    td Last score
-                    td 10/15
-                    td You're fired
-                tr
-                    td Best score
-                    td 20/21
-                    td Could be better
+                tr(ng-repeat="match in $match.results")
+                    td {{ $first ? 'Last score' : 'Best score' }}
+                    td {{ match.score }}/{{ match.totalTry }}
+                    td {{ match.comment }}
     div#play
-        a(href='' ng-click='play()') PLAY
+        a(href='' ng-click="$navigation.to('match', 600)") PLAY
 
-audio(autoplay=true, loop=true src="http://grayscale.scene.pl/msx/synthy_g.mp3")
+audio(ng-if="env == 'production'" autoplay=true, loop=true src="http://grayscale.scene.pl/msx/synthy_g.mp3")
