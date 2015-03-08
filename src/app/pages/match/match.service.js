@@ -4,16 +4,32 @@ angular.module('app.xwhois')
     .factory('$match', function ($rootScope, $location, $http, $log, api) {
 
         var currentChallenge = null;
-        var currentMatch = {
-            score: 0, totalTry: 0
-        };
+        var currentMatch = null;
+        var results = [
+            {score: 10, totalTry: 15, comment: 'You\'re Fired'},
+            {score: 20, totalTry: 21, comment: 'Could be Better'}
+        ];
 
         function startMatch() {
             if ($rootScope.playing) {
                 $log.warn('game alreay running');
                 return;
             }
+            currentMatch = {
+                score: 0, totalTry: 0
+            };
             $rootScope.playing = true;
+        }
+
+        function killMatch() {
+            if (!$rootScope.playing) {
+                $log.warn('game is not running');
+                return;
+            }
+            currentMatch.comment = '-'; // TODO randomize this
+            results[0] = currentMatch;
+            currentMatch = null;
+            $rootScope.playing = false;
         }
 
         function nextChallenge() {
@@ -36,14 +52,6 @@ angular.module('app.xwhois')
             return false;
         }
 
-        function killMatch() {
-            if (!$rootScope.playing) {
-                $log.warn('game is not running');
-                return;
-            }
-            $rootScope.playing = false;
-        }
-
         return {
             start: startMatch,
             kill: killMatch,
@@ -52,10 +60,7 @@ angular.module('app.xwhois')
             },
             nextChallenge: nextChallenge,
             tryToAnswer: tryToAnswer,
-            results: [
-                {score: 10, totalTry: 15, comment: 'You\'re Fired'},
-                {score: 20, totalTry: 21, comment: 'Could be Better'}
-            ]
+            results: results
         };
 
     })
