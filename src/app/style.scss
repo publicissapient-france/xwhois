@@ -6,8 +6,9 @@
 @import "styles/bitters/base";
 @import "neat";
 
-@import "components/loading/loader/loader";
-
 @import "styles/root";
 @import "pages/home/home";
 @import "pages/match/match";
+
+@import "components/loading/loader/loader";
+@import "components/xp/xp";

@@ -1,0 +1,30 @@
+$xp-height: 15px;
+
+.xp {
+  border: 3px solid white;
+  width: 200px;
+  height: $xp-height + 6px;
+  background-color: #DDDDDD;
+  box-shadow: 3px 3px 5px 0px rgba(0, 0, 0, 0.5);
+  .xp-bar {
+    position: relative;
+    height: $xp-height;
+    width: 0;
+    border: none;
+    background-color: rgba(103, 0, 102, .2);
+  }
+  .xp-values {
+    z-index: 10;
+    position: absolute;
+    font-size: 10px;
+    width: 200px - 8px;
+    display: block;
+  }
+  &:hover {
+    // background-color: white;
+  }
+  &:hover .xp-bar {
+    // display: block;
+    // background-color: rgba(103, 0, 102, .5);
+  }
+}
