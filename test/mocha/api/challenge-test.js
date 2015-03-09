@@ -2,6 +2,7 @@ var assert = require("assert");
 var challengeModule = require("../../../src/api/challenge");
 
 describe("Challenge Module Test", function () {
+
     it('should create a challenge', function () {
         var challenge = challengeModule('./test/assets/images/xebians', '/assets/images/xebians').createChallenge();
 
@@ -18,4 +19,5 @@ describe("Challenge Module Test", function () {
 
         assert.notDeepEqual(challenge2, challenge1);
     });
+
 });

@@ -235,15 +235,14 @@ task 'test:loop', ['build'], (done) ->
             'src/app/**/*.js'
         ]),
         reporters: ['dots', 'junit', 'coverage']
-        singleRun: true
+        singleRun: false
     , done
 
 task 'test:mocha', ->
-    gulp
-        .src './test/mocha/**/*.js'
-        .pipe mocha()
-        .once 'end', ->
-            process.exit()
+    from './test/mocha/**/*.js'
+    .pipe do mocha
+    .once 'end', ->
+        do process.exit
 
 # development tasks
 

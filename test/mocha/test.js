@@ -2,17 +2,17 @@ var assert = require("assert");
 require("../../server");
 var http = require("http");
 
-
 describe('API Test', function () {
+
     it('should return 200 and a message', function (done) {
-        http.get('http://localhost:8080', function (res) {
+        http.get('http://localhost:8080/', function (res) {
             assert.equal(200, res.statusCode);
             var data = "";
             res.on('data', function (chunk) {
                 data += chunk;
             });
             res.on('end', function () {
-                assert.equal("Salut tout le monde !", data);
+                assert(data.indexOf("XWhois") >= 0);
                 done();
             });
         });
@@ -36,4 +36,5 @@ describe('API Test', function () {
             });
         });
     });
+
 });
