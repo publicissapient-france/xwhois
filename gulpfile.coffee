@@ -9,7 +9,6 @@ $.if = require 'gulp-if-else'
 rm = require 'del'
 sequence = require 'run-sequence'
 karma = (require 'karma').server
-mocha = require 'gulp-mocha'
 css =
     minify: (require 'gulp-minify-css')
     compile: $.sass
@@ -153,7 +152,7 @@ task 'build:ng-app', [], ->
     .pipe do ng.annotate
     .pipe $.concat 'app.js'
     .pipe $.if args.compressed, $.uglify
-    .pipe $.if args.compressed, $.obfuscate
+    # .pipe $.if args.compressed, $.obfuscate
     .pipe $.size title: 'ng-app'
     .pipe to paths.exploded
 
@@ -239,9 +238,11 @@ task 'test:loop', ['build'], (done) ->
     , done
 
 task 'test:mocha', ->
-    from './test/mocha/**/*.js'
-    .pipe do mocha
+    $.express.run ['server.js', '8081'], {}, false
+    from paths.test + '/mocha/**/*.js'
+    .pipe $.mocha timeout: 5000
     .once 'end', ->
+        do $.express.stop
         do process.exit
 
 # development tasks

@@ -9,9 +9,10 @@ var methodOverride = require('method-override');
 var favicon = require('serve-favicon');
 
 var root = __dirname;
-var port = process.argv[2] || 8080;
 var challengeModule = require('./src/api/challenge');
 var app = module.exports = express();
+
+app.set('port', process.argv[2] || process.env.PORT || 8081);
 
 { // configure server with error handlers, etc.
     app.use(bodyParser.json());
@@ -29,4 +30,4 @@ app.get('/api/challenge', function (req, res) {
 });
 app.use(express.static(path.join(root, './build/')));
 
-app.listen(port);
+app.listen(app.get('port'));

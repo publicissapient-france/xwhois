@@ -5,7 +5,7 @@ var http = require("http");
 describe('API Test', function () {
 
     it('should return 200 and a message', function (done) {
-        http.get('http://localhost:8080/', function (res) {
+        http.get('http://localhost:8081/index.html', function (res) {
             assert.equal(200, res.statusCode);
             var data = "";
             res.on('data', function (chunk) {
@@ -19,7 +19,7 @@ describe('API Test', function () {
     });
 
     it('should get a challenge', function (done) {
-        http.get('http://localhost:8080/api/challenge', function (res) {
+        http.get('http://localhost:8081/api/challenge', function (res) {
             assert.equal(200, res.statusCode);
             var data = '';
             res.on('data', function (chunk) {
