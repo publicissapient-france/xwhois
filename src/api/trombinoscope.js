@@ -1,5 +1,5 @@
 var cheerio = require('cheerio'),
-    https = require('https');
+    confluence = require('./infrastructure/confluence');
 
 var extractImage = function (element) {
     var image = element.find('ri\\:attachment').attr('ri:filename');
@@ -21,9 +21,6 @@ var sanitize = function (content) {
 };
 
 var Trombinoscope = function () {
-    this.hostname = process.env.HOSTNAME;
-    this.path = process.env.PATH;
-    this.auth = process.env.USER + ':' + process.env.PASSWORD;
     this.people = [];
     this.content = '';
 };
@@ -35,40 +32,20 @@ Trombinoscope.prototype.getPeople = function (index) {
     return this.people[index];
 };
 
-Trombinoscope.prototype.getContent = function (callback) {
-    var self = this,
-        request = https.get({
-            'hostname': self.hostname,
-            'path': self.path,
-            'auth': self.auth
-        }, function (response) {
-            response.on('data', function (chunk) {
-                self.content += chunk;
-            });
+Trombinoscope.prototype.parse = function () {
+    confluence.content(process.env.RESOURCE_ID, function (content) {
+        var $ = cheerio.load(cheerio.load(content).root().text()), self = this;
 
-            response.on('end', function () {
-                self.parse();
-                callback();
-            });
+        $('ac\\:image').each(function (index) {
+            self.getPeople(index)['image'] = extractImage($(this));
         });
 
-    request.on('error', function (e) {
-        console.log(e);
+        $('th').each(function (index) {
+            self.getPeople(index)['name'] = sanitize($(this).html());
+        });
+    }, function (error) {
+        console.log(error);
     });
 };
 
-Trombinoscope.prototype.parse = function () {
-    var $ = cheerio.load(cheerio.load(this.content).root().text()), self = this;
-
-    $('ac\\:image').each(function (index) {
-        self.getPeople(index)['image'] = extractImage($(this));
-    });
-
-    $('th').each(function (index) {
-        self.getPeople(index)['name'] = sanitize($(this).html());
-    });
-};
-
-module.exports = function () {
-    return new Trombinoscope();
-};
+module.exports = new Trombinoscope();

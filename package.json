@@ -80,7 +80,8 @@
     "main-bower-files": "^2.4.0",
     "mocha": "^2.1.0",
     "require-dir": "^0.1.0",
-    "run-sequence": "^1.0.1"
+    "run-sequence": "^1.0.1",
+    "sinon": "1.13.0"
   },
   "dependencies": {
     "body-parser": "~1.12.0",
