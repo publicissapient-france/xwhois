@@ -1,13 +1,10 @@
 var https = require('https');
 
-var Confluence = function () {
-};
-
-Confluence.prototype.content = function (id, onCompleted, onError) {
+function confuenceRequest(path, onCompleted, onError) {
     var content = '',
         request = https.get({
             'hostname': process.env.HOSTNAME,
-            'path': '/confluence/rest/prototype/1/content/' + id,
+            'path': path,
             'auth': process.env.USER + ':' + process.env.PASSWORD
         }, function (response) {
             response.on('data', function (chunk) {
@@ -23,6 +20,13 @@ Confluence.prototype.content = function (id, onCompleted, onError) {
         console.log(e);
         onError(e);
     });
-};
+}
 
-module.exports = new Confluence();
+module.exports = {
+    'content': function (id, onCompleted, onError) {
+        confuenceRequest('/confluence/rest/prototype/1/content/' + id, onCompleted, onError);
+    },
+    'attachments': function (id, onCompleted, onError) {
+        confuenceRequest('/confluence/rest/prototype/1/content/' + id + '/attachments', onCompleted, onError);
+    }
+};
