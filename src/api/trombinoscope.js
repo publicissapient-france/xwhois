@@ -1,6 +1,16 @@
 var cheerio = require('cheerio'),
     confluence = require('./infrastructure/confluence');
 
+function extractChildrenId($) {
+    return $('content').find('children').find('content').find('title')
+        .filter(function (index, title) {
+            return $(title).text() === process.env.TITLE;
+        })
+        .map(function (index, title) {
+            return $(title).parent().attr('id')
+        })
+}
+
 function extractImage(element, index, self) {
     var image = element.find('ri\\:attachment').attr('ri:filename');
     if (image !== undefined) {
@@ -40,52 +50,63 @@ module.exports = {
     },
 
     'parse': function () {
-        confluence.content(process.env.RESOURCE_ID, function (content) {
-            var $ = cheerio.load(cheerio.load(content).root().text()),
-                self = this;
+        confluence.content(process.env.PARENT_RESOURCE_ID, function (content) {
+            var $ = cheerio.load(content),
+                self = this,
+                id = extractChildrenId($);
 
-            $('th').each(function (index) {
-                self.getPeople(index)['name'] = sanitize($(this).html());
-            });
+            if (id.length === 0) {
+                console.log('Children identified by title ' + process.env.TITLE + ' was not found');
+                return;
+            }
 
-            $('ac\\:image').each(function (index) {
-                extractImage($(this), index, self);
-            });
+            // TODO compare with previous fetched id in order to synchronize
 
-            confluence.attachments(process.env.RESOURCE_ID, function (content) {
-                var $ = cheerio.load(content),
-                    urlByFilename = {};
+            confluence.content(id.get(0), function (content) {
+                var $ = cheerio.load(cheerio.load(content).root().text());
 
-                $('attachment').each(function () {
-                    var attachment = $(this);
-                    var filename = attachment.attr('filename');
-                    attachment.find('link').each(function () {
-                        var link = $(this);
-                        if (link.attr('rel') === 'download') {
-                            urlByFilename[filename] = link.attr('href');
-                        }
-                    });
+                $('th').each(function (index) {
+                    self.getPeople(index)['name'] = sanitize($(this).html());
                 });
 
-                for (var filename in urlByFilename) {
-                    if (!urlByFilename.hasOwnProperty(filename)) {
-                        continue;
-                    }
-                    var people = self.findPeople(filename);
-                    if (people !== undefined) {
-                        delete people['filename'];
-                        people['href'] = urlByFilename[filename];
-                        continue;
-                    }
-                    console.log(filename, ' is not known');
-                }
+                $('ac\\:image').each(function (index) {
+                    extractImage($(this), index, self);
+                });
 
-                console.log(self.people);
+                confluence.attachments(process.env.RESOURCE_ID, function (content) {
+                    var $ = cheerio.load(content),
+                        urlByFilename = {};
+
+                    $('attachment').each(function () {
+                        var attachment = $(this);
+                        var filename = attachment.attr('filename');
+                        attachment.find('link').each(function () {
+                            var link = $(this);
+                            if (link.attr('rel') === 'download') {
+                                urlByFilename[filename] = link.attr('href');
+                            }
+                        });
+                    });
+
+                    for (var filename in urlByFilename) {
+                        if (!urlByFilename.hasOwnProperty(filename)) {
+                            continue;
+                        }
+                        var people = self.findPeople(filename);
+                        if (people !== undefined) {
+                            delete people['filename'];
+                            people['href'] = urlByFilename[filename];
+                            continue;
+                        }
+                        console.log(filename, ' is not known');
+                    }
+                }, function (error) {
+                    console.log(error);
+                })
             }, function (error) {
                 console.log(error);
-            })
+            });
         }, function (error) {
-            console.log(error);
-        });
+        }, ['children']);
     }
 };
