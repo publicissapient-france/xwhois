@@ -26,7 +26,25 @@ app.set('port', process.argv[2] || process.env.PORT || 8081);
 }
 
 app.get('/api/challenge', function (req, res) {
+    // ne pas renvoyer la réponse
     res.send(challengeModule('./src/assets/images/xebians', '/assets/images/xebians').createChallenge());
+    /*
+     {
+     firstImage: publicPath + '/' + photos[1],
+     secondImage: publicPath + '/' + photos[0],
+     name: 'Sébastian Le Merdy',
+     }
+     */
+});
+app.post('/api/challenge', function (req, res) {
+    req.body(); // challengeResponse
+    var oui = {
+        name: 'Sébastian Le Merdy',
+        clickedImage: ''
+    };
+    // check du ok
+    // stockage du challenge
+    // retourner la réponse
 });
 app.use(express.static(path.join(root, './build/')));
 
