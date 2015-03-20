@@ -1,15 +1,6 @@
 var cheerio = require('cheerio'),
-    confluence = require('./infrastructure/confluence');
-
-function extractChildrenId($) {
-    return $('content').find('children').find('content').find('title')
-        .filter(function (index, title) {
-            return $(title).text() === process.env.TITLE;
-        })
-        .map(function (index, title) {
-            return $(title).parent().attr('id')
-        })
-}
+    confluence = require('./infrastructure/confluence'),
+    trombinoscopeDb = require('./infrastructure/trombinoscopeDb');
 
 function extractImage(element, index, self) {
     var image = element.find('ri\\:attachment').attr('ri:filename');
@@ -30,9 +21,23 @@ function sanitize(content) {
     return sanitizedContent;
 }
 
+function lastModifiedDatesAreSame(lastModifiedDateFromConfluence) {
+    var lastModifiedDateFromDb = trombinoscopeDb.getLastModifiedDate();
+
+    if (lastModifiedDateFromDb === undefined) {
+        return false;
+    }
+
+    return lastModifiedDateFromConfluence.getTime() === lastModifiedDateFromDb.getTime()
+}
+
 module.exports = {
     'people': [],
-    'content': '',
+
+    'reset': function () {
+        this.people = [];
+    },
+
     'getPeople': function (index) {
         if (this.people[index] === undefined) {
             this.people[index] = {};
@@ -50,63 +55,58 @@ module.exports = {
     },
 
     'parse': function () {
-        confluence.content(process.env.PARENT_RESOURCE_ID, function (content) {
+        confluence.content(process.env.RESOURCE_ID, function (content) {
             var $ = cheerio.load(content),
                 self = this,
-                id = extractChildrenId($);
+                lastModifiedDate = new Date($('lastModifiedDate').attr('date'));
 
-            if (id.length === 0) {
-                console.log('Children identified by title ' + process.env.TITLE + ' was not found');
+            if (lastModifiedDatesAreSame(lastModifiedDate)) {
+                console.log('no need to update because last modified date hasn\'t change since last update: ', lastModifiedDate);
                 return;
             }
 
-            // TODO compare with previous fetched id in order to synchronize
+            $ = cheerio.load($.root().text());
 
-            confluence.content(id.get(0), function (content) {
-                var $ = cheerio.load(cheerio.load(content).root().text());
+            $('th').each(function (index) {
+                self.getPeople(index)['name'] = sanitize($(this).html());
+            });
 
-                $('th').each(function (index) {
-                    self.getPeople(index)['name'] = sanitize($(this).html());
-                });
+            $('ac\\:image').each(function (index) {
+                extractImage($(this), index, self);
+            });
 
-                $('ac\\:image').each(function (index) {
-                    extractImage($(this), index, self);
-                });
+            confluence.attachments(process.env.RESOURCE_ID, function (content) {
+                var $ = cheerio.load(content),
+                    urlByFilename = {};
 
-                confluence.attachments(process.env.RESOURCE_ID, function (content) {
-                    var $ = cheerio.load(content),
-                        urlByFilename = {};
-
-                    $('attachment').each(function () {
-                        var attachment = $(this);
-                        var filename = attachment.attr('filename');
-                        attachment.find('link').each(function () {
-                            var link = $(this);
-                            if (link.attr('rel') === 'download') {
-                                urlByFilename[filename] = link.attr('href');
-                            }
-                        });
+                $('attachment').each(function () {
+                    var attachment = $(this);
+                    var filename = attachment.attr('filename');
+                    attachment.find('link').each(function () {
+                        var link = $(this);
+                        if (link.attr('rel') === 'download') {
+                            urlByFilename[filename] = link.attr('href');
+                        }
                     });
+                });
 
-                    for (var filename in urlByFilename) {
-                        if (!urlByFilename.hasOwnProperty(filename)) {
-                            continue;
-                        }
-                        var people = self.findPeople(filename);
-                        if (people !== undefined) {
-                            delete people['filename'];
-                            people['href'] = urlByFilename[filename];
-                            continue;
-                        }
-                        console.log(filename, ' is not known');
+                for (var filename in urlByFilename) {
+                    if (!urlByFilename.hasOwnProperty(filename)) {
+                        continue;
                     }
-                }, function (error) {
-                    console.log(error);
-                })
+                    var people = self.findPeople(filename);
+                    if (people !== undefined) {
+                        delete people['filename'];
+                        people['href'] = urlByFilename[filename];
+                        continue;
+                    }
+                    console.log(filename, ' is not known');
+                }
             }, function (error) {
                 console.log(error);
-            });
+            })
         }, function (error) {
-        }, ['children']);
+            console.log(error);
+        });
     }
 };
