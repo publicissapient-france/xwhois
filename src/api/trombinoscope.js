@@ -6,6 +6,7 @@ function extractImage(element, index, self) {
     var image = element.find('ri\\:attachment').attr('ri:filename');
     if (image !== undefined) {
         self.getPeople(index)['filename'] = image;
+        return;
     }
     self.getPeople(index)['href'] = element.find('ri\\:url').attr('ri:value');
 }
@@ -54,7 +55,7 @@ module.exports = {
         return this.people[index];
     },
 
-    'parse': function () {
+    'parsePeople': function () {
         confluence.content(process.env.RESOURCE_ID, function (content) {
             var $ = cheerio.load(content),
                 self = this,
@@ -81,7 +82,6 @@ module.exports = {
                 $('attachment').each(function () {
                     var attachment = $(this),
                         filename = attachment.attr('filename'),
-                        href = attachment.find('link[rel=download]').attr('href'),
                         people = findPeople(filename, self);
 
                     if (people === undefined) {
@@ -89,7 +89,8 @@ module.exports = {
                     }
 
                     delete people['filename'];
-                    people['href'] = href;
+                    people['href'] = attachment.find('link[rel=download]').attr('href');
+                    people['lastModifiedDate'] = attachment.find('lastModifiedDate').attr('date');
                 });
             }, function (error) {
                 console.log(error);
