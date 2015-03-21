@@ -23,7 +23,7 @@ $ npm rebuild node-sass
 $ gulp && node server.js
 ```
 
-Then go to [http://localhost:8080/](http://localhost:8080/)
+Then go to [http://localhost:8081](http://localhost:8081)
 
 
 ### Tests ###
