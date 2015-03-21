@@ -31,6 +31,15 @@ function lastModifiedDatesAreSame(lastModifiedDateFromConfluence) {
     return lastModifiedDateFromConfluence.getTime() === lastModifiedDateFromDb.getTime()
 }
 
+function findPeople(filename, self) {
+    for (var i = 0; i < self.people.length; i++) {
+        if (self.people[i]['filename'] === filename) {
+            return self.people[i];
+        }
+    }
+    return undefined;
+}
+
 module.exports = {
     'people': [],
 
@@ -43,15 +52,6 @@ module.exports = {
             this.people[index] = {};
         }
         return this.people[index];
-    },
-
-    'findPeople': function (filename) {
-        for (var i = 0; i < this.people.length; i++) {
-            if (this.people[i]['filename'] === filename) {
-                return this.people[i];
-            }
-        }
-        return undefined;
     },
 
     'parse': function () {
@@ -76,32 +76,21 @@ module.exports = {
             });
 
             confluence.attachments(process.env.RESOURCE_ID, function (content) {
-                var $ = cheerio.load(content),
-                    urlByFilename = {};
+                var $ = cheerio.load(content);
 
                 $('attachment').each(function () {
-                    var attachment = $(this);
-                    var filename = attachment.attr('filename');
-                    attachment.find('link').each(function () {
-                        var link = $(this);
-                        if (link.attr('rel') === 'download') {
-                            urlByFilename[filename] = link.attr('href');
-                        }
-                    });
-                });
+                    var attachment = $(this),
+                        filename = attachment.attr('filename'),
+                        href = attachment.find('link[rel=download]').attr('href'),
+                        people = findPeople(filename, self);
 
-                for (var filename in urlByFilename) {
-                    if (!urlByFilename.hasOwnProperty(filename)) {
-                        continue;
+                    if (people === undefined) {
+                        return;
                     }
-                    var people = self.findPeople(filename);
-                    if (people !== undefined) {
-                        delete people['filename'];
-                        people['href'] = urlByFilename[filename];
-                        continue;
-                    }
-                    console.log(filename, ' is not known');
-                }
+
+                    delete people['filename'];
+                    people['href'] = href;
+                });
             }, function (error) {
                 console.log(error);
             })
