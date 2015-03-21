@@ -91,6 +91,8 @@ module.exports = {
                     delete people['filename'];
                     people['href'] = attachment.find('link[rel=download]').attr('href');
                     people['lastModifiedDate'] = attachment.find('lastModifiedDate').attr('date');
+
+                    trombinoscopeDb.updatePeople(people);
                 });
             }, function (error) {
                 console.log(error);

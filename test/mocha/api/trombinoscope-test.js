@@ -5,11 +5,12 @@ var assert = require('assert'),
     trombinoscope = require('../../../src/api/trombinoscope');
 
 describe('Trombinoscope Module Test', function () {
-    var confluenceContentStub, confluenceAttachmentsStub, trombinoscopeDbLastModifiedDateStub, previousProcessEnvTITLE;
+    var confluenceContentStub, confluenceAttachmentsStub, trombinoscopeDbLastModifiedDateStub, trombinoscopeDbUpdatePeople, previousProcessEnvTITLE;
     beforeEach(function (done) {
         confluenceContentStub = sinon.stub(confluence, 'content');
         confluenceAttachmentsStub = sinon.stub(confluence, 'attachments');
         trombinoscopeDbLastModifiedDateStub = sinon.stub(trombinoscopeDb, 'getLastModifiedDate');
+        trombinoscopeDbUpdatePeople = sinon.stub(trombinoscopeDb, 'updatePeople');
         previousProcessEnvTITLE = process.env.TITLE;
         process.env.TITLE = 'Child1';
         done();
@@ -20,6 +21,7 @@ describe('Trombinoscope Module Test', function () {
         confluenceContentStub.restore();
         confluenceAttachmentsStub.restore();
         trombinoscopeDbLastModifiedDateStub.restore();
+        trombinoscopeDbUpdatePeople.restore();
         if (previousProcessEnvTITLE === undefined) {
             delete process.env.TITLE;
         } else {
@@ -37,6 +39,7 @@ describe('Trombinoscope Module Test', function () {
         assert.strictEqual(trombinoscope.getPeople(0)['name'], 'Firstname1 LASTNAME1');
         assert.strictEqual(trombinoscope.getPeople(0)['href'], 'https://host/confluence/download/attachments/1234/file1.jpg?version=1&modificationDate=1424787636276');
         assert.strictEqual(trombinoscope.getPeople(0)['lastModifiedDate'], '2015-02-24T15:20:36+0100');
+        assert(trombinoscopeDbUpdatePeople.getCall(0).calledWithExactly(trombinoscope.getPeople(0)));
         assert.strictEqual(trombinoscope.getPeople(31)['name'], 'Firs&#xE8;stname32 LAS- TNAME32');
         assert.strictEqual(trombinoscope.getPeople(34)['name'], 'Firstname (Firstn) LASTNAME35');
         assert.strictEqual(trombinoscope.getPeople(37)['href'], 'https://host/confluence/download/attachments/1234/file38.jpg?version=1&modificationDate=1387021227752');
