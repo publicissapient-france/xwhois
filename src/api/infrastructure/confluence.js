@@ -17,9 +17,11 @@ function confuenceRequest(path, onCompleted, onError, expand) {
             });
         });
 
-    request.onError('error', function (e) {
+    request.on('error', function (e) {
         console.log(e);
-        onError(e);
+        if (onError !== undefined) {
+            onError(e);
+        }
     });
 }
 
