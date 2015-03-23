@@ -5,10 +5,10 @@ var cheerio = require('cheerio'),
 function extractImage(element, index, self) {
     var image = element.find('ri\\:attachment').attr('ri:filename');
     if (image !== undefined) {
-        self.getPeople(index)['filename'] = image;
+        self.getPerson(index)['filename'] = image;
         return;
     }
-    self.getPeople(index)['href'] = element.find('ri\\:url').attr('ri:value');
+    self.getPerson(index)['href'] = element.find('ri\\:url').attr('ri:value');
 }
 
 function sanitize(content) {
@@ -32,13 +32,18 @@ function lastModifiedDatesAreSame(lastModifiedDateFromConfluence) {
     return lastModifiedDateFromConfluence.getTime() === lastModifiedDateFromDb.getTime()
 }
 
-function findPeople(filename, self) {
-    for (var i = 0; i < self.people.length; i++) {
-        if (self.people[i]['filename'] === filename) {
-            return self.people[i];
-        }
-    }
-    return undefined;
+function findPerson(filename, self) {
+    return self.people.filter(function (person) {
+        return person['filename'] === filename;
+    })[0];
+}
+
+function download(person) {
+    confluence.download(person['href'], function (content) {
+        person['imageAsByteArray'] = new Buffer(content);
+        delete person['href'];
+        trombinoscopeDb.updatePeople(person);
+    });
 }
 
 module.exports = {
@@ -48,7 +53,7 @@ module.exports = {
         this.people = [];
     },
 
-    'getPeople': function (index) {
+    'getPerson': function (index) {
         if (this.people[index] === undefined) {
             this.people[index] = {};
         }
@@ -59,17 +64,17 @@ module.exports = {
         confluence.content(process.env.RESOURCE_ID, function (content) {
             var $ = cheerio.load(content),
                 self = this,
-                lastModifiedDate = new Date($('lastModifiedDate').attr('date'));
+                lastModifiedDateFromConfluence = new Date($('lastModifiedDate').attr('date'));
 
-            if (lastModifiedDatesAreSame(lastModifiedDate)) {
-                console.log('no need to update because last modified date hasn\'t change since last update: ', lastModifiedDate);
+            if (lastModifiedDatesAreSame(lastModifiedDateFromConfluence)) {
+                console.log('no need to update because last modified date hasn\'t change since last update: ', lastModifiedDateFromConfluence);
                 return;
             }
 
             $ = cheerio.load($.root().text());
 
             $('th').each(function (index) {
-                self.getPeople(index)['name'] = sanitize($(this).html());
+                self.getPerson(index)['name'] = sanitize($(this).html());
             });
 
             $('ac\\:image').each(function (index) {
@@ -82,23 +87,26 @@ module.exports = {
                 $('attachment').each(function () {
                     var attachment = $(this),
                         filename = attachment.attr('filename'),
-                        people = findPeople(filename, self);
+                        person = findPerson(filename, self);
 
-                    if (people === undefined) {
+                    if (person === undefined) {
                         return;
                     }
 
-                    delete people['filename'];
-                    people['href'] = attachment.find('link[rel=download]').attr('href');
-                    people['lastModifiedDate'] = attachment.find('lastModifiedDate').attr('date');
-
-                    trombinoscopeDb.updatePeople(people);
+                    delete person['filename'];
+                    person['href'] = attachment.find('link[rel=download]').attr('href');
+                    person['lastModifiedDate'] = attachment.find('lastModifiedDate').attr('date');
+                    download(person);
                 });
-            }, function (error) {
-                console.log(error);
+
+                self.people.filter(function (person) {
+                    return person['href'] !== undefined;
+                }).forEach(function (person) {
+                    download(person);
+                });
+
+                trombinoscopeDb.updateLastModifiedDate(lastModifiedDateFromConfluence);
             })
-        }, function (error) {
-            console.log(error);
         });
     }
 };

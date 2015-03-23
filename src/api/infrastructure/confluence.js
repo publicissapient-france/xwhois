@@ -1,4 +1,7 @@
-var https = require('https');
+var https = require('https'),
+    extractPathFrom = function (url) {
+        return url.substring(('https://' + process.env.HOSTNAME).length, url.length);
+    };
 
 function confuenceRequest(path, onCompleted, onError, expand) {
     var content = '',
@@ -18,7 +21,7 @@ function confuenceRequest(path, onCompleted, onError, expand) {
         });
 
     request.on('error', function (e) {
-        console.log(e);
+        console.log('Error when connecting to ' + process.env.HOSTNAME + path + expandParameter + ': ' + e.message);
         if (onError !== undefined) {
             onError(e);
         }
@@ -31,5 +34,8 @@ module.exports = {
     },
     'attachments': function (id, onCompleted, onError) {
         confuenceRequest('/confluence/rest/prototype/1/content/' + id + '/attachments', onCompleted, onError);
+    },
+    'download': function (url, onCompleted, onError) {
+        confuenceRequest(extractPathFrom(url), onCompleted, onError);
     }
 };
