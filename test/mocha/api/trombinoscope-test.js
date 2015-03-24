@@ -5,7 +5,7 @@ var assert = require('assert'),
     trombinoscope = require('../../../src/api/trombinoscope');
 
 describe('Trombinoscope Module Test', function () {
-    var confluenceContentStub, confluenceAttachmentsStub, confluenceDownloadStub, trombinoscopeDbLastModifiedDateStub, trombinoscopeDbUpdatePeopleStub, trombinoscopeDbUpdateLastModifiedDateStub, previousProcessEnvTITLE,
+    var confluenceContentStub, confluenceAttachmentsStub, confluenceDownloadStub, trombinoscopeDbLastModifiedDateStub, trombinoscopeDbUpdatePersonStub, trombinoscopeDbUpdateLastModifiedDateStub, previousProcessEnvTITLE,
 
         assertThat = function (actual) {
             return {
@@ -34,7 +34,7 @@ describe('Trombinoscope Module Test', function () {
         confluenceAttachmentsStub = sinon.stub(confluence, 'attachments');
         confluenceDownloadStub = sinon.stub(confluence, 'download');
         trombinoscopeDbLastModifiedDateStub = sinon.stub(trombinoscopeDb, 'getLastModifiedDate');
-        trombinoscopeDbUpdatePeopleStub = sinon.stub(trombinoscopeDb, 'updatePeople');
+        trombinoscopeDbUpdatePersonStub = sinon.stub(trombinoscopeDb, 'updatePerson');
         trombinoscopeDbUpdateLastModifiedDateStub = sinon.stub(trombinoscopeDb, 'updateLastModifiedDate');
         previousProcessEnvTITLE = process.env.TITLE;
         process.env.TITLE = 'Child1';
@@ -47,7 +47,7 @@ describe('Trombinoscope Module Test', function () {
         confluenceAttachmentsStub.restore();
         confluenceDownloadStub.restore();
         trombinoscopeDbLastModifiedDateStub.restore();
-        trombinoscopeDbUpdatePeopleStub.restore();
+        trombinoscopeDbUpdatePersonStub.restore();
         trombinoscopeDbUpdateLastModifiedDateStub.restore();
         if (previousProcessEnvTITLE === undefined) {
             delete process.env.TITLE;
@@ -70,7 +70,7 @@ describe('Trombinoscope Module Test', function () {
             .filenameIsUndefined()
             .hrefIsUndefined();
         assert(trombinoscope.getPerson(0)['imageAsByteArray'].equals(new Buffer('jpeg...')), 'actual image as byte array is not equal to subbed content');
-        assert(trombinoscopeDbUpdatePeopleStub.getCall(0).calledWithExactly(trombinoscope.getPerson(0)), 'first person should be updated to database');
+        assert(trombinoscopeDbUpdatePersonStub.getCall(0).calledWithExactly(trombinoscope.getPerson(0)), 'first person should be updated to database');
         assertThat(trombinoscope.getPerson(31)).hasName('Firs&#xE8;stname32 LAS- TNAME32', 'name that contains html entity, space and minus');
         assertThat(trombinoscope.getPerson(34)).hasName('Firstname (Firstn) LASTNAME35', 'name that contains parenthesis');
         assertThat(trombinoscope.getPerson(37)).hrefIsUndefined();

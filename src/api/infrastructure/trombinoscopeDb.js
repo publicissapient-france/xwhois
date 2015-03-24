@@ -4,6 +4,6 @@ module.exports = {
     },
     'updateLastModifiedDate': function (lastModifiedDate) {
     },
-    'updatePeople': function (people) {
+    'updatePerson': function (person) {
     }
 };

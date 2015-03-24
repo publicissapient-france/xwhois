@@ -42,7 +42,7 @@ function download(person) {
     confluence.download(person['href'], function (content) {
         person['imageAsByteArray'] = new Buffer(content);
         delete person['href'];
-        trombinoscopeDb.updatePeople(person);
+        trombinoscopeDb.updatePerson(person);
     });
 }
 
