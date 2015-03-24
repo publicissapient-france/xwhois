@@ -34,6 +34,7 @@ describe('Trombinoscope Module Test', function () {
         confluenceAttachmentsStub = sinon.stub(confluence, 'attachments');
         confluenceDownloadStub = sinon.stub(confluence, 'download');
         trombinoscopeDbLastModifiedDateStub = sinon.stub(trombinoscopeDb, 'getLastModifiedDate');
+        trombinoscopeDbLastModifiedDateStub.returns(new Date(0));
         trombinoscopeDbUpdatePersonStub = sinon.stub(trombinoscopeDb, 'updatePerson');
         trombinoscopeDbUpdateLastModifiedDateStub = sinon.stub(trombinoscopeDb, 'updateLastModifiedDate');
         previousProcessEnvTITLE = process.env.TITLE;
@@ -42,7 +43,7 @@ describe('Trombinoscope Module Test', function () {
     });
 
     afterEach(function (done) {
-        trombinoscope.reset();
+        trombinoscopeDb.reset();
         confluenceContentStub.restore();
         confluenceAttachmentsStub.restore();
         confluenceDownloadStub.restore();
@@ -74,7 +75,7 @@ describe('Trombinoscope Module Test', function () {
         assertThat(trombinoscope.getPerson(31)).hasName('Firs&#xE8;stname32 LAS- TNAME32', 'name that contains html entity, space and minus');
         assertThat(trombinoscope.getPerson(34)).hasName('Firstname (Firstn) LASTNAME35', 'name that contains parenthesis');
         assertThat(trombinoscope.getPerson(37)).hrefIsUndefined();
-        assert.strictEqual(trombinoscope.people.length, 40, 'number of parsed people');
+        assert.strictEqual(trombinoscopeDb.people.length, 40, 'number of parsed people');
         assert(trombinoscopeDbUpdateLastModifiedDateStub.calledWithExactly(new Date('2015-02-24T15:21:57+0100')), 'once downloaded and parsed, last modified date from confluence shoulb be written to database');
     });
 
@@ -85,6 +86,6 @@ describe('Trombinoscope Module Test', function () {
 
         trombinoscope.parsePeople();
 
-        assert.strictEqual(trombinoscope.people.length, 0);
+        assert.strictEqual(trombinoscopeDb.people.length, 0);
     });
 });

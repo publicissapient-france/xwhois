@@ -22,18 +22,8 @@ function sanitize(content) {
     return sanitizedContent;
 }
 
-function lastModifiedDatesAreSame(lastModifiedDateFromConfluence) {
-    var lastModifiedDateFromDb = trombinoscopeDb.getLastModifiedDate();
-
-    if (lastModifiedDateFromDb === undefined) {
-        return false;
-    }
-
-    return lastModifiedDateFromConfluence.getTime() === lastModifiedDateFromDb.getTime()
-}
-
-function findPerson(filename, self) {
-    return self.people.filter(function (person) {
+function findPerson(filename) {
+    return trombinoscopeDb.people.filter(function (person) {
         return person['filename'] === filename;
     })[0];
 }
@@ -47,17 +37,11 @@ function download(person) {
 }
 
 module.exports = {
-    'people': [],
-
-    'reset': function () {
-        this.people = [];
-    },
-
     'getPerson': function (index) {
-        if (this.people[index] === undefined) {
-            this.people[index] = {};
+        if (trombinoscopeDb.people[index] === undefined) {
+            trombinoscopeDb.people[index] = {};
         }
-        return this.people[index];
+        return trombinoscopeDb.people[index];
     },
 
     'parsePeople': function () {
@@ -66,7 +50,7 @@ module.exports = {
                 self = this,
                 lastModifiedDateFromConfluence = new Date($('lastModifiedDate').attr('date'));
 
-            if (lastModifiedDatesAreSame(lastModifiedDateFromConfluence)) {
+            if (lastModifiedDateFromConfluence.getTime() === trombinoscopeDb.getLastModifiedDate().getTime()) {
                 console.log('no need to update because last modified date hasn\'t change since last update: ', lastModifiedDateFromConfluence);
                 return;
             }
@@ -99,7 +83,7 @@ module.exports = {
                     download(person);
                 });
 
-                self.people.filter(function (person) {
+                trombinoscopeDb.people.filter(function (person) {
                     return person['href'] !== undefined;
                 }).forEach(function (person) {
                     download(person);
