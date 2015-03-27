@@ -1,6 +1,17 @@
 var https = require('https'),
     extractPathFrom = function (url) {
         return url.substring(('https://' + process.env.HOSTNAME).length, url.length);
+    },
+    obfuscatedPassword = process.env.PASSWORD === undefined ? '?' : '*'.times(process.env.PASSWORD.length),
+    url = function (path) {
+        return 'https://' + process.env.USER + ':' + obfuscatedPassword + '@' + process.env.HOSTNAME + path;
+    },
+    error = function (message, onError) {
+        if (onError === undefined) {
+            console.log(message);
+        } else {
+            onError(message);
+        }
     };
 
 function confuenceRequest(path, onCompleted, onError, expand) {
@@ -16,15 +27,16 @@ function confuenceRequest(path, onCompleted, onError, expand) {
             });
 
             response.on('end', function () {
+                if (response.statusCode === 401) {
+                    error('confluence.confluenceRequest unauthorized request ' + url(path + expandParameter), onError);
+                    return;
+                }
                 onCompleted(content);
             });
         });
 
     request.on('error', function (e) {
-        console.log('Error when connecting to ' + process.env.HOSTNAME + path + expandParameter + ': ' + e.message);
-        if (onError !== undefined) {
-            onError(e);
-        }
+        error('Error when connecting to ' + url(path + expandParameter) + ': ' + e.message, onError);
     });
 }
 
