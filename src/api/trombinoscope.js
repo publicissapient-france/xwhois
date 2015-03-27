@@ -45,9 +45,9 @@ module.exports = {
     },
 
     'parsePeople': function () {
+        var self = this;
         confluence.content(process.env.RESOURCE_ID, function (content) {
             var $ = cheerio.load(content),
-                self = this,
                 lastModifiedDateFromConfluence = new Date($('lastModifiedDate').attr('date'));
 
             if (lastModifiedDateFromConfluence.getTime() === trombinoscopeDb.getLastModifiedDate().getTime()) {
@@ -71,7 +71,7 @@ module.exports = {
                 $('attachment').each(function () {
                     var attachment = $(this),
                         filename = attachment.attr('filename'),
-                        person = findPerson(filename, self);
+                        person = findPerson(filename);
 
                     if (person === undefined) {
                         return;
