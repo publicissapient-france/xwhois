@@ -1,23 +1,29 @@
-var assert = require("assert");
-var challengeModule = require("../../../src/api/challenge");
+var assert = require("assert"),
+    trombinoscopeDb = require('../../../src/api/infrastructure/trombinoscopeDb'),
+    challengeModule = require("../../../src/api/challenge");
 
 describe("Challenge Module Test", function () {
+    var previousPeople;
+
+    beforeEach(function (done) {
+        previousPeople = trombinoscopeDb.people;
+        trombinoscopeDb.people = [
+            {'name': 'Firstname1 Lastname1'},
+            {'name': 'Firstname2 Lastname2'}
+        ];
+        done();
+    });
+
+    afterEach(function (done) {
+        trombinoscopeDb.people = previousPeople;
+        done();
+    });
 
     it('should create a challenge', function () {
-        var challenge = challengeModule('./test/assets/images/xebians', '/assets/images/xebians').createChallenge();
+        var challenge = challengeModule('/assets/images/xebians').createChallenge();
 
-        assert.equal(challenge.firstImage, "/assets/images/xebians/Sebastian Le Merdy.jpg");
-        assert.equal(challenge.secondImage, "/assets/images/xebians/Antoine Michaud.jpg");
-        assert.equal(challenge.name, "Sébastian Le Merdy");
-        assert.equal(challenge.answer, "firstImage");
+        assert(challenge.firstImage.search('/assets/images/xebians/Firstname[1|2] Lastname[1|2]') !== -1);
+        assert(challenge.secondImage.search('/assets/images/xebians/Firstname[1|2] Lastname[1|2]') !== -1);
+        assert(challenge.name.search('Firstname[1|2] Lastname[1|2]') !== -1);
     });
-
-    it('should have two different challenges', function () {
-        var challenge = challengeModule('./test/assets/images/xebians', '/assets/images/xebians');
-        var challenge1 = challenge.createChallenge();
-        var challenge2 = challenge.createChallenge();
-
-        assert.notDeepEqual(challenge2, challenge1);
-    });
-
 });

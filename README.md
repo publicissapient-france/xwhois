@@ -20,7 +20,7 @@ Please go to [wiki page](https://github.com/xebia-france/xwhois/wiki).
 ```
 $ npm install
 $ npm rebuild node-sass
-$ gulp && node server.js
+$ gulp && CONFLUENCE_HOSTNAME=<hostname> CONFLUENCE_USER=<user> CONFLUENCE_PASSWORD=<password> CONFLUENCE_RESOURCE_ID=<trombinoscipePageId> node server.js
 ```
 
 Then go to [http://localhost:8081](http://localhost:8081)

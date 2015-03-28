@@ -24,7 +24,7 @@ function sanitize(content) {
 
 function findPerson(filename) {
     return trombinoscopeDb.people.filter(function (person) {
-        return person['filename'] === filename;
+        return person.filename === filename;
     })[0];
 }
 
@@ -37,6 +37,12 @@ function download(person) {
 }
 
 module.exports = {
+    'checkEnvironmentVariable': function () {
+        if (process.env.CONFLUENCE_RESOURCE_ID === undefined) {
+            throw 'Environment variable CONFLUENCE_RESOURCE_ID should be defined';
+        }
+    },
+
     'getPerson': function (index) {
         if (trombinoscopeDb.people[index] === undefined) {
             trombinoscopeDb.people[index] = {};
@@ -46,7 +52,7 @@ module.exports = {
 
     'parsePeople': function () {
         var self = this;
-        confluence.content(process.env.RESOURCE_ID, function (content) {
+        confluence.content(process.env.CONFLUENCE_RESOURCE_ID, function (content) {
             var $ = cheerio.load(content),
                 lastModifiedDateFromConfluence = new Date($('lastModifiedDate').attr('date'));
 
@@ -65,7 +71,7 @@ module.exports = {
                 extractImage($(this), index, self);
             });
 
-            confluence.attachments(process.env.RESOURCE_ID, function (content) {
+            confluence.attachments(process.env.CONFLUENCE_RESOURCE_ID, function (content) {
                 var $ = cheerio.load(content);
 
                 $('attachment').each(function () {
@@ -90,7 +96,9 @@ module.exports = {
                 });
 
                 trombinoscopeDb.updateLastModifiedDate(lastModifiedDateFromConfluence);
-            })
+            }, function () {}, attachmentsSize);
+        }, function (error) {
+            console.log(error);
         });
     }
 };

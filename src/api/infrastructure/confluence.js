@@ -1,10 +1,10 @@
 var https = require('https'),
     extractPathFrom = function (url) {
-        return url.substring(('https://' + process.env.HOSTNAME).length, url.length);
+        return url.substring(('https://' + process.env.CONFLUENCE_HOSTNAME).length, url.length);
     },
-    obfuscatedPassword = process.env.PASSWORD === undefined ? '?' : '*'.times(process.env.PASSWORD.length),
+    obfuscatedPassword = process.env.CONFLUENCE_PASSWORD === undefined ? '?' : '*',
     url = function (path) {
-        return 'https://' + process.env.USER + ':' + obfuscatedPassword + '@' + process.env.HOSTNAME + path;
+        return 'https://' + process.env.CONFLUENCE_USER + ':' + obfuscatedPassword + '@' + process.env.CONFLUENCE_HOSTNAME + path;
     },
     error = function (message, onError) {
         if (onError === undefined) {
@@ -12,40 +12,49 @@ var https = require('https'),
         } else {
             onError(message);
         }
+    },
+    checkEnvironmentVariable = function (name, value) {
+        if (value === undefined) {
+            throw 'Environment variable ' + name + ' should be defined';
+        }
+    },
+    confuenceRequest = function (path, onCompleted, onError, expand) {
+        var content = '',
+            expandParameter = expand === undefined ? '' : '?expand=' + expand.join(','),
+            request = https.get({
+                'hostname': process.env.CONFLUENCE_HOSTNAME,
+                'path': path + expandParameter,
+                'auth': process.env.CONFLUENCE_USER + ':' + process.env.CONFLUENCE_PASSWORD
+            }, function (response) {
+                response.on('data', function (chunk) {
+                    content += chunk;
+                });
+
+                response.on('end', function () {
+                    if (response.statusCode === 401) {
+                        error('confluence.confluenceRequest unauthorized request ' + url(path + expandParameter), onError);
+                        return;
+                    }
+                    onCompleted(content);
+                });
+            });
+
+        request.on('error', function (e) {
+            error('Error when connecting to ' + url(path + expandParameter) + ': ' + e.message, onError);
+        });
     };
 
-function confuenceRequest(path, onCompleted, onError, expand) {
-    var content = '',
-        expandParameter = (expand === undefined ? '' : '?expand=' + expand.join(',')),
-        request = https.get({
-            'hostname': process.env.HOSTNAME,
-            'path': path + expandParameter,
-            'auth': process.env.USER + ':' + process.env.PASSWORD
-        }, function (response) {
-            response.on('data', function (chunk) {
-                content += chunk;
-            });
-
-            response.on('end', function () {
-                if (response.statusCode === 401) {
-                    error('confluence.confluenceRequest unauthorized request ' + url(path + expandParameter), onError);
-                    return;
-                }
-                onCompleted(content);
-            });
-        });
-
-    request.on('error', function (e) {
-        error('Error when connecting to ' + url(path + expandParameter) + ': ' + e.message, onError);
-    });
-}
-
 module.exports = {
+    'checkEnvironmentVariables': function () {
+        checkEnvironmentVariable('CONFLUENCE_USER', process.env.CONFLUENCE_USER);
+        checkEnvironmentVariable('CONFLUENCE_PASSWORD', process.env.CONFLUENCE_PASSWORD);
+        checkEnvironmentVariable('CONFLUENCE_HOSTNAME', process.env.CONFLUENCE_HOSTNAME);
+    },
     'content': function (id, onCompleted, onError, expand) {
         confuenceRequest('/confluence/rest/prototype/1/content/' + id, onCompleted, onError, expand);
     },
-    'attachments': function (id, onCompleted, onError) {
-        confuenceRequest('/confluence/rest/prototype/1/content/' + id + '/attachments', onCompleted, onError);
+    'attachments': function (id, onCompleted, onError, maxResults) {
+        confuenceRequest('/confluence/rest/prototype/1/content/' + id + '/attachments' + (maxResults === undefined ? '' : '?max-results=' + maxResults), onCompleted, onError);
     },
     'download': function (url, onCompleted, onError) {
         confuenceRequest(extractPathFrom(url), onCompleted, onError);
