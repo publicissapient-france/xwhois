@@ -19,7 +19,7 @@ Please go to [wiki page](https://github.com/xebia-france/xwhois/wiki).
 
 ```
 $ npm install
-$ npm rebuild node-sass
+$ npm install --global gulp
 $ gulp && CONFLUENCE_HOSTNAME=<hostname> CONFLUENCE_USER=<user> CONFLUENCE_PASSWORD=<password> CONFLUENCE_RESOURCE_ID=<trombinoscipePageId> node server.js
 ```
 
