@@ -27,7 +27,7 @@ app.set('port', process.argv[2] || process.env.PORT || 8081);
 
 app.get('/api/challenge', function (req, res) {
     // ne pas renvoyer la réponse
-    res.send(challengeModule('./src/assets/images/xebians', '/assets/images/xebians').createChallenge());
+    res.send(challengeModule('/assets/images/xebians').createChallenge());
     /*
      {
      firstImage: publicPath + '/' + photos[1],

@@ -1,26 +1,19 @@
-var fs = require('fs');
-
-module.exports = function (imagesPath, publicPath) {
-    var photos = fs.readdirSync(imagesPath);
+module.exports = function (publicPath) {
     var first = false;
     return {
         createChallenge: function () {
             first = !first;
             return first ? {
-                firstImage: publicPath + '/' + photos[1],
-                secondImage: publicPath + '/' + photos[0],
-                name: 'Sébastian Le Merdy',
+                firstImage: publicPath + '/' + 'Firstname1 Lastname1',
+                secondImage: publicPath + '/' + 'Firstname2 Lastname2',
+                name: 'Firstname1 Lastname1',
                 answer: 'firstImage'
             } : {
-                firstImage: publicPath + '/' + photos[1],
-                secondImage: publicPath + '/' + photos[0],
-                name: 'Antoine Michaud',
+                firstImage: publicPath + '/' + 'Firstname2 Lastname2',
+                secondImage: publicPath + '/' + 'Firstname1 Lastname1',
+                name: 'Firstname2 Lastname2',
                 answer: 'secondImage'
             };
         }
     };
 };
-
-
-// http://www.obsessedwithconformity.com/wp-content/uploads/keyser-soze11.jpg
-// http://www.metroactive.com/papers/metro/05.29.97/gifs/brassed-off2-9722.jpg

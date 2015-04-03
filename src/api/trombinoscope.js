@@ -54,7 +54,8 @@ module.exports = {
         var self = this;
         confluence.content(process.env.CONFLUENCE_RESOURCE_ID, function (content) {
             var $ = cheerio.load(content),
-                lastModifiedDateFromConfluence = new Date($('lastModifiedDate').attr('date'));
+                lastModifiedDateFromConfluence = new Date($('lastModifiedDate').attr('date')),
+                attachmentsSize = $('attachments').attr('size');
 
             if (lastModifiedDateFromConfluence.getTime() === trombinoscopeDb.getLastModifiedDate().getTime()) {
                 console.log('no need to update because last modified date hasn\'t change since last update: ', lastModifiedDateFromConfluence);

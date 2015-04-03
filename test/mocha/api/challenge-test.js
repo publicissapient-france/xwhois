@@ -22,8 +22,8 @@ describe("Challenge Module Test", function () {
     it('should create a challenge', function () {
         var challenge = challengeModule('/assets/images/xebians').createChallenge();
 
-        assert(challenge.firstImage.search('/assets/images/xebians/Firstname[1|2] Lastname[1|2]') !== -1);
-        assert(challenge.secondImage.search('/assets/images/xebians/Firstname[1|2] Lastname[1|2]') !== -1);
-        assert(challenge.name.search('Firstname[1|2] Lastname[1|2]') !== -1);
+        assert(challenge.firstImage.search('/assets/images/xebians/Firstname[1|2] Lastname[1|2]') !== -1, 'first image is in form /assets/images/xebians/Firstname[1|2] Lastname[1|2]');
+        assert(challenge.secondImage.search('/assets/images/xebians/Firstname[1|2] Lastname[1|2]') !== -1, 'second image is in form /assets/images/xebians/Firstname[1|2] Lastname[1|2]');
+        assert(challenge.name.search('Firstname[1|2] Lastname[1|2]') !== -1, 'name is in form Firstname[1|2] Lastname[1|2]');
     });
 });

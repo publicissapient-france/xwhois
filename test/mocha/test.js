@@ -28,10 +28,10 @@ describe('API Test', function () {
 
             res.on('end', function () {
                 var jsonData = JSON.parse(data);
-                assert.equal("/assets/images/xebians/Sebastian Le Merdy.jpg", jsonData.firstImage);
-                assert.equal("/assets/images/xebians/Antoine Michaud.jpg", jsonData.secondImage);
-                assert.equal("Sébastian Le Merdy", jsonData.name);
-                assert.equal("firstImage", jsonData.answer);
+                assert.ok(jsonData.firstImage.search('/assets/images/xebians/Firstname[1|2] Lastname[1|2]') !== -1);
+                assert.ok(jsonData.secondImage.search('/assets/images/xebians/Firstname[1|2] Lastname[1|2]') !== -1);
+                assert.ok(jsonData.name.search('Firstname[1|2] Lastname[1|2]') !== -1);
+                assert.ok(jsonData.answer.search('[first|second]Image') !== -1);
                 done();
             });
         });
