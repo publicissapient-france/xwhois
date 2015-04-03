@@ -13,13 +13,29 @@ Please go to [wiki page](https://github.com/xebia-france/xwhois/wiki).
 - routes : ngRouteSegment (http://angular-route-segment.com/)
 - build : coffee (http://coffeescript.org/), gulp (http://gulpjs.com/)
 - tests : Jasmine (http://jasmine.github.io/), Karma (http://karma-runner.github.io/0.12/index.html), Chai (http://chaijs.com/), Mocha
+- database: MongoDB
 
 
 ### Launch ###
 
+On a linux machine:
+
 ```
 $ npm install
 $ npm install --global gulp
+$ docker run --name=xwhois-mongo --detach --publish=27017:27017 mongo
+$ gulp && CONFLUENCE_HOSTNAME=<hostname> CONFLUENCE_USER=<user> CONFLUENCE_PASSWORD=<password> CONFLUENCE_RESOURCE_ID=<trombinoscipePageId> node server.js
+```
+
+On a OS X machine:
+
+```
+$ npm install
+$ npm install --global gulp
+$ boot2docker up
+$ $(boot2docker shellinit)
+$ docker run --name=xwhois-mongo --detach --publish=27017:27017 mongo
+$ VBoxManage controlvm "boot2docker-vm" natpf1 "tcp-port27017,tcp,,27017,,27017"
 $ gulp && CONFLUENCE_HOSTNAME=<hostname> CONFLUENCE_USER=<user> CONFLUENCE_PASSWORD=<password> CONFLUENCE_RESOURCE_ID=<trombinoscipePageId> node server.js
 ```
 
