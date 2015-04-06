@@ -1,3 +1,9 @@
+var findPerson = function (name, people) {
+    return people.filter(function (person) {
+        return person.name === name;
+    }).shift();
+};
+
 module.exports = {
     'people': [],
     'lastModifiedDate': new Date(0),
@@ -8,7 +14,7 @@ module.exports = {
         this.lastModifiedDate = lastModifiedDate;
     },
     'updatePerson': function (person) {
-        var personFromDb = this.findPerson(person.name);
+        var personFromDb = findPerson(person.name, this.people);
 
         if (personFromDb === undefined) {
             this.people.push(person);
@@ -17,11 +23,6 @@ module.exports = {
             personFromDb.imageAsByteArray = person.imageAsByteArray;
             personFromDb.lastModifiedDate = person.lastModifiedDate;
         }
-    },
-    'findPerson': function (name) {
-        return this.people.filter(function (person) {
-            return person.name === name;
-        }).shift();
     },
     'reset': function () {
         this.people = [];
