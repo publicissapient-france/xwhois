@@ -2,7 +2,7 @@ var https = require('https'),
     extractPathFrom = function (url) {
         return url.substring(('https://' + process.env.CONFLUENCE_HOSTNAME).length, url.length);
     },
-    obfuscatedPassword = process.env.CONFLUENCE_PASSWORD === undefined ? '?' : '*',
+    obfuscatedPassword = process.env.CONFLUENCE_PASSWORD === undefined ? 'undefined' : '*',
     url = function (path) {
         return 'https://' + process.env.CONFLUENCE_USER + ':' + obfuscatedPassword + '@' + process.env.CONFLUENCE_HOSTNAME + path;
     },
