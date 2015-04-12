@@ -29,14 +29,16 @@ angular.module('app.xwhois')
             $scope.modal = false;
         };
 
-        $scope.chooseImage = function(answer) {
+        $scope.chooseImage = function(chosedImage, name) {
             if ($scope.result !== null) {
                 return;
             }
-            $scope.result = $match.tryToAnswer(answer);
-            $timeout(function() {
-                nextImage();
-            }, 2000);
+            $match.tryToAnswer(chosedImage, name).then(function (result) {
+                $scope.result = result;
+                $timeout(function() {
+                    nextImage();
+                }, 2000);
+            });
         };
 
         $match.start();

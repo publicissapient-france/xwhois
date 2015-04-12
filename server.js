@@ -11,11 +11,11 @@ var favicon = require('serve-favicon');
 var root = __dirname;
 var challengeModule = require('./src/api/challenge');
 var app = module.exports = express();
+var jsonParser = bodyParser.json();
 
 app.set('port', process.argv[2] || process.env.PORT || 8081);
 
 { // configure server with error handlers, etc.
-    app.use(bodyParser.json());
     app.use(cookieParser());
     app.use(methodOverride('_method'));
     app.use(favicon(path.join(root, './build/favicon.ico')));
@@ -25,26 +25,19 @@ app.set('port', process.argv[2] || process.env.PORT || 8081);
     }
 }
 
-app.get('/api/challenge', function (req, res) {
-    // ne pas renvoyer la réponse
-    res.send(challengeModule('/assets/images/xebians').createChallenge());
-    /*
-     {
-     firstImage: publicPath + '/' + photos[1],
-     secondImage: publicPath + '/' + photos[0],
-     name: 'Sébastian Le Merdy',
-     }
-     */
+app.get('/api/challenge', jsonParser, function (req, res) {
+    res.send(challengeModule.createChallenge('/assets/images/xebians'));
 });
-app.post('/api/challenge', function (req, res) {
-    req.body(); // challengeResponse
-    var oui = {
-        name: 'Sébastian Le Merdy',
-        clickedImage: ''
-    };
-    // check du ok
+
+app.post('/api/challenge/answer', jsonParser, function (req, res) {
+    var challengeResponse = req.body;
+    if(challengeResponse.image && challengeResponse.name){
+        res.send({result : challengeModule.validAnswer(challengeResponse)});
     // stockage du challenge
-    // retourner la réponse
+    } else {
+        res.writeHead(400);
+        res.end();
+    }
 });
 app.use(express.static(path.join(root, './build/')));
 

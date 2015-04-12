@@ -16,10 +16,10 @@ div.leave(ng-if='modal')
 div.game(ng-class="{'slide-out': $navigation.leaving}")
     div(ng-if='question')
         div.game-area.firstImage
-            span(ng-click="chooseImage('firstImage')")
+            span(ng-click="chooseImage(question.firstImage, question.name)")
                 img(ng-if="question.firstImage" ng-src="{{ question.firstImage }}")
         div.game-area.secondImage
-            span(ng-click="chooseImage('secondImage')")
+            span(ng-click="chooseImage(question.secondImage, question.name)")
                 img(ng-if="question.secondImage" ng-src="{{ question.secondImage }}")
         div.who-am-i
             span(ng-if="result === null") Who is "{{ question.name | normalize }}" ?

@@ -18,7 +18,7 @@ var https = require('https'),
             throw 'Environment variable ' + name + ' should be defined';
         }
     },
-    confuenceRequest = function (path, onCompleted, onError, expand) {
+    confluenceRequest = function (path, onCompleted, onError, expand) {
         var content = '',
             expandParameter = expand === undefined ? '' : '?expand=' + expand.join(','),
             request = https.get({
@@ -47,16 +47,16 @@ var https = require('https'),
 module.exports = {
     'checkEnvironmentVariables': function () {
         checkEnvironmentVariable('CONFLUENCE_USER', process.env.CONFLUENCE_USER);
-        checkEnvironmentVariable('CONFLUENCE_PASSWORD', process.env.CONFLUENCE_PASSWORD);
-        checkEnvironmentVariable('CONFLUENCE_HOSTNAME', process.env.CONFLUENCE_HOSTNAME);
+        checkEnvironmentVariable('', process.env.CONFLUENCE_PASSWORD);
+        checkEnvironmentVariable('CONFLUECONFLUENCE_PASSWORDNCE_HOSTNAME', process.env.CONFLUENCE_HOSTNAME);
     },
     'content': function (id, onCompleted, onError, expand) {
-        confuenceRequest('/confluence/rest/prototype/1/content/' + id, onCompleted, onError, expand);
+        confluenceRequest('/confluence/rest/prototype/1/content/' + id, onCompleted, onError, expand);
     },
     'attachments': function (id, onCompleted, onError, maxResults) {
-        confuenceRequest('/confluence/rest/prototype/1/content/' + id + '/attachments' + (maxResults === undefined ? '' : '?max-results=' + maxResults), onCompleted, onError);
+        confluenceRequest('/confluence/rest/prototype/1/content/' + id + '/attachments' + (maxResults === undefined ? '' : '?max-results=' + maxResults), onCompleted, onError);
     },
     'download': function (url, onCompleted, onError) {
-        confuenceRequest(extractPathFrom(url), onCompleted, onError);
+        confluenceRequest(extractPathFrom(url), onCompleted, onError);
     }
 };

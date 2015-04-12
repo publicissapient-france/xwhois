@@ -40,22 +40,28 @@ angular.module('app.xwhois')
             });
         }
 
-        function tryToAnswer(answer) {
+        function tryToAnswer(imageChoosed, name) {
             currentMatch.totalTry++;
             // put this code on the server to protect game
-            if (currentChallenge && currentChallenge.answer === answer) {
-                currentMatch.score++;
-                // server call
-                $log.info('server call to POST /api/challenge {', answer, '}');
-                return true;
-            }
-            return false;
+            var answer = {
+                name: name,
+                image: imageChoosed
+            };
+            return $http.post(api.challenge.post, answer).then(function (response) {
+                if (response.data.result === true) {
+                    currentMatch.score++;
+                    return true;
+                }
+                return false;
+            }, function () {
+                $log.warn('something goes wrong on the server');
+            });
         }
 
         return {
             start: startMatch,
             kill: killMatch,
-            current: function() {
+            current: function () {
                 return angular.copy(currentMatch);
             },
             nextChallenge: nextChallenge,
@@ -65,6 +71,6 @@ angular.module('app.xwhois')
 
     })
 
-    .run(function($match, $rootScope) {
+    .run(function ($match, $rootScope) {
         $rootScope.$match = $match;
     });
