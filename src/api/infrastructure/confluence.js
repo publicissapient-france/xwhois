@@ -1,10 +1,8 @@
 var https = require('https'),
-    extractPathFrom = function (url) {
-        return url.substring(('https://' + process.env.CONFLUENCE_HOSTNAME).length, url.length);
-    },
+    url = require('url'),
     obfuscatedPassword = process.env.CONFLUENCE_PASSWORD === undefined ? 'undefined' : '*',
-    url = function (path) {
-        return 'https://' + process.env.CONFLUENCE_USER + ':' + obfuscatedPassword + '@' + process.env.CONFLUENCE_HOSTNAME + path;
+    confluenceURL = function (confluencePath) {
+        return 'https://' + process.env.CONFLUENCE_USER + ':' + obfuscatedPassword + '@' + process.env.CONFLUENCE_HOSTNAME + confluencePath;
     },
     error = function (message, onError) {
         if (onError === undefined) {
@@ -21,9 +19,10 @@ var https = require('https'),
     confluenceRequest = function (path, onCompleted, onError, expand) {
         var content = '',
             expandParameter = expand === undefined ? '' : '?expand=' + expand.join(','),
+            confluencePath = path + expandParameter,
             request = https.get({
                 'hostname': process.env.CONFLUENCE_HOSTNAME,
-                'path': path + expandParameter,
+                'path': confluencePath,
                 'auth': process.env.CONFLUENCE_USER + ':' + process.env.CONFLUENCE_PASSWORD
             }, function (response) {
                 response.on('data', function (chunk) {
@@ -32,7 +31,11 @@ var https = require('https'),
 
                 response.on('end', function () {
                     if (response.statusCode === 401) {
-                        error('confluence.confluenceRequest unauthorized request ' + url(path + expandParameter), onError);
+                        error('confluence.confluenceRequest unauthorized request ' + confluenceURL(confluencePath), onError);
+                        return;
+                    }
+                    if (response.statusCode == 404) {
+                        error('confluence.confluenceRequest not found ' + confluenceURL(confluencePath), onError);
                         return;
                     }
                     onCompleted(content);
@@ -40,7 +43,7 @@ var https = require('https'),
             });
 
         request.on('error', function (e) {
-            error('Error when connecting to ' + url(path + expandParameter) + ': ' + e.message, onError);
+            error('Error when connecting to ' + confluenceURL(path + expandParameter) + ': ' + e.message, onError);
         });
     };
 
@@ -56,7 +59,7 @@ module.exports = {
     'attachments': function (id, onCompleted, onError, maxResults) {
         confluenceRequest('/confluence/rest/prototype/1/content/' + id + '/attachments' + (maxResults === undefined ? '' : '?max-results=' + maxResults), onCompleted, onError);
     },
-    'download': function (url, onCompleted, onError) {
-        confluenceRequest(extractPathFrom(url), onCompleted, onError);
+    'download': function (downloadURL, onCompleted, onError) {
+        confluenceRequest(url.parse(downloadURL).path, onCompleted, onError);
     }
 };

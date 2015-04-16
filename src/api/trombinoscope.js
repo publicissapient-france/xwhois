@@ -100,7 +100,9 @@ module.exports = {
                 });
 
                 trombinoscopeDb.updateLastModifiedDate(lastModifiedDateFromConfluence);
-            }, function () {}, attachmentsSize);
+            }, function (error) {
+                console.log(error);
+            }, attachmentsSize);
         }, function (error) {
             console.log(error);
         });
