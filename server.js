@@ -10,6 +10,7 @@ var favicon = require('serve-favicon');
 
 var root = __dirname;
 var challenge = require('./src/api/challenge')('/assets/images/xebians'),
+    trombinoscopeDb = require('./src/api/infrastructure/trombinoscopeDb');
 var app = module.exports = express();
 var jsonParser = bodyParser.json();
 
@@ -38,6 +39,17 @@ app.post('/api/challenge/answer', jsonParser, function (req, res) {
         res.writeHead(400);
         res.end();
     }
+});
+app.get('/assets/images/xebians/:name', function (req, res) {
+    var person = trombinoscopeDb.findPerson(req.params.name);
+
+    if (person === undefined) {
+        res.sendStatus(404);
+        return;
+    }
+
+    res.set('Content-Type', 'image/jpeg'); // TODO handle other content-types
+    res.send(person.imageAsByteArray);
 });
 app.use(express.static(path.join(root, './build/')));
 
