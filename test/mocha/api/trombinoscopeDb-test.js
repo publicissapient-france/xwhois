@@ -41,6 +41,23 @@ describe('Trombinoscope Db Module Test', function () {
         assertThat(trombinoscopeDb).lastModifiedDateIs(new Date(1000));
     });
 
+    it('should find a person by name', function () {
+        var person = {
+            'name': 'name'
+        };
+        trombinoscopeDb.updatePerson(person);
+
+        var found = trombinoscopeDb.findPerson('name');
+
+        assert.strictEqual(found, person);
+    });
+
+    it('should not find unknown person', function () {
+        var found = trombinoscopeDb.findPerson('name');
+
+        assert.strictEqual(found, undefined);
+    });
+
     it ('should update person', function () {
         var updatedPerson = {
             'name': 'name',

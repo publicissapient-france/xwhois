@@ -1,14 +1,14 @@
-var findPerson = function (name, people) {
-        return people.filter(function (person) {
-            return person.name === name;
-        }).shift();
-    },
-    people = [],
+var people = [],
     lastModifiedDate = new Date(0);
 
 module.exports = {
     'getAllPeople': function () {
         return people;
+    },
+    'findPerson': function (name) {
+        return people.filter(function (person) {
+            return person.name === name;
+        }).shift();
     },
     'isEmpty': function () {
         return people.length === 0;
@@ -20,7 +20,7 @@ module.exports = {
         lastModifiedDate = newLastModifiedDate;
     },
     'updatePerson': function (person) {
-        var personFromDb = findPerson(person.name, people);
+        var personFromDb = this.findPerson(person.name);
 
         if (personFromDb === undefined) {
             people.push(person);
