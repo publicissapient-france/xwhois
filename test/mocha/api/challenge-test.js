@@ -1,26 +1,23 @@
 var assert = require("assert"),
     trombinoscopeDb = require('../../../src/api/infrastructure/trombinoscopeDb'),
-    challengeModule = require("../../../src/api/challenge");
+    challengeModule = require("../../../src/api/challenge")('/assets/images/xebians');
 
 describe("Challenge Module Test", function () {
     var previousPeople;
 
     beforeEach(function (done) {
-        previousPeople = trombinoscopeDb.people;
-        trombinoscopeDb.people = [
-            {'name': 'Firstname1 Lastname1'},
-            {'name': 'Firstname2 Lastname2'}
-        ];
+        trombinoscopeDb.updatePerson({'name': 'Firstname1 Lastname1'});
+        trombinoscopeDb.updatePerson({'name': 'Firstname2 Lastname2'});
         done();
     });
 
     afterEach(function (done) {
-        trombinoscopeDb.people = previousPeople;
+        trombinoscopeDb.reset();
         done();
     });
 
     it('should create a challenge', function () {
-        var challenge = challengeModule.createChallenge('/assets/images/xebians');
+        var challenge = challengeModule.createChallenge();
 
         assert(challenge.firstImage.search('/assets/images/xebians/Firstname[1|2] Lastname[1|2]') !== -1, 'first image is in form /assets/images/xebians/Firstname[1|2] Lastname[1|2]');
         assert(challenge.secondImage.search('/assets/images/xebians/Firstname[1|2] Lastname[1|2]') !== -1, 'second image is in form /assets/images/xebians/Firstname[1|2] Lastname[1|2]');

@@ -1,20 +1,26 @@
-var first = false;
-module.exports = {
-    'createChallenge': function (publicPath) {
-        first = !first;
-        return first ? {
-            firstImage: publicPath + '/' + 'Firstname1 Lastname1',
-            secondImage: publicPath + '/' + 'Firstname2 Lastname2',
-            name: 'Firstname1 Lastname1'
-        } : {
-            firstImage: publicPath + '/' + 'Firstname2 Lastname2',
-            secondImage: publicPath + '/' + 'Firstname1 Lastname1',
-            name: 'Firstname2 Lastname2'
-        };
-    },
+var trombinoscopeDb = require('./infrastructure/trombinoscopeDb');
 
-    'validAnswer': function (answer) {
-        var imagePathArray = answer.image.split('/');
-        return answer.name === imagePathArray[imagePathArray.length - 1];
-    }
+module.exports = function (path) {
+    return {
+        createChallenge: function () {
+            var answearFirst = Math.random() < 0.5,
+                people = trombinoscopeDb.getAllPeople(),
+                first = people[Math.floor(Math.random() * people.length)],
+                second = {};
+
+            do {
+                second = people[Math.floor(Math.random() * people.length)];
+            } while (first === second);
+
+            return {
+                firstImage: path + '/' + first.name,
+                secondImage: path + '/' + second.name,
+                name: answearFirst ? first.name : second.name
+            };
+        },
+        'validAnswer': function (answer) {
+            var imagePathArray = answer.image.split('/');
+            return answer.name === imagePathArray[imagePathArray.length - 1];
+        }
+    };
 };

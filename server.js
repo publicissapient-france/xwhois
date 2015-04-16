@@ -9,7 +9,7 @@ var methodOverride = require('method-override');
 var favicon = require('serve-favicon');
 
 var root = __dirname;
-var challengeModule = require('./src/api/challenge');
+var challenge = require('./src/api/challenge')('/assets/images/xebians'),
 var app = module.exports = express();
 var jsonParser = bodyParser.json();
 
@@ -26,13 +26,13 @@ app.set('port', process.argv[2] || process.env.PORT || 8081);
 }
 
 app.get('/api/challenge', jsonParser, function (req, res) {
-    res.send(challengeModule.createChallenge('/assets/images/xebians'));
+    res.send(challenge.createChallenge());
 });
 
 app.post('/api/challenge/answer', jsonParser, function (req, res) {
     var challengeResponse = req.body;
     if(challengeResponse.image && challengeResponse.name){
-        res.send({result : challengeModule.validAnswer(challengeResponse)});
+        res.send({result : challenge.validAnswer(challengeResponse)});
     // stockage du challenge
     } else {
         res.writeHead(400);
