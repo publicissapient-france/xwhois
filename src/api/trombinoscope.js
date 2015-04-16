@@ -87,6 +87,7 @@ module.exports = {
                     }
 
                     delete person['filename'];
+                    person['contentType'] = attachment.attr('contenttype');
                     person['href'] = attachment.find('link[rel=download]').attr('href');
                     person['lastModifiedDate'] = attachment.find('lastModifiedDate').attr('date');
                     download(person);

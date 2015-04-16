@@ -48,7 +48,7 @@ app.get('/assets/images/xebians/:name', function (req, res) {
         return;
     }
 
-    res.set('Content-Type', 'image/jpeg'); // TODO handle other content-types
+    res.set('Content-Type', person['contentType']);
     res.send(person.imageAsByteArray);
 });
 app.use(express.static(path.join(root, './build/')));

@@ -58,11 +58,31 @@ describe('Trombinoscope Db Module Test', function () {
         assert.strictEqual(found, undefined);
     });
 
-    it ('should update person', function () {
-        var updatedPerson = {
+    it ('should insert person', function () {
+        var newPerson = {
             'name': 'name',
             'imageAsByteArray': new Buffer('abc'),
+            'contentType': 'image/jpeg',
             'lastModifiedDate': new Date(0)
+        };
+
+        trombinoscopeDb.updatePerson(newPerson);
+
+        assertThat(trombinoscopeDb).containsExactly(newPerson);
+    });
+
+    it ('should update person', function () {
+        trombinoscopeDb.updatePerson({
+            'name': 'name',
+            'imageAsByteArray': new Buffer('abc'),
+            'contentType': 'image/jpeg',
+            'lastModifiedDate': new Date(0)
+        });
+        var updatedPerson = {
+            'name': 'name',
+            'imageAsByteArray': new Buffer('def'),
+            'contentType': 'image/png',
+            'lastModifiedDate': new Date(1000)
         };
 
         trombinoscopeDb.updatePerson(updatedPerson);
@@ -75,6 +95,7 @@ describe('Trombinoscope Db Module Test', function () {
         trombinoscopeDb.updatePerson({
             'name': 'name',
             'imageAsByteArray': new Buffer('abc'),
+            'contentType': 'image/jpeg',
             'lastModifiedDate': new Date(0)
         });
 
