@@ -47,8 +47,8 @@ var https = require('https'),
 module.exports = {
     'checkEnvironmentVariables': function () {
         checkEnvironmentVariable('CONFLUENCE_USER', process.env.CONFLUENCE_USER);
-        checkEnvironmentVariable('', process.env.CONFLUENCE_PASSWORD);
-        checkEnvironmentVariable('CONFLUECONFLUENCE_PASSWORDNCE_HOSTNAME', process.env.CONFLUENCE_HOSTNAME);
+        checkEnvironmentVariable('CONFLUENCE_PASSWORD', process.env.CONFLUENCE_PASSWORD);
+        checkEnvironmentVariable('CONFLUENCE_HOSTNAME', process.env.CONFLUENCE_HOSTNAME);
     },
     'content': function (id, onCompleted, onError, expand) {
         confluenceRequest('/confluence/rest/prototype/1/content/' + id, onCompleted, onError, expand);
