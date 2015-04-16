@@ -10,8 +10,10 @@ var favicon = require('serve-favicon');
 
 var root = __dirname;
 var challenge = require('./src/api/challenge')('/assets/images/xebians'),
+    confluence = require('./src/api/infrastructure/confluence');
+    trombinoscope = require('./src/api/trombinoscope');
     trombinoscopeDb = require('./src/api/infrastructure/trombinoscopeDb'),
-    fs = require('fs');
+    CronJob = require('cron').CronJob;
 var app = module.exports = express();
 var jsonParser = bodyParser.json();
 
@@ -60,34 +62,16 @@ app.get('/assets/images/xebians/:name', function (req, res) {
 });
 app.use(express.static(path.join(root, './build/')));
 
-// ugly mocks until trombinoscopeDb is persisted
+confluence.checkEnvironmentVariables();
+trombinoscope.checkEnvironmentVariable();
 
-var updatePerson = function (person, done) {
-    fs.readFile(person.image, function (error, data) {
-        if (error) {
-            throw error;
-        }
-        person.image = new Buffer(data);
-        done(person);
-    });
-};
-
-updatePerson({
-    name: 'Antoine Michaud',
-    image: './src/assets/images/xebians/Antoine Michaud.jpg',
-    contentType: 'image/jpeg',
-    lastModifiedDate: new Date()
-}, function (person) {
-    trombinoscopeDb.updatePerson(person);
-});
-
-updatePerson({
-    name: 'Sébastian Le Merdy',
-    image: './src/assets/images/xebians/Sebastian Le Merdy.jpg',
-    contentType: 'image/jpeg',
-    lastModifiedDate: new Date()
-}, function (person) {
-    trombinoscopeDb.updatePerson(person);
+trombinoscope.parsePeople();
+new CronJob({
+    cronTime: '0 0 1 * * *',
+    onTick: function () {
+        trombinoscope.parsePeople();
+    },
+    start: true
 });
 
 app.listen(app.get('port'));
