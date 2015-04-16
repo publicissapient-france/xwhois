@@ -1,14 +1,15 @@
 var cheerio = require('cheerio'),
     confluence = require('./infrastructure/confluence'),
-    trombinoscopeDb = require('./infrastructure/trombinoscopeDb');
+    trombinoscopeDb = require('./infrastructure/trombinoscopeDb'),
+    people = [];
 
-function extractImage(element, index, self) {
+function extractImage(element, index) {
     var image = element.find('ri\\:attachment').attr('ri:filename');
     if (image !== undefined) {
-        self.getPerson(index)['filename'] = image;
+        people[index]['filename'] = image;
         return;
     }
-    self.getPerson(index)['href'] = element.find('ri\\:url').attr('ri:value');
+    people[index]['href'] = element.find('ri\\:url').attr('ri:value');
 }
 
 function sanitize(content) {
@@ -23,7 +24,7 @@ function sanitize(content) {
 }
 
 function findPerson(filename) {
-    return trombinoscopeDb.people.filter(function (person) {
+    return people.filter(function (person) {
         return person.filename === filename;
     })[0];
 }
@@ -43,15 +44,15 @@ module.exports = {
         }
     },
 
+    'reset': function () {
+        people = [];
+    },
+
     'getPerson': function (index) {
-        if (trombinoscopeDb.people[index] === undefined) {
-            trombinoscopeDb.people[index] = {};
-        }
-        return trombinoscopeDb.people[index];
+        return people[index];
     },
 
     'parsePeople': function () {
-        var self = this;
         confluence.content(process.env.CONFLUENCE_RESOURCE_ID, function (content) {
             var $ = cheerio.load(content),
                 lastModifiedDateFromConfluence = new Date($('lastModifiedDate').attr('date')),
@@ -65,11 +66,12 @@ module.exports = {
             $ = cheerio.load($.root().text());
 
             $('th').each(function (index) {
-                self.getPerson(index)['name'] = sanitize($(this).html());
+                people[index] = {};
+                people[index]['name'] = sanitize($(this).html());
             });
 
             $('ac\\:image').each(function (index) {
-                extractImage($(this), index, self);
+                extractImage($(this), index);
             });
 
             confluence.attachments(process.env.CONFLUENCE_RESOURCE_ID, function (content) {
@@ -90,7 +92,7 @@ module.exports = {
                     download(person);
                 });
 
-                trombinoscopeDb.people.filter(function (person) {
+                people.filter(function (person) {
                     return person['href'] !== undefined;
                 }).forEach(function (person) {
                     download(person);

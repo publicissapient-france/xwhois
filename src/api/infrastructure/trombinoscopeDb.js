@@ -1,31 +1,39 @@
 var findPerson = function (name, people) {
-    return people.filter(function (person) {
-        return person.name === name;
-    }).shift();
-};
+        return people.filter(function (person) {
+            return person.name === name;
+        }).shift();
+    },
+    people = [],
+    lastModifiedDate = new Date(0);
 
 module.exports = {
-    'people': [],
-    'lastModifiedDate': new Date(0),
-    'getLastModifiedDate': function () {
-        return this.lastModifiedDate;
+    'getAllPeople': function () {
+        return people;
     },
-    'updateLastModifiedDate': function (lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+    'isEmpty': function () {
+        return people.length === 0;
+    },
+    'getLastModifiedDate': function () {
+        return lastModifiedDate;
+    },
+    'updateLastModifiedDate': function (newLastModifiedDate) {
+        lastModifiedDate = newLastModifiedDate;
     },
     'updatePerson': function (person) {
-        var personFromDb = findPerson(person.name, this.people);
+        var personFromDb = findPerson(person.name, people);
 
         if (personFromDb === undefined) {
-            this.people.push(person);
+            people.push(person);
         } else {
             personFromDb.name = person.name;
             personFromDb.imageAsByteArray = person.imageAsByteArray;
             personFromDb.lastModifiedDate = person.lastModifiedDate;
         }
+
+        return person;
     },
     'reset': function () {
-        this.people = [];
-        this.lastModifiedDate = new Date(0);
+        people = [];
+        lastModifiedDate = new Date(0);
     }
 };

@@ -46,6 +46,7 @@ describe('Trombinoscope Module Test', function () {
     });
 
     afterEach(function (done) {
+        trombinoscope.reset();
         trombinoscopeDb.reset();
         confluenceContentStub.restore();
         confluenceAttachmentsStub.restore();
@@ -79,7 +80,7 @@ describe('Trombinoscope Module Test', function () {
         assertThat(trombinoscope.getPerson(1)).hasName('Firs&#xE8;stname2 LAS- TNAME2', 'name that contains html entity, space and minus');
         assertThat(trombinoscope.getPerson(2)).hasName('Firstname (Firstn) LASTNAME3', 'name that contains parenthesis');
         assertThat(trombinoscope.getPerson(3)).hrefIsUndefined();
-        assert.strictEqual(trombinoscopeDb.people.length, 4, 'number of parsed people');
+        assert.strictEqual(trombinoscope.getPerson(4), undefined);
         assert(trombinoscopeDbUpdateLastModifiedDateStub.calledWithExactly(new Date('2015-02-24T15:21:57+0100')), 'once downloaded and parsed, last modified date from confluence shoulb be written to database');
     });
 
@@ -90,6 +91,6 @@ describe('Trombinoscope Module Test', function () {
 
         trombinoscope.parsePeople();
 
-        assert.strictEqual(trombinoscopeDb.people.length, 0);
+        assert.strictEqual(trombinoscope.getPerson(0), undefined);
     });
 });
