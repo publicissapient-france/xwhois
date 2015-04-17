@@ -3,8 +3,6 @@ var assert = require("assert"),
     challengeModule = require("../../../src/api/challenge")('/assets/images/xebians');
 
 describe("Challenge Module Test", function () {
-    var previousPeople;
-
     beforeEach(function (done) {
         trombinoscopeDb.updatePerson({'name': 'Firstname1 Lastname1'});
         trombinoscopeDb.updatePerson({'name': 'Firstname2 Lastname2'});
