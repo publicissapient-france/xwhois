@@ -10,27 +10,27 @@ describe('Trombinoscope Module Test', function () {
         assertThat = function (actual) {
             return {
                 'hasName': function (expected, message) {
-                    assert.strictEqual(actual['name'], expected, message === undefined ? 'person\'s name' : message);
+                    assert.strictEqual(actual.getName(), expected, message === undefined ? 'person\'s name' : message);
                     return this;
                 },
                 'hasLastModificationDate': function (expected) {
-                    assert.strictEqual(actual['lastModifiedDate'], expected, 'last modified date of image of parsed person');
+                    assert.strictEqual(actual.getLastModifiedDate(), expected, 'last modified date of image of parsed person');
                     return this;
                 },
                 'filenameIsUndefined': function () {
-                    assert.strictEqual(actual['filename'], undefined, 'filename of image of parsed person');
+                    assert.strictEqual(actual.getFilename(), undefined, 'filename of image of parsed person');
                     return this;
                 },
                 'hrefIsUndefined': function () {
-                    assert.strictEqual(actual['href'], undefined, 'href of image of parsed person');
+                    assert.strictEqual(actual.getHref(), undefined, 'href of image of parsed person');
                     return this;
                 },
                 'hasImageAsByteArray': function (buffer) {
-                    assert(actual['imageAsByteArray'].equals(buffer), 'actual image as byte array is not equal to subbed content');
+                    assert(actual.getImageAsByteArray().equals(buffer), 'actual image as byte array is not equal to subbed content');
                     return this;
                 },
                 'hasContentType': function (expectedContentType) {
-                    assert.strictEqual(actual['contentType'], expectedContentType, 'content type of image of parsed person');
+                    assert.strictEqual(actual.getContentType(), expectedContentType, 'content type of image of parsed person');
                     return this;
                 }
             };
@@ -81,7 +81,7 @@ describe('Trombinoscope Module Test', function () {
             .hasImageAsByteArray(new Buffer('jpeg...'))
             .hasContentType('image/jpeg')
         ;
-        assert(trombinoscopeDbUpdatePersonStub.getCall(0).calledWithExactly(trombinoscope.getPerson(0)), 'first person should be updated to database');
+        assert(trombinoscopeDbUpdatePersonStub.getCall(0).calledWithExactly(trombinoscope.getPerson(0).toJson()), 'first person should be updated to database');
         assertThat(trombinoscope.getPerson(1)).hasName('Firs&#xE8;stname2 LAS- TNAME2', 'name that contains html entity, space and minus').hasContentType('image/png');
         assertThat(trombinoscope.getPerson(2)).hasName('Firstname (Firstn) LASTNAME3', 'name that contains parenthesis');
         assertThat(trombinoscope.getPerson(3)).hrefIsUndefined();
