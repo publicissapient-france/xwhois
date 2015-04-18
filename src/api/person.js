@@ -15,7 +15,10 @@ module.exports = function (nameAsHtml) {
         href,
         imageAsByteArray,
         lastModifiedDate,
-        contentType;
+        contentType,
+        setHref = function (href_) {
+            href = href_.replace(/\+/g, '%20');
+        };
 
     return {
         'getName': function () {
@@ -34,8 +37,8 @@ module.exports = function (nameAsHtml) {
             return href;
         },
 
-        'prepareDownloadByUrl': function (href_) {
-            href = href_;
+        'prepareDownloadByUrl': function (href) {
+            setHref(href);
         },
 
         'getImageAsByteArray': function () {
@@ -59,10 +62,10 @@ module.exports = function (nameAsHtml) {
             return contentType;
         },
 
-        'prepareDownloadByAttachment': function (contentType_, href_, lastModifiedDate_) {
+        'prepareDownloadByAttachment': function (contentType_, href, lastModifiedDate_) {
             filename = undefined;
             contentType = contentType_;
-            href = href_;
+            setHref(href);
             lastModifiedDate = lastModifiedDate_;
         },
 
