@@ -69,10 +69,11 @@ module.exports = function (nameAsHtml) {
             lastModifiedDate = lastModifiedDate_;
         },
 
-        'toJson': function () {
+        'export': function () {
             return {
                 'name': name,
                 'imageAsByteArray': imageAsByteArray,
+                'contentType': contentType,
                 'lastModifiedDate': lastModifiedDate
             };
         }
