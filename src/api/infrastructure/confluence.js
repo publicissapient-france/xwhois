@@ -1,9 +1,5 @@
 var https = require('https'),
     url = require('url'),
-    obfuscatedPassword = process.env.CONFLUENCE_PASSWORD === undefined ? 'undefined' : '*',
-    confluenceURL = function (confluencePath) {
-        return 'https://' + process.env.CONFLUENCE_USER + ':' + obfuscatedPassword + '@' + process.env.CONFLUENCE_HOSTNAME + confluencePath;
-    },
     error = function (message, onError) {
         if (onError === undefined) {
             console.log(message);
@@ -20,22 +16,23 @@ var https = require('https'),
         var content = '',
             expandParameter = expand === undefined ? '' : '?expand=' + expand.join(','),
             confluencePath = path + expandParameter,
-            request = https.get({
+            options = {
                 'hostname': process.env.CONFLUENCE_HOSTNAME,
                 'path': confluencePath,
                 'auth': process.env.CONFLUENCE_USER + ':' + process.env.CONFLUENCE_PASSWORD
-            }, function (response) {
+            },
+            request = https.get(options, function (response) {
                 response.on('data', function (chunk) {
                     content += chunk;
                 });
 
                 response.on('end', function () {
                     if (response.statusCode === 401) {
-                        error('confluence.confluenceRequest unauthorized request ' + confluenceURL(confluencePath), onError);
+                        error('confluence.confluenceRequest unauthorized request ' + JSON.stringify(options), onError);
                         return;
                     }
                     if (response.statusCode == 404) {
-                        error('confluence.confluenceRequest not found ' + confluenceURL(confluencePath), onError);
+                        error('confluence.confluenceRequest not found ' + JSON.stringify(options), onError);
                         return;
                     }
                     onCompleted(content);
@@ -43,7 +40,7 @@ var https = require('https'),
             });
 
         request.on('error', function (e) {
-            error('Error when connecting to ' + confluenceURL(path + expandParameter) + ': ' + e.message, onError);
+            error('Error when connecting to ' + JSON.stringify(options) + ': ' + e.message, onError);
         });
     },
     binaryConfluenceRequest = function (path, onCompleted, onError) {
