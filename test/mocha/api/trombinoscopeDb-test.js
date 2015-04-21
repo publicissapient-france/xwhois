@@ -61,7 +61,7 @@ describe('Trombinoscope Db Module Test', function () {
     it ('should insert person', function () {
         var newPerson = {
             'name': 'name',
-            'imageAsByteArray': new Buffer('abc'),
+            'image': new Buffer('abc'),
             'contentType': 'image/jpeg',
             'lastModifiedDate': new Date(0)
         };
@@ -74,13 +74,13 @@ describe('Trombinoscope Db Module Test', function () {
     it ('should update person', function () {
         trombinoscopeDb.updatePerson({
             'name': 'name',
-            'imageAsByteArray': new Buffer('abc'),
+            'image': new Buffer('abc'),
             'contentType': 'image/jpeg',
             'lastModifiedDate': new Date(0)
         });
         var updatedPerson = {
             'name': 'name',
-            'imageAsByteArray': new Buffer('def'),
+            'image': new Buffer('def'),
             'contentType': 'image/png',
             'lastModifiedDate': new Date(1000)
         };
@@ -94,7 +94,7 @@ describe('Trombinoscope Db Module Test', function () {
         trombinoscopeDb.updateLastModifiedDate(new Date(1000));
         trombinoscopeDb.updatePerson({
             'name': 'name',
-            'imageAsByteArray': new Buffer('abc'),
+            'image': new Buffer('abc'),
             'contentType': 'image/jpeg',
             'lastModifiedDate': new Date(0)
         });

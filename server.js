@@ -49,7 +49,7 @@ app.get('/assets/images/xebians/:name', function (req, res) {
     }
 
     res.set('Content-Type', person['contentType']);
-    res.end(person.imageAsByteArray);
+    res.end(person.image);
 });
 app.use(express.static(path.join(root, './build/')));
 

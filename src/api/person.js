@@ -13,7 +13,7 @@ module.exports = function (nameAsHtml) {
     var name = sanitize(nameAsHtml),
         filename,
         href,
-        imageAsByteArray,
+        image,
         lastModifiedDate,
         contentType,
         setHref = function (href_) {
@@ -41,16 +41,16 @@ module.exports = function (nameAsHtml) {
             setHref(href);
         },
 
-        'getImageAsByteArray': function () {
-            return imageAsByteArray;
+        'getImage': function () {
+            return image;
         },
 
         'isReadyToDownload': function () {
             return href !== undefined;
         },
 
-        'downloaded': function (imageAsByteArray_) {
-            imageAsByteArray = imageAsByteArray_;
+        'downloaded': function (image_) {
+            image = image_;
             href = undefined;
         },
 
@@ -72,7 +72,7 @@ module.exports = function (nameAsHtml) {
         'export': function () {
             return {
                 'name': name,
-                'imageAsByteArray': imageAsByteArray,
+                'image': image,
                 'contentType': contentType,
                 'lastModifiedDate': lastModifiedDate
             };

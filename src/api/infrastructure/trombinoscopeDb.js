@@ -25,7 +25,7 @@ module.exports = {
         if (personFromDb === undefined) {
             people.push(person);
         } else {
-            personFromDb.imageAsByteArray = person.imageAsByteArray;
+            personFromDb.image = person.image;
             personFromDb.contentType = person.contentType;
             personFromDb.lastModifiedDate = person.lastModifiedDate;
         }

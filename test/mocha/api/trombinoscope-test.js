@@ -25,8 +25,8 @@ describe('Trombinoscope Module Test', function () {
                     assert.strictEqual(actual.getHref(), undefined, 'href of image of parsed person');
                     return this;
                 },
-                'hasImageAsByteArray': function (buffer) {
-                    assert(actual.getImageAsByteArray().equals(buffer), 'actual image as byte array is not equal to subbed content');
+                'hasImage': function (buffer) {
+                    assert(actual.getImage().equals(buffer), 'actual image as buffer is not equal to subbed content');
                     return this;
                 },
                 'hasContentType': function (expectedContentType) {
@@ -78,7 +78,7 @@ describe('Trombinoscope Module Test', function () {
             .hasLastModificationDate('2015-02-24T15:20:36+0100')
             .filenameIsUndefined()
             .hrefIsUndefined()
-            .hasImageAsByteArray(new Buffer('jpeg...'))
+            .hasImage(new Buffer('jpeg...'))
             .hasContentType('image/jpeg')
         ;
         assert(trombinoscopeDbUpdatePersonStub.getCall(0).calledWithExactly(trombinoscope.getPerson(0).export()), 'first person should be updated to database');
