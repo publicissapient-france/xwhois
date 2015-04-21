@@ -45,6 +45,34 @@ var https = require('https'),
         request.on('error', function (e) {
             error('Error when connecting to ' + confluenceURL(path + expandParameter) + ': ' + e.message, onError);
         });
+    },
+    binaryConfluenceRequest = function (path, onCompleted, onError) {
+        var buffers = [],
+            options = {
+                'hostname': process.env.CONFLUENCE_HOSTNAME,
+                'path': path
+            },
+            request = https.get(options, function (response) {
+                response.on('data', function (chunk) {
+                    buffers.push(chunk);
+                });
+
+                response.on('end', function () {
+                    if (response.statusCode === 401) {
+                        error('confluence.confluenceRequest unauthorized request ' + JSON.stringify(options), onError);
+                        return;
+                    }
+                    if (response.statusCode == 404) {
+                        error('confluence.confluenceRequest not found ' + JSON.stringify(options), onError);
+                        return;
+                    }
+                    onCompleted(Buffer.concat(buffers));
+                });
+            });
+
+        request.on('error', function (e) {
+            error('Error when connecting to ' + JSON.stringify(options) + ': ' + e.message, onError);
+        });
     };
 
 module.exports = {
@@ -60,6 +88,6 @@ module.exports = {
         confluenceRequest('/confluence/rest/prototype/1/content/' + id + '/attachments' + (maxResults === undefined ? '' : '?max-results=' + maxResults), onCompleted, onError);
     },
     'download': function (downloadURL, onCompleted, onError) {
-        confluenceRequest(url.parse(downloadURL).path, onCompleted, onError);
+        binaryConfluenceRequest(url.parse(downloadURL).path, onCompleted, onError);
     }
 };

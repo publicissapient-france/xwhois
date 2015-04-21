@@ -44,7 +44,7 @@ function downloadByUrl() {
 
 function download(person) {
     confluence.download(person.getHref(), function (content) {
-        person.downloaded(new Buffer(content));
+        person.downloaded(content);
         trombinoscopeDb.updatePerson(person.export());
     });
 }
