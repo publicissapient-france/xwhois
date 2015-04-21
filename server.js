@@ -10,7 +10,8 @@ var favicon = require('serve-favicon');
 
 var root = __dirname;
 var challenge = require('./src/api/challenge')('/assets/images/xebians'),
-    trombinoscopeDb = require('./src/api/infrastructure/trombinoscopeDb');
+    trombinoscopeDb = require('./src/api/infrastructure/trombinoscopeDb'),
+    fs = require('fs');
 var app = module.exports = express();
 var jsonParser = bodyParser.json();
 
@@ -52,5 +53,35 @@ app.get('/assets/images/xebians/:name', function (req, res) {
     res.end(person.image);
 });
 app.use(express.static(path.join(root, './build/')));
+
+// ugly mocks until trombinoscopeDb is persisted
+
+var updatePerson = function (person, done) {
+    fs.readFile(person.image, function (error, data) {
+        if (error) {
+            throw error;
+        }
+        person.image = new Buffer(data);
+        done(person);
+    });
+};
+
+updatePerson({
+    name: 'Antoine Michaud',
+    image: './src/assets/images/xebians/Antoine Michaud.jpg',
+    contentType: 'image/jpeg',
+    lastModifiedDate: new Date()
+}, function (person) {
+    trombinoscopeDb.updatePerson(person);
+});
+
+updatePerson({
+    name: 'Sébastian Le Merdy',
+    image: './src/assets/images/xebians/Sebastian Le Merdy.jpg',
+    contentType: 'image/jpeg',
+    lastModifiedDate: new Date()
+}, function (person) {
+    trombinoscopeDb.updatePerson(person);
+});
 
 app.listen(app.get('port'));
