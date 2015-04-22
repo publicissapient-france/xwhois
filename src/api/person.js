@@ -54,6 +54,10 @@ module.exports = function (nameAsHtml) {
             href = undefined;
         },
 
+        'downloadFailed': function () {
+            href = undefined;
+        },
+
         'getLastModifiedDate': function () {
             return lastModifiedDate;
         },

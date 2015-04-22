@@ -21,7 +21,9 @@ function findPerson(filename) {
     }).shift();
 }
 
-function downloadByAttachment($) {
+function downloadByAttachment($, done) {
+    var peopleReadyToDownload = [];
+
     $('attachment').each(function () {
         var attachment = $(this),
             filename = attachment.attr('filename'),
@@ -33,25 +35,40 @@ function downloadByAttachment($) {
         }
 
         person.prepareDownloadByAttachment(attachment.attr('contenttype'), attachment.find('link[rel=download]').attr('href'), attachment.find('lastModifiedDate').attr('date'));
+        peopleReadyToDownload.push(person);
         console.log(person.getName(), ' has url ', person.getHref(), ' last updated at ', person.getLastModifiedDate());
-        download(person);
     });
+
+    console.log('trombinoscope.downloadByAttachment start downloading', peopleReadyToDownload.length, 'people');
+    download(peopleReadyToDownload, done);
 }
 
-function downloadByUrl() {
-    people.filter(function (person) {
+function downloadByUrl(done) {
+    var peopleReadyToDownload = people.filter(function (person) {
         return person.isReadyToDownload();
-    }).forEach(function (person) {
-        download(person);
     });
+    console.log('trombinoscope.downloadByUrl start downloading', peopleReadyToDownload.length, 'people');
+    download(peopleReadyToDownload, done);
 }
 
-function download(person) {
+function download(peopleReadyToDownload, done) {
+    if (peopleReadyToDownload.length === 0) {
+        done();
+        return;
+    }
+
+    var person = peopleReadyToDownload.shift();
+
     console.log('download of', person.getName(), 'from', person.getHref(), 'will start');
     confluence.download(person.getHref(), function (content) {
         console.log('download of', person.getName(), 'from', person.getHref(), 'is finished with', content.length, 'bytes');
         person.downloaded(content);
         trombinoscopeDb.updatePerson(person.export());
+        download(peopleReadyToDownload, done);
+    }, function () {
+        console.log('download of', person.getName(), 'has failed');
+        person.downloadFailed();
+        download(peopleReadyToDownload, done);
     });
 }
 
@@ -94,9 +111,11 @@ module.exports = {
             });
 
             confluence.attachments(process.env.CONFLUENCE_RESOURCE_ID, function (content) {
-                downloadByAttachment(cheerio.load(content));
-                downloadByUrl();
-                trombinoscopeDb.updateLastModifiedDate(lastModifiedDateFromConfluence);
+                downloadByAttachment(cheerio.load(content), function () {
+                    downloadByUrl(function () {
+                        trombinoscopeDb.updateLastModifiedDate(lastModifiedDateFromConfluence);
+                    });
+                });
             }, function (error) {
                 console.log(error);
             }, attachmentsSize);
