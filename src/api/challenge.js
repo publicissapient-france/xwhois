@@ -3,8 +3,17 @@ var trombinoscopeDb = require('./infrastructure/trombinoscopeDb');
 module.exports = function (path) {
     return {
         createChallenge: function () {
+            if (trombinoscopeDb.isEmpty()) {
+                throw 'database is empty';
+            }
+
+            var people = trombinoscopeDb.getAllPeople();
+
+            if (people.length === 1) {
+                throw 'database has only one element';
+            }
+
             var answearFirst = Math.random() < 0.5,
-                people = trombinoscopeDb.getAllPeople(),
                 first = people[Math.floor(Math.random() * people.length)],
                 second = {};
 

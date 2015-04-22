@@ -35,4 +35,28 @@ describe("Challenge Module Test", function () {
 
         assert(result === false, 'The answer should be a losing one');
     });
+
+    it('should not create challenge if database is empty', function () {
+        trombinoscopeDb.reset();
+
+        try {
+            challengeModule.createChallenge();
+            fail();
+        } catch (errorMessage) {
+            assert.strictEqual(errorMessage, 'database is empty', 'error message');
+        }
+    });
+
+    it('should not create challenge if database has only one person', function () {
+        trombinoscopeDb.reset();
+        trombinoscopeDb.updatePerson({'name': 'Firstname1 Lastname1'});
+
+        try {
+            challengeModule.createChallenge();
+            fail();
+        } catch (errorMessage) {
+            assert.strictEqual(errorMessage, 'database has only one element', 'error message');
+        }
+
+    });
 });

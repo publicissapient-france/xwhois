@@ -28,7 +28,12 @@ app.set('port', process.argv[2] || process.env.PORT || 8081);
 }
 
 app.get('/api/challenge', jsonParser, function (req, res) {
-    res.send(challenge.createChallenge());
+    try {
+        res.send(challenge.createChallenge());
+    } catch (errorMessage) {
+        res.writeHead(400, errorMessage);
+    }
+    res.end();
 });
 
 app.post('/api/challenge/answer', jsonParser, function (req, res) {
