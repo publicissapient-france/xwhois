@@ -46,6 +46,7 @@ app.post('/api/challenge/answer', jsonParser, function (req, res) {
         res.end();
     }
 });
+
 app.get('/assets/images/xebians/:name', function (req, res) {
     var person = trombinoscopeDb.findPerson(req.params.name);
 

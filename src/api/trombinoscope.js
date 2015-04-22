@@ -8,9 +8,11 @@ function prepareDownload(element, index) {
     var image = element.find('ri\\:attachment').attr('ri:filename');
     if (image !== undefined) {
         people[index].setFilename(image);
+        console.log(people[index].getName(), ' has filename ', image);
         return;
     }
     people[index].prepareDownloadByUrl(element.find('ri\\:url').attr('ri:value'));
+    console.log(people[index].getName(), ' has url ', people[index].getHref());
 }
 
 function findPerson(filename) {
@@ -26,10 +28,12 @@ function downloadByAttachment($) {
             person = findPerson(filename);
 
         if (person === undefined) {
+            console.log(filename, ' is not bound to anyone');
             return;
         }
 
         person.prepareDownloadByAttachment(attachment.attr('contenttype'), attachment.find('link[rel=download]').attr('href'), attachment.find('lastModifiedDate').attr('date'));
+        console.log(person.getName(), ' has url ', person.getHref(), ' last updated at ', person.getLastModifiedDate());
         download(person);
     });
 }
@@ -43,7 +47,9 @@ function downloadByUrl() {
 }
 
 function download(person) {
+    console.log('download of', person.getName(), 'from', person.getHref(), 'will start');
     confluence.download(person.getHref(), function (content) {
+        console.log('download of', person.getName(), 'from', person.getHref(), 'is finished with', content.length, 'bytes');
         person.downloaded(content);
         trombinoscopeDb.updatePerson(person.export());
     });
@@ -80,6 +86,7 @@ module.exports = {
 
             $('th').each(function (index) {
                 people[index] = person($(this).html());
+                console.log('discovered ', people[index].getName());
             });
 
             $('ac\\:image').each(function (index) {
