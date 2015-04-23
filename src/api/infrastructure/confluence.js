@@ -35,6 +35,10 @@ var https = require('https'),
                         error('confluence.confluenceRequest not found ' + JSON.stringify(options), onError);
                         return;
                     }
+                    if (response.statusCode == 302) {
+                        error('confluence.binaryConfluenceRequest moved temporarily' + JSON.stringify(options), onError);
+                        return;
+                    }
                     onCompleted(content);
                 });
             });
@@ -47,7 +51,8 @@ var https = require('https'),
         var buffers = [],
             options = {
                 'hostname': process.env.CONFLUENCE_HOSTNAME,
-                'path': path
+                'path': path,
+                'auth': process.env.CONFLUENCE_USER + ':' + process.env.CONFLUENCE_PASSWORD
             },
             request = https.get(options, function (response) {
                 response.on('data', function (chunk) {
@@ -61,6 +66,10 @@ var https = require('https'),
                     }
                     if (response.statusCode == 404) {
                         error('confluence.confluenceRequest not found ' + JSON.stringify(options), onError);
+                        return;
+                    }
+                    if (response.statusCode == 302) {
+                        error('confluence.binaryConfluenceRequest moved temporarily' + JSON.stringify(options), onError);
                         return;
                     }
                     onCompleted(Buffer.concat(buffers));
