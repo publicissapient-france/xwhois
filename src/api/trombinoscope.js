@@ -8,11 +8,11 @@ function prepareDownload(element, index) {
     var image = element.find('ri\\:attachment').attr('ri:filename');
     if (image !== undefined) {
         people[index].setFilename(image);
-        console.log(people[index].getName(), ' has filename ', image);
+        console.log(people[index].getName(), 'has filename', image);
         return;
     }
     people[index].prepareDownloadByUrl(element.find('ri\\:url').attr('ri:value'));
-    console.log(people[index].getName(), ' has url ', people[index].getHref());
+    console.log(people[index].getName(), 'has url', people[index].getHref());
 }
 
 function findPerson(filename) {
@@ -30,13 +30,13 @@ function downloadByAttachment($, done) {
             person = findPerson(filename);
 
         if (person === undefined) {
-            console.log(filename, ' is not bound to anyone');
+            console.log(filename, 'is not bound to anyone');
             return;
         }
 
         person.prepareDownloadByAttachment(attachment.attr('contenttype'), attachment.find('link[rel=download]').attr('href'), attachment.find('lastModifiedDate').attr('date'));
         peopleReadyToDownload.push(person);
-        console.log(person.getName(), ' has url ', person.getHref(), ' last updated at ', person.getLastModifiedDate());
+        console.log(person.getName(), 'has url', person.getHref(), 'last updated at', person.getLastModifiedDate());
     });
 
     console.log('trombinoscope.downloadByAttachment start downloading', peopleReadyToDownload.length, 'people');
@@ -93,7 +93,7 @@ module.exports = {
                 lastModifiedDateFromConfluence = new Date($('lastModifiedDate').attr('date'));
 
             if (lastModifiedDateFromConfluence.getTime() === trombinoscopeDb.getLastModifiedDate().getTime()) {
-                console.log('no need to update because last modified date hasn\'t change since last update: ', lastModifiedDateFromConfluence);
+                console.log('no need to update because last modified date hasn\'t change since last update:', lastModifiedDateFromConfluence);
                 return;
             }
 
@@ -103,7 +103,7 @@ module.exports = {
 
             $('th').each(function (index) {
                 people[index] = person($(this).html());
-                console.log('discovered ', people[index].getName());
+                console.log('discovered', people[index].getName());
             });
 
             $('ac\\:image').each(function (index) {
