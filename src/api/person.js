@@ -1,3 +1,6 @@
+var Entities = require('html-entities').AllHtmlEntities,
+    entities = new Entities();
+
 function sanitize(content) {
     var sanitizedContent = content, infiniteLoopGuardCount = 0;
     while (sanitizedContent.indexOf('<') !== -1 && infiniteLoopGuardCount < 10) {
@@ -6,7 +9,7 @@ function sanitize(content) {
         sanitizedContent = sanitizedContent.replace(/(.+)<br>(.+)/gi, '$1$2');
         infiniteLoopGuardCount++;
     }
-    return sanitizedContent;
+    return entities.decode(sanitizedContent);
 }
 
 module.exports = function (nameAsHtml) {

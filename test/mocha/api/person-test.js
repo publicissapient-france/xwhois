@@ -21,4 +21,10 @@ describe("Person Module Test", function () {
         assert.strictEqual(personAsJson.contentType, 'image/jpeg');
         assert.strictEqual(personAsJson.lastModifiedDate, lastModifiedDate);
     });
+
+    it('should replace html character reference for name', function () {
+        var p = person('Firstname LAST&#xC8;NAME');
+
+        assert.strictEqual(p.getName(), 'Firstname LASTÈNAME');
+    });
 });
