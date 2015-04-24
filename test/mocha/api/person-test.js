@@ -15,7 +15,7 @@ describe("Person Module Test", function () {
         var lastModifiedDate = new Date(0);
         p.prepareDownloadByAttachment('image/jpeg', 'https://intarnet/confluence/download/attachments/1234/image.jpg?version=1&modificationDate=1234', lastModifiedDate);
 
-        var personAsJson = p.export();
+        var personAsJson = p.exportToJSON();
 
         assert.strictEqual(personAsJson.name, 'name');
         assert.strictEqual(personAsJson.contentType, 'image/jpeg');

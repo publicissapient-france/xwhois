@@ -18,71 +18,87 @@ module.exports = function (nameAsHtml) {
         href,
         image,
         lastModifiedDate,
-        contentType,
-        setHref = function (href_) {
-            href = href_.replace(/\+/g, '%20');
-        };
+        contentType;
 
     return {
-        'getName': function () {
-            return name;
-        },
-
-        'getFilename': function () {
-            return filename;
-        },
-
-        'setFilename': function (filename_) {
-            filename = filename_;
-        },
-
-        'getHref': function () {
-            return href;
-        },
-
-        'prepareDownloadByUrl': function (href) {
-            setHref(href);
-        },
-
-        'getImage': function () {
-            return image;
-        },
-
-        'isReadyToDownload': function () {
-            return href !== undefined;
-        },
-
-        'downloaded': function (image_) {
-            image = image_;
-            href = undefined;
-        },
-
-        'downloadFailed': function () {
-            href = undefined;
-        },
-
-        'getLastModifiedDate': function () {
-            return lastModifiedDate;
-        },
-
-        'getContentType': function () {
-            return contentType;
-        },
-
-        'prepareDownloadByAttachment': function (contentType_, href, lastModifiedDate_) {
-            filename = undefined;
-            contentType = contentType_;
-            setHref(href);
-            lastModifiedDate = lastModifiedDate_;
-        },
-
-        'export': function () {
-            return {
-                'name': name,
-                'image': image,
-                'contentType': contentType,
-                'lastModifiedDate': lastModifiedDate
-            };
-        }
+        'getName': getName,
+        'getFilename': getFilename,
+        'setFilename': setFilename,
+        'getHref': getHref,
+        'prepareDownloadByUrl': prepareDownloadByUrl,
+        'getImage': getImage,
+        'isReadyToDownload': isReadyToDownload,
+        'downloaded': downloaded,
+        'downloadFailed': downloadFailed,
+        'getLastModifiedDate': getLastModifiedDate,
+        'getContentType': getContentType,
+        'prepareDownloadByAttachment': prepareDownloadByAttachment,
+        'exportToJSON': exportToJSON
     };
+
+    function getName() {
+        return name;
+    }
+
+    function getFilename() {
+        return filename;
+    }
+
+    function setFilename(filename_) {
+        filename = filename_;
+    }
+
+    function getHref() {
+        return href;
+    }
+
+    function prepareDownloadByUrl(href) {
+        setHref(href);
+    }
+
+    function getImage() {
+        return image;
+    }
+
+    function isReadyToDownload() {
+        return href !== undefined;
+    }
+
+    function downloaded(image_) {
+        image = image_;
+        href = undefined;
+    }
+
+    function downloadFailed() {
+        href = undefined;
+    }
+
+    function getLastModifiedDate() {
+        return lastModifiedDate;
+    }
+
+    function getContentType() {
+        return contentType;
+    }
+
+    function prepareDownloadByAttachment(contentType_, href, lastModifiedDate_) {
+        filename = undefined;
+        contentType = contentType_;
+        setHref(href);
+        lastModifiedDate = lastModifiedDate_;
+    }
+
+    function exportToJSON() {
+        return {
+            'name': name,
+            'image': image,
+            'contentType': contentType,
+            'lastModifiedDate': lastModifiedDate
+        };
+    }
+
+
+    function setHref(href_) {
+        href = href_.replace(/\+/g, '%20');
+    }
 };

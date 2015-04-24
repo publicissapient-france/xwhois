@@ -81,7 +81,7 @@ describe('Trombinoscope Module Test', function () {
             .hasImage(new Buffer('jpeg...'))
             .hasContentType('image/jpeg')
         ;
-        assert(trombinoscopeDbUpdatePersonStub.getCall(0).calledWithExactly(trombinoscope.getPerson(0).export()), 'first person should be updated to database');
+        assert(trombinoscopeDbUpdatePersonStub.getCall(0).calledWithExactly(trombinoscope.getPerson(0).exportToJSON()), 'first person should be updated to database');
         assertThat(trombinoscope.getPerson(1)).hasName('Firsèstname2 LAS- TNAME2', 'name that contains html entity, space and minus').hasContentType('image/png');
         assertThat(trombinoscope.getPerson(2)).hasName('Firstname (Firstn) LASTNAME3', 'name that contains parenthesis');
         assertThat(trombinoscope.getPerson(3)).hrefIsUndefined();

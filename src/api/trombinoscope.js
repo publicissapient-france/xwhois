@@ -63,7 +63,7 @@ function download(peopleReadyToDownload, done) {
     confluence.download(person.getHref(), function (content) {
         console.log('download of', person.getName(), 'from', person.getHref(), 'is finished with', content.length, 'bytes');
         person.downloaded(content);
-        trombinoscopeDb.updatePerson(person.export());
+        trombinoscopeDb.updatePerson(person.exportToJSON());
         download(peopleReadyToDownload, done);
     }, function () {
         console.log('download of', person.getName(), 'has failed');
