@@ -27,4 +27,10 @@ describe("Person Module Test", function () {
 
         assert.strictEqual(p.getName(), 'Firstname LASTÈNAME');
     });
+
+    it('should trim', function () {
+        var p = person(' Firstname LASTNAME  ');
+
+        assert.strictEqual(p.getName(), 'Firstname LASTNAME');
+    });
 });

@@ -9,7 +9,7 @@ function sanitize(content) {
         sanitizedContent = sanitizedContent.replace(/(.+)<br>(.+)/gi, '$1$2');
         infiniteLoopGuardCount++;
     }
-    return entities.decode(sanitizedContent);
+    return entities.decode(sanitizedContent).trim();
 }
 
 module.exports = function (nameAsHtml) {
