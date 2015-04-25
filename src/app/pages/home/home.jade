@@ -1,22 +1,26 @@
 div(ng-class="{'slide-out': $navigation.leaving}").splash-screen
     div#logo
     div.slogan Le jeu des petits bonshommes violets
-    div.informations
-        div.avatar
-            img(src="https://fr.gravatar.com/userimage/80232426/a5e97654a15843fa94bc523e14f0525e.jpeg")
-        div.exp(xp, next-level=30, value=12)
-        div.scores
-            div.me
-                div(style="float: left;") Level 1
-                div(style="float: right;") M. Boule Qui-est-ce
-                div(style="clear: both")
-            table
-                tr(ng-repeat="match in $match.results")
-                    td {{ $first ? 'Last score' : 'Best score' }}
-                    td {{ match.score }}/{{ match.totalTry }}
-                    td {{ match.comment }}
-    div#play
-        a(href='' ng-click="$navigation.to('match', 600)") PLAY
+    div(ng-show="connected")
+        div.informations
+            div.avatar
+                img(src="https://fr.gravatar.com/userimage/80232426/a5e97654a15843fa94bc523e14f0525e.jpeg")
+            div.exp(xp, next-level=30, value=12)
+            div.scores
+                div.me
+                    div(style="float: left;") Level 1
+                    div(style="float: right;") M. Boule Qui-est-ce
+                    div(style="clear: both")
+                table
+                    tr(ng-repeat="match in $match.results")
+                        td {{ $first ? 'Last score' : 'Best score' }}
+                        td {{ match.score }}/{{ match.totalTry }}
+                        td {{ match.comment }}
+        div#play
+            a(href='' ng-click="$navigation.to('match', 600)") PLAY
+    div.signin(ng-hide="connected") Si vous avez le coeur violet
+        div
+            button(ng-click="signin()") Connectez-vous
 
 footer.footer(ng-class="{'slide-out': $navigation.leaving}")
     ul

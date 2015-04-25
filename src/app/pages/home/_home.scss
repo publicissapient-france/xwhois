@@ -51,6 +51,14 @@
     text-align: center;
   }
 
+  .signin {
+    text-align: center;
+    margin-top: 3em;
+    button {
+      margin-top: 1em;
+    }
+  }
+
   .informations {
 
     @include border-top-radius(1em);
