@@ -51,11 +51,31 @@
     text-align: center;
   }
 
-  .signin {
+  #signin {
     text-align: center;
     margin-top: 3em;
-    button {
-      margin-top: 1em;
+    div {
+      @include border-top-radius(40px);
+      @include border-bottom-radius(40px);
+      border: 3px solid $base-color;
+      background: linear-gradient(to top, rgba(128, 0, 128, 0), darken(#800080, 5%));
+      width: 400px;
+      margin: auto;
+      margin-top: .5em;
+      text-align: center;
+      box-shadow: 0px 20px 30px 0px rgba(0, 0, 0, 0.3);
+
+      &:hover {
+        background-color: darken(#800080, 5%);
+        border: 3px dashed white;
+      }
+
+      a {
+        font-size: 2em;
+        display: inline-block;
+        padding: .1em;
+        padding-top: 0em;
+      }
     }
   }
 
@@ -159,4 +179,5 @@
       padding-top: 0em;
     }
   }
+
 }

@@ -18,9 +18,9 @@ div(ng-class="{'slide-out': $navigation.leaving}").splash-screen
                         td {{ match.comment }}
         div#play
             a(href='' ng-click="$navigation.to('match', 600)") PLAY
-    div.signin(ng-hide="connected") Si vous avez le coeur violet
+    div#signin(ng-hide="connected")
         div
-            button(ng-click="signin()") Connectez-vous
+            a(href="" ng-click="signin()") SIGN IN
 
 footer.footer(ng-class="{'slide-out': $navigation.leaving}")
     ul
