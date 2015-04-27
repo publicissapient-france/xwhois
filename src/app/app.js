@@ -4,13 +4,14 @@ angular.module('app.xwhois',
     [
         'app.conf',
         'app.templates',
-        'ngRoute', 'route-segment', 'view-segment'
+        'ngRoute', 'route-segment', 'view-segment', 'oauth'
     ])
 
-    .config(function ($routeProvider, $routeSegmentProvider) {
+    .config(function ($routeProvider, $routeSegmentProvider, $locationProvider) {
 
         $routeSegmentProvider.options.autoLoadTemplates = true;
         $routeProvider.otherwise({redirectTo: '/'});
+        $locationProvider.html5Mode({enabled: true, requireBase: false}).hashPrefix('!');
 
     })
 

@@ -1,26 +1,27 @@
 {
-    "name": "xwhois",
-    "version": "0.0.0",
-    "homepage": "https://github.com/xebia-france/xwhois",
-    "ignore": [
-        "**/.*",
-        "node_modules",
-        "bower_components",
-        "test",
-        "tests"
-    ],
-    "dependencies": {
-        "angular": "~1.4.0",
-        "lodash": "~3.2.0",
-        "angular-route-segment": "~1.3.3",
-        "angular-route": "~1.3.5",
-        "bourbon": ">=4.0",
-        "neat": ">=1.7"
-    },
-    "resolutions": {
-        "angular": "~1.4.0"
-    },
-    "devDependencies": {
-        "angular-mocks": "~1.4.0"
-    }
+  "name": "xwhois",
+  "version": "0.0.0",
+  "homepage": "https://github.com/xebia-france/xwhois",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "~1.4.0",
+    "lodash": "~3.2.0",
+    "angular-route-segment": "~1.3.3",
+    "angular-route": "~1.3.5",
+    "bourbon": ">=4.0",
+    "neat": ">=1.7",
+    "oauth-ng": "~0.3.10"
+  },
+  "resolutions": {
+    "angular": "~1.4.0"
+  },
+  "devDependencies": {
+    "angular-mocks": "~1.4.0"
+  }
 }

@@ -19,8 +19,13 @@ div(ng-class="{'slide-out': $navigation.leaving}").splash-screen
         div#play
             a(href='' ng-click="$navigation.to('match', 600)") PLAY
     div#signin(ng-hide="connected")
-        div
-            a(href="" ng-click="signin()") SIGN IN
+        oauth(site="http://oauth-ng-server.herokuapp.com"
+            client-id="d6d2b510d18471d2e22aa202216e86c42beac80f9a6ac2da505dcb79c7b2fd99"
+            redirect-uri="/play"
+            profile-uri="http://oauth-ng-server.herokuapp.com/api/v1/me"
+            scope="public")
+        //div
+        //    a(href="" ng-click="signin()") SIGN IN
 
 footer.footer(ng-class="{'slide-out': $navigation.leaving}")
     ul
