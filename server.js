@@ -96,18 +96,18 @@ function setupDatabaseForTestingPurpose() {
     trombinoscopeDb.reset();
 
     updatePerson({
-        name: 'Antoine Michaud',
-        image: './src/assets/images/xebians/Antoine Michaud.jpg',
-        contentType: 'image/jpeg',
+        name: 'Pretty Bear',
+        image: './test/assets/images/xebians/Pretty Bear.png',
+        contentType: 'image/png',
         lastModifiedDate: new Date()
     }, function (person) {
         trombinoscopeDb.updatePerson(person);
     });
 
     updatePerson({
-        name: 'Sébastian Le Merdy',
-        image: './src/assets/images/xebians/Sebastian Le Merdy.jpg',
-        contentType: 'image/jpeg',
+        name: 'Cute Aligator',
+        image: './test/assets/images/xebians/Cute Aligator.gif',
+        contentType: 'image/gif',
         lastModifiedDate: new Date()
     }, function (person) {
         trombinoscopeDb.updatePerson(person);

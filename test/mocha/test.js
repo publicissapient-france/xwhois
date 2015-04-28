@@ -56,9 +56,9 @@ describe('API Test', function () {
             res.on('end', function () {
                 var jsonData = JSON.parse(data);
                 assert.ok(jsonData.firstImage !== jsonData.secondImage, 'first image should be different than second image');
-                var firstMatch = jsonData.firstImage.match('/assets/images/xebians/(Sébastian Le Merdy|Antoine Michaud)');
+                var firstMatch = jsonData.firstImage.match('/assets/images/xebians/(Pretty Bear|Cute Aligator)');
                 assert.notStrictEqual(firstMatch, null);
-                var secondMatch = jsonData.secondImage.match('/assets/images/xebians/(Sébastian Le Merdy|Antoine Michaud)');
+                var secondMatch = jsonData.secondImage.match('/assets/images/xebians/(Pretty Bear|Cute Aligator)');
                 assert.notStrictEqual(secondMatch, null);
                 assert.notStrictEqual([firstMatch[1], secondMatch[1]].indexOf(jsonData.name), -1, 'name should be one of first or second image');
                 done();
