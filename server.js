@@ -9,7 +9,8 @@ var methodOverride = require('method-override');
 var favicon = require('serve-favicon');
 
 var root = __dirname;
-var challenge = require('./src/api/challenge')('/assets/images/xebians'),
+var imagePath = '/assets/images/xebians',
+    challenge = require('./src/api/challenge')(imagePath),
     confluence = require('./src/api/infrastructure/confluence'),
     trombinoscope = require('./src/api/trombinoscope'),
     trombinoscopeDb = require('./src/api/infrastructure/trombinoscopeDb'),
@@ -50,7 +51,7 @@ app.post('/api/challenge/answer', jsonParser, function (req, res) {
     }
 });
 
-app.get('/assets/images/xebians/:name', function (req, res) {
+app.get(imagePath + '/:name', function (req, res) {
     var person = trombinoscopeDb.findPerson(req.params.name);
 
     if (person === undefined) {
@@ -97,7 +98,7 @@ function setupDatabaseForTestingPurpose() {
 
     updatePerson({
         name: 'Pretty Bear',
-        image: './test/assets/images/xebians/Pretty Bear.png',
+        image: './test' + imagePath + '/Pretty Bear.png',
         contentType: 'image/png',
         lastModifiedDate: new Date()
     }, function (person) {
@@ -106,7 +107,7 @@ function setupDatabaseForTestingPurpose() {
 
     updatePerson({
         name: 'Cute Aligator',
-        image: './test/assets/images/xebians/Cute Aligator.gif',
+        image: './test' + imagePath + '/Cute Aligator.gif',
         contentType: 'image/gif',
         lastModifiedDate: new Date()
     }, function (person) {
