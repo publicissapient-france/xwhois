@@ -10,12 +10,13 @@ var favicon = require('serve-favicon');
 
 var root = __dirname;
 var challenge = require('./src/api/challenge')('/assets/images/xebians'),
-    confluence = require('./src/api/infrastructure/confluence');
-    trombinoscope = require('./src/api/trombinoscope');
+    confluence = require('./src/api/infrastructure/confluence'),
+    trombinoscope = require('./src/api/trombinoscope'),
     trombinoscopeDb = require('./src/api/infrastructure/trombinoscopeDb'),
-    CronJob = require('cron').CronJob;
-var app = module.exports = express();
-var jsonParser = bodyParser.json();
+    CronJob = require('cron').CronJob,
+    app = module.exports = express(),
+    jsonParser = bodyParser.json(),
+    fs = require('fs');
 
 app.set('port', process.argv[2] || process.env.PORT || 8081);
 
@@ -62,6 +63,11 @@ app.get('/assets/images/xebians/:name', function (req, res) {
 });
 app.use(express.static(path.join(root, './build/')));
 
+if (process.env.DEVMODE !== undefined) {
+    setupDatabaseForTestingPurpose();
+    return
+}
+
 confluence.checkEnvironmentVariables();
 trombinoscope.checkEnvironmentVariable();
 
@@ -75,3 +81,35 @@ new CronJob({
 });
 
 app.listen(app.get('port'));
+
+function setupDatabaseForTestingPurpose() {
+    function updatePerson(person, done) {
+        fs.readFile(person.image, function (error, data) {
+            if (error) {
+                throw error;
+            }
+            person.image = new Buffer(data);
+            done(person);
+        });
+    }
+
+    trombinoscopeDb.reset();
+
+    updatePerson({
+        name: 'Antoine Michaud',
+        image: './src/assets/images/xebians/Antoine Michaud.jpg',
+        contentType: 'image/jpeg',
+        lastModifiedDate: new Date()
+    }, function (person) {
+        trombinoscopeDb.updatePerson(person);
+    });
+
+    updatePerson({
+        name: 'Sébastian Le Merdy',
+        image: './src/assets/images/xebians/Sebastian Le Merdy.jpg',
+        contentType: 'image/jpeg',
+        lastModifiedDate: new Date()
+    }, function (person) {
+        trombinoscopeDb.updatePerson(person);
+    });
+}

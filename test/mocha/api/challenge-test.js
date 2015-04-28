@@ -4,6 +4,7 @@ var assert = require("assert"),
 
 describe("Challenge Module Test", function () {
     beforeEach(function (done) {
+        trombinoscopeDb.reset();
         trombinoscopeDb.updatePerson({'name': 'Firstname1 Lastname1'});
         trombinoscopeDb.updatePerson({'name': 'Firstname2 Lastname2'});
         done();
