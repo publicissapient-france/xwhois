@@ -64,24 +64,25 @@ app.get(imagePath + '/:name', function (req, res) {
 });
 app.use(express.static(path.join(root, './build/')));
 
-if (process.env.DEVMODE !== undefined) {
+if (process.env.TESTDB !== undefined) {
     setupDatabaseForTestingPurpose();
-    return
+} else {
+    confluence.checkEnvironmentVariables();
+    trombinoscope.checkEnvironmentVariable();
+
+    trombinoscope.parsePeople();
+    new CronJob({
+        cronTime: '0 0 1 * * *',
+        onTick: function () {
+            trombinoscope.parsePeople();
+        },
+        start: true
+    });
 }
 
-confluence.checkEnvironmentVariables();
-trombinoscope.checkEnvironmentVariable();
-
-trombinoscope.parsePeople();
-new CronJob({
-    cronTime: '0 0 1 * * *',
-    onTick: function () {
-        trombinoscope.parsePeople();
-    },
-    start: true
-});
-
-app.listen(app.get('port'));
+if (process.env.NOLISTEN === undefined) {
+    app.listen(app.get('port'));
+}
 
 function setupDatabaseForTestingPurpose() {
     function updatePerson(person, done) {

@@ -3,11 +3,11 @@ var assert = require("assert"),
     trombinoscopeDb = require('../../src/api/infrastructure/trombinoscopeDb');
 
 describe('API Test', function () {
-    var server, devMode;
+    var server, testDb, noListen;
 
     before(function (done) {
-        devMode = process.env.DEVMODE;
-        process.env.DEVMODE = true;
+        testDb = savePreviousAndSet('TESTDB');
+        noListen = savePreviousAndSet('NOLISTEN');
         app = require("../../server");
         server = app.listen(8081);
         done();
@@ -17,11 +17,8 @@ describe('API Test', function () {
         if (server !== undefined) {
             server.close();
         }
-        if (devMode === undefined) {
-            delete process.env.DEVMODE;
-        } else {
-            process.env.DEVMODE = devMode;
-        }
+        resetPrevious('TESTDB', testDb);
+        resetPrevious('NOLISTEN', noListen);
         trombinoscopeDb.reset();
         done();
     });
@@ -165,4 +162,18 @@ describe('API Test', function () {
         });
         req.end();
     });
+
+    function savePreviousAndSet(environmentVariableName) {
+        var previous = process.env[environmentVariableName];
+        process.env[environmentVariableName] = true;
+        return previous;
+    }
+
+    function resetPrevious(environmentVariableName, previousValue) {
+        if (previousValue === undefined) {
+            delete process.env[environmentVariableName];
+        } else {
+            process.env[environmentVariableName] = previousValue;
+        }
+    }
 });
