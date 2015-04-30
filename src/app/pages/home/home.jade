@@ -19,14 +19,13 @@ div(ng-class="{'slide-out': $navigation.leaving}").splash-screen
         div#play
             a(href='' ng-click="$navigation.to('match', 600)") PLAY
     div#signin(ng-hide="connected")
+        // See https://doorkeeper-provider.herokuapp.com/oauth/applications/252
         oauth(site="http://oauth-ng-server.herokuapp.com"
-            client-id="d6d2b510d18471d2e22aa202216e86c42beac80f9a6ac2da505dcb79c7b2fd99"
-            redirect-uri="/play"
+            client-id="ca24539ef8e281c57e926004f3a1369acc680efad1457cc09ba25b6476392109"
+            redirect-uri="http://localhost:8081"
             profile-uri="http://oauth-ng-server.herokuapp.com/api/v1/me"
             scope="public"
-            template="/assets/oauth-template.html")
-        //div
-        //    a(href="" ng-click="signin()") SIGN IN
+            template="/assets/templates/oauth-template.html") SIGN IN
 
 footer.footer(ng-class="{'slide-out': $navigation.leaving}")
     ul

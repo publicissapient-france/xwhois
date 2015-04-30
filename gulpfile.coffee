@@ -106,12 +106,12 @@ task 'build:statics-fonts', ->
     .pipe to paths.build + '/assets/fonts'
 
 task 'build:statics-templates', ->
-    from "#{ paths.assets }/**/*.html"
+    from "#{ paths.assets }/templates/**/*.html"
     .pipe $.size title: 'templates'
-    .pipe to paths.build + '/assets'
+    .pipe to paths.build + '/assets/templates'
 
 task 'build:statics', (cb) ->
-    sequence ['build:statics-root-files', 'build:statics-images', 'build:statics-fonts'], cb
+    sequence ['build:statics-root-files', 'build:statics-images', 'build:statics-fonts', 'build:statics-templates'], cb
 
 
 task 'build:vendors', [], ->
