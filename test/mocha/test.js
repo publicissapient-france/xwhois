@@ -1,25 +1,49 @@
-var assert = require("assert");
-require("../../server");
-var http = require("http");
+var assert = require("assert"),
+    http = require("http"),
+    trombinoscopeDb = require('../../src/api/infrastructure/trombinoscopeDb');
 
 describe('API Test', function () {
+    var server, testDb, noListen;
+
+    before(function (done) {
+        testDb = savePreviousAndSet('TESTDB');
+        noListen = savePreviousAndSet('NOLISTEN');
+        app = require("../../server");
+        server = app.listen(8081);
+        done();
+    });
+
+    after(function (done) {
+        if (server !== undefined) {
+            server.close();
+        }
+        resetPrevious('TESTDB', testDb);
+        resetPrevious('NOLISTEN', noListen);
+        trombinoscopeDb.reset();
+        done();
+    });
 
     it('should return 200 and a message', function (done) {
-        http.get('http://localhost:8081/index.html', function (res) {
-            assert.equal(200, res.statusCode);
-            var data = "";
-            res.on('data', function (chunk) {
-                data += chunk;
+        var url = 'http://localhost:8081/index.html',
+            home = http.get(url, function (res) {
+                assert.equal(200, res.statusCode);
+                var data = '';
+                res.on('data', function (chunk) {
+                    data += chunk;
+                });
+                res.on('end', function () {
+                    assert(data.indexOf("XWhois") >= 0);
+                    done();
+                });
             });
-            res.on('end', function () {
-                assert(data.indexOf("XWhois") >= 0);
-                done();
-            });
+        home.on('error', function (error) {
+            assert.fail(error.message, '', 'There was a error during connection to ' + url);
         });
     });
 
     it('should get a challenge', function (done) {
-        http.get('http://localhost:8081/api/challenge', function (res) {
+        var url = 'http://localhost:8081/api/challenge',
+            challenge = http.get(url, function (res) {
             assert.equal(200, res.statusCode);
             var data = '';
             res.on('data', function (chunk) {
@@ -28,11 +52,18 @@ describe('API Test', function () {
 
             res.on('end', function () {
                 var jsonData = JSON.parse(data);
-                assert.ok(jsonData.firstImage.search('/assets/images/xebians/Firstname[1|2] Lastname[1|2]') !== -1);
-                assert.ok(jsonData.secondImage.search('/assets/images/xebians/Firstname[1|2] Lastname[1|2]') !== -1);
-                assert.ok(jsonData.name.search('Firstname[1|2] Lastname[1|2]') !== -1);
+                assert.ok(jsonData.firstImage !== jsonData.secondImage, 'first image should be different than second image');
+                var firstMatch = jsonData.firstImage.match('/assets/images/xebians/(Pretty Bear|Cute Aligator)');
+                assert.notStrictEqual(firstMatch, null);
+                var secondMatch = jsonData.secondImage.match('/assets/images/xebians/(Pretty Bear|Cute Aligator)');
+                assert.notStrictEqual(secondMatch, null);
+                assert.notStrictEqual([firstMatch[1], secondMatch[1]].indexOf(jsonData.name), -1, 'name should be one of first or second image');
                 done();
             });
+        });
+        challenge.on('error', function (error) {
+            assert.fail(error.message, '', 'There was a error during connection to ' + url);
+            done();
         });
     });
 
@@ -66,6 +97,10 @@ describe('API Test', function () {
         });
 
         req.write(answerString);
+        req.on('error', function (error) {
+            assert.fail(error.message, '', 'There was a error during connection to ' + options);
+            done();
+        });
         req.end();
     });
 
@@ -98,6 +133,10 @@ describe('API Test', function () {
         });
 
         req.write(answerString);
+        req.on('error', function (error) {
+            assert.fail(error.message, '', 'There was a error during connection to ' + options);
+            done();
+        });
         req.end();
     });
 
@@ -117,6 +156,24 @@ describe('API Test', function () {
             done();
         });
         req.write("{}");
+        req.on('error', function (error) {
+            assert.fail(error.message, '', 'There was a error during connection to ' + options);
+            done();
+        });
         req.end();
     });
+
+    function savePreviousAndSet(environmentVariableName) {
+        var previous = process.env[environmentVariableName];
+        process.env[environmentVariableName] = true;
+        return previous;
+    }
+
+    function resetPrevious(environmentVariableName, previousValue) {
+        if (previousValue === undefined) {
+            delete process.env[environmentVariableName];
+        } else {
+            process.env[environmentVariableName] = previousValue;
+        }
+    }
 });

@@ -9,13 +9,15 @@ var methodOverride = require('method-override');
 var favicon = require('serve-favicon');
 
 var root = __dirname;
-var challenge = require('./src/api/challenge')('/assets/images/xebians'),
-    confluence = require('./src/api/infrastructure/confluence');
-    trombinoscope = require('./src/api/trombinoscope');
+var imagePath = '/assets/images/xebians',
+    challenge = require('./src/api/challenge')(imagePath),
+    confluence = require('./src/api/infrastructure/confluence'),
+    trombinoscope = require('./src/api/trombinoscope'),
     trombinoscopeDb = require('./src/api/infrastructure/trombinoscopeDb'),
-    CronJob = require('cron').CronJob;
-var app = module.exports = express();
-var jsonParser = bodyParser.json();
+    CronJob = require('cron').CronJob,
+    app = module.exports = express(),
+    jsonParser = bodyParser.json(),
+    fs = require('fs');
 
 app.set('port', process.argv[2] || process.env.PORT || 8081);
 
@@ -49,7 +51,7 @@ app.post('/api/challenge/answer', jsonParser, function (req, res) {
     }
 });
 
-app.get('/assets/images/xebians/:name', function (req, res) {
+app.get(imagePath + '/:name', function (req, res) {
     var person = trombinoscopeDb.findPerson(req.params.name);
 
     if (person === undefined) {
@@ -62,16 +64,54 @@ app.get('/assets/images/xebians/:name', function (req, res) {
 });
 app.use(express.static(path.join(root, './build/')));
 
-confluence.checkEnvironmentVariables();
-trombinoscope.checkEnvironmentVariable();
+if (process.env.TESTDB !== undefined) {
+    setupDatabaseForTestingPurpose();
+} else {
+    confluence.checkEnvironmentVariables();
+    trombinoscope.checkEnvironmentVariable();
 
-trombinoscope.parsePeople();
-new CronJob({
-    cronTime: '0 0 1 * * *',
-    onTick: function () {
-        trombinoscope.parsePeople();
-    },
-    start: true
-});
+    trombinoscope.parsePeople();
+    new CronJob({
+        cronTime: '0 0 1 * * *',
+        onTick: function () {
+            trombinoscope.parsePeople();
+        },
+        start: true
+    });
+}
 
-app.listen(app.get('port'));
+if (process.env.NOLISTEN === undefined) {
+    app.listen(app.get('port'));
+}
+
+function setupDatabaseForTestingPurpose() {
+    function updatePerson(person, done) {
+        fs.readFile(person.image, function (error, data) {
+            if (error) {
+                throw error;
+            }
+            person.image = new Buffer(data);
+            done(person);
+        });
+    }
+
+    trombinoscopeDb.reset();
+
+    updatePerson({
+        name: 'Pretty Bear',
+        image: './test' + imagePath + '/Pretty Bear.png',
+        contentType: 'image/png',
+        lastModifiedDate: new Date()
+    }, function (person) {
+        trombinoscopeDb.updatePerson(person);
+    });
+
+    updatePerson({
+        name: 'Cute Aligator',
+        image: './test' + imagePath + '/Cute Aligator.gif',
+        contentType: 'image/gif',
+        lastModifiedDate: new Date()
+    }, function (person) {
+        trombinoscopeDb.updatePerson(person);
+    });
+}

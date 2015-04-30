@@ -243,12 +243,8 @@ task 'test:loop', ['build'], (done) ->
     , done
 
 task 'test:mocha', ->
-    $.express.run ['server.js', '8081'], {}, false
     from paths.test + '/mocha/**/*.js'
     .pipe $.mocha timeout: 5000
-    .once 'end', ->
-        do $.express.stop
-        do process.exit
 
 # development tasks
 
