@@ -1,7 +1,7 @@
 div(ng-class="{'slide-out': $navigation.leaving}").splash-screen
     div#logo
     div.slogan Le jeu des petits bonshommes violets
-    div(ng-show="connected")
+    div(ng-show="logged")
         div.informations
             div.avatar
                 img(src="https://fr.gravatar.com/userimage/80232426/a5e97654a15843fa94bc523e14f0525e.jpeg")
@@ -18,13 +18,13 @@ div(ng-class="{'slide-out': $navigation.leaving}").splash-screen
                         td {{ match.comment }}
         div#play
             a(href='' ng-click="$navigation.to('match', 600)") PLAY
-    div#signin(ng-hide="connected")
+    div#signin
         // See https://doorkeeper-provider.herokuapp.com/oauth/applications/252
-        oauth(site="http://oauth-ng-server.herokuapp.com"
-            client-id="ca24539ef8e281c57e926004f3a1369acc680efad1457cc09ba25b6476392109"
+        oauth(site="https://accounts.google.com/o"
+            authorize-path="/oauth2/auth"
+            client-id="13229706518-7q72jrhasf3lhprslqaiejg716arcivf.apps.googleusercontent.com"
             redirect-uri="http://localhost:8081"
-            profile-uri="http://oauth-ng-server.herokuapp.com/api/v1/me"
-            scope="public"
+            scope="profile"
             template="/assets/templates/oauth-template.html") SIGN IN
 
 footer.footer(ng-class="{'slide-out': $navigation.leaving}")

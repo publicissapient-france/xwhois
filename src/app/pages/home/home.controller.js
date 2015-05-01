@@ -1,12 +1,10 @@
 'use strict';
 
 angular.module('app.xwhois')
-    .controller('HomeController', function ($navigation, $scope) {
+    .controller('HomeController', function ($navigation, $scope, $timeout, AccessToken) {
         $navigation.leavingHome = false;
 
-        $scope.connected = false;
-
-        $scope.signin = function() {
-            $scope.connected = true;
-        };
+        $timeout(function() {
+            $scope.logged = !!AccessToken.get();
+        }, 0);
     });
