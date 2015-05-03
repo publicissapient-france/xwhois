@@ -1,7 +1,7 @@
 div(ng-class="{'slide-out': $navigation.leaving}").splash-screen
     div#logo
     div.slogan Le jeu des petits bonshommes violets
-    div(ng-show="logged")
+    div(ng-show="loggedIn()")
         div.informations
             div.avatar
                 img(src="https://fr.gravatar.com/userimage/80232426/a5e97654a15843fa94bc523e14f0525e.jpeg")
