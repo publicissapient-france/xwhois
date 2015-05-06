@@ -21,7 +21,7 @@ div(ng-class="{'slide-out': $navigation.leaving}").splash-screen
     div#signin
         // See https://doorkeeper-provider.herokuapp.com/oauth/applications/252
         oauth(site="https://accounts.google.com/o"
-            authorize-path="/oauth2/auth"
+            authorize-path="/oauth2/auth?hd=xebia.fr"
             client-id="13229706518-7q72jrhasf3lhprslqaiejg716arcivf.apps.googleusercontent.com"
             redirect-uri="http://localhost:8081"
             scope="profile"
