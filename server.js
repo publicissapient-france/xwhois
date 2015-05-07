@@ -31,6 +31,11 @@ app.set('port', process.env.PORT || 8081);
     }
 }
 
+// TODO: use passport-http-bearer, https://goo.gl/qT4ecR
+// TODO: create endpoint for storing an auth token
+// TODO: create endpoint for deleting an auth token
+// TODO: check stored auth tokens on each request
+
 app.get('/api/challenge', jsonParser, function (req, res) {
     challenge.createChallenge()
         .then(function (challenge) {

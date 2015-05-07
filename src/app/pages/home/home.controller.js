@@ -7,4 +7,7 @@ angular.module('app.xwhois')
         $scope.loggedIn = function () {
             return !!AccessToken.get();
         };
+
+        // TODO: on login, ask backend to store the auth token
+        // TODO: on logout, ask backend to remove the auth token
     });
