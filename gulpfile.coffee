@@ -246,6 +246,10 @@ task 'test:mocha', ->
     from paths.test + '/mocha/**/*.js'
     .pipe $.mocha timeout: 5000
 
+task 'test:int', ->
+    from paths.test + '/integration/**/*.js'
+    .pipe $.mocha timeout: 5000
+
 # development tasks
 
 task 'serve', ['build'], ->

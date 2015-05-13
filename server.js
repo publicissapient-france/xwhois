@@ -144,3 +144,5 @@ function setupDatabaseForTestingPurpose() {
             });
         });
 }
+
+module.exports = app;
