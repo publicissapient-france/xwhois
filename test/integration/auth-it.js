@@ -1,5 +1,5 @@
 var assert = require("assert");
-var hippie = require('hippie');
+var supertest = require('supertest');
 
 var server;
 var handler;
@@ -14,19 +14,17 @@ before(function (done) {
 });
 
 after(function () {
-    process.exit(0);
+    handler.close();
 });
 
 describe('Server', function () {
     describe('/api/challenge endpoint', function () {
         it('should get challenge', function (done) {
-            hippie(server)
-                .json()
+            supertest(server)
                 .get('/api/challenge')
-                .expectStatus(200)
-                .end(function (err, res, body) {
+                .expect(200)
+                .end(function (err, res) {
                     assert(res);
-                    assert(body);
                     if (err) throw err;
                     done();
                 });
