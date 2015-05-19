@@ -1,3 +1,5 @@
+var Q = require('q');
+
 var people = [],
     lastModifiedDate = new Date(0);
 
@@ -20,6 +22,7 @@ module.exports = {
         lastModifiedDate = newLastModifiedDate;
     },
     'updatePerson': function (person) {
+        var deferred = Q.defer();
         var personFromDb = this.findPerson(person.name);
 
         if (personFromDb === undefined) {
@@ -30,10 +33,14 @@ module.exports = {
             personFromDb.lastModifiedDate = person.lastModifiedDate;
         }
 
-        return person;
+        deferred.resolve(person);
+        return deferred.promise;
     },
     'reset': function () {
+        var deferred = Q.defer();
         people = [];
         lastModifiedDate = new Date(0);
+        deferred.resolve();
+        return deferred.promise;
     }
 };

@@ -17,7 +17,8 @@ var imagePath = '/assets/images/xebians',
     CronJob = require('cron').CronJob,
     app = module.exports = express(),
     jsonParser = bodyParser.json(),
-    fs = require('fs');
+    fs = require('fs'),
+    Q = require('q');
 
 app.set('port', process.argv[2] || process.env.PORT || 8081);
 
@@ -85,33 +86,36 @@ if (process.env.NOLISTEN === undefined) {
 }
 
 function setupDatabaseForTestingPurpose() {
-    function updatePerson(person, done) {
-        fs.readFile(person.image, function (error, data) {
-            if (error) {
-                throw error;
-            }
-            person.image = new Buffer(data);
-            done(person);
-        });
+    function updatePerson(person) {
+        return Q.nfcall(fs.readFile, person.image)
+            .then(function (data) {
+                person.image = new Buffer(data);
+                return person;
+            })
+            .then(function (person) {
+                return trombinoscopeDb.updatePerson(person);
+            });
     }
 
-    trombinoscopeDb.reset();
-
-    updatePerson({
-        name: 'Pretty Bear',
-        image: './test' + imagePath + '/Pretty Bear.png',
-        contentType: 'image/png',
-        lastModifiedDate: new Date()
-    }, function (person) {
-        trombinoscopeDb.updatePerson(person);
-    });
-
-    updatePerson({
-        name: 'Cute Aligator',
-        image: './test' + imagePath + '/Cute Aligator.gif',
-        contentType: 'image/gif',
-        lastModifiedDate: new Date()
-    }, function (person) {
-        trombinoscopeDb.updatePerson(person);
-    });
+    trombinoscopeDb.reset()
+        .then(function () {
+            return updatePerson({
+                name: 'Pretty Bear',
+                image: './test' + imagePath + '/Pretty Bear.png',
+                contentType: 'image/png',
+                lastModifiedDate: new Date()
+            });
+        })
+        .then(function () {
+            return updatePerson({
+                name: 'Cute Aligator',
+                image: './test' + imagePath + '/Cute Aligator.gif',
+                contentType: 'image/gif',
+                lastModifiedDate: new Date()
+            });
+        })
+        .fail(function (error) {
+            console.log(error);
+        })
+        .done();
 }
