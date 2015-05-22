@@ -1,8 +1,8 @@
 var assert = require("assert");
-var supertest = require('supertest');
 
 var server;
 var handler;
+var supertest = require('supertest');
 
 before(function (done) {
     process.env.NOLISTEN = true;
@@ -20,7 +20,7 @@ after(function () {
 describe('Server', function () {
     describe('/api/challenge endpoint', function () {
         it('should get challenge', function (done) {
-            supertest(server)
+            supertest('http://localhost:9090')
                 .get('/api/challenge')
                 .expect(200)
                 .end(function (err, res) {
