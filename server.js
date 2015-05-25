@@ -31,10 +31,24 @@ app.set('port', process.env.PORT || 8081);
     }
 }
 
-// TODO: use passport-http-bearer, https://goo.gl/qT4ecR
-// TODO: create endpoint for storing an auth token
-// TODO: create endpoint for deleting an auth token
-// TODO: check stored auth tokens on each request
+passport.use('provider', new OAuth2Strategy({
+    authorizationURL: 'https://provider.com/oauth2/authorize',
+    tokenURL: 'https://provider.com/oauth2/token',
+    clientID: '123-456-789',
+    clientSecret: 'mySecret',
+    callbackURL: 'https://localhost:3000'
+}, function (accessToken, refreshToken, profile, done) {
+    if (profile.indexOf('xebia.fr') !== -1) {
+        done();
+    }
+}));
+
+app.get('/auth/provider', password.authenticate('provider', {scope: 'email'}));
+
+app.get('/auth/provider/callback', passport.authenticate('provider', {
+    successRedirect: '/',
+    failureRedirect: '/login'
+}));
 
 app.get('/api/challenge', jsonParser, function (req, res) {
     challenge.createChallenge()
