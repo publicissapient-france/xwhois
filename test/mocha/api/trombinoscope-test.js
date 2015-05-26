@@ -51,7 +51,6 @@ describe('Trombinoscope Module Test', function () {
 
     afterEach(function (done) {
         trombinoscope.reset();
-        trombinoscopeDb.reset();
         confluenceContentStub.restore();
         confluenceAttachmentsStub.restore();
         confluenceDownloadStub.restore();

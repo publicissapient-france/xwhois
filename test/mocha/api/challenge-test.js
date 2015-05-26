@@ -1,26 +1,26 @@
 var assert = require("assert"),
     trombinoscopeDb = require('../../../src/api/infrastructure/trombinoscopeDb'),
-    challengeModule = require("../../../src/api/challenge")('/assets/images/xebians');
+    challengeModule = require("../../../src/api/challenge")('/assets/images/xebians'),
+    sinon = require('sinon');
 
 describe("Challenge Module Test", function () {
+    var trombinoscopeIsEmptyStub,
+        trombinoscopeGetAllPeople;
+
     beforeEach(function (done) {
-        trombinoscopeDb.reset()
-            .then(function () {
-                return trombinoscopeDb.updatePerson({'name': 'Firstname1 Lastname1'});
-            })
-            .then(function () {
-                return trombinoscopeDb.updatePerson({'name': 'Firstname2 Lastname2'});
-            })
-            .then(function () {
-                done();
-            })
-            .fail(done);
+        trombinoscopeIsEmptyStub = sinon.stub(trombinoscopeDb, 'isEmpty').returns(false);
+        trombinoscopeGetAllPeople = sinon.stub(trombinoscopeDb, 'getAllPeople')
+            .returns([
+                {'name': 'Firstname1 Lastname1'},
+                {'name': 'Firstname2 Lastname2'}
+            ]);
+        done();
     });
 
     afterEach(function (done) {
-        trombinoscopeDb.reset()
-            .then(done)
-            .fail(done);
+        trombinoscopeIsEmptyStub.restore();
+        trombinoscopeGetAllPeople.restore();
+        done();
     });
 
     it('should create a challenge', function () {
@@ -45,32 +45,26 @@ describe("Challenge Module Test", function () {
         assert(result === false, 'The answer should be a losing one');
     });
 
-    it('should not create challenge if database is empty', function (done) {
-        trombinoscopeDb.reset()
-            .then(function () {
-                try {
-                    challengeModule.createChallenge();
-                    fail();
-                } catch (errorMessage) {
-                    assert.strictEqual(errorMessage, 'database is empty', 'error message');
-                }
-            })
-            .fin(done);
+    it('should not create challenge if database is empty', function () {
+        trombinoscopeIsEmptyStub.returns(true);
+
+        try {
+            var challenge = challengeModule.createChallenge();
+            assert.fail(challenge, undefined, 'created challenge');
+        } catch (errorMessage) {
+            assert.strictEqual(errorMessage, 'database is empty', 'error message');
+        }
     });
 
     it('should not create challenge if database has only one person', function () {
-        trombinoscopeDb.reset()
-            .then(function () {
-                return trombinoscopeDb.updatePerson({'name': 'Firstname1 Lastname1'});
-            })
-            .then(function () {
+        trombinoscopeGetAllPeople.returns([{'name': 'Firstname1 Lastname1'}]);
 
-                try {
-                    challengeModule.createChallenge();
-                    fail();
-                } catch (errorMessage) {
-                    assert.strictEqual(errorMessage, 'database has only one element', 'error message');
-                }
-            });
+        try {
+            challengeModule.createChallenge();
+            fail();
+        } catch (errorMessage) {
+            assert.strictEqual(errorMessage, 'database has only one element', 'error message');
+        }
+
     });
 });
