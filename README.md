@@ -22,6 +22,7 @@ Please go to [wiki page](https://github.com/xebia-france/xwhois/wiki).
     $ npm install --global gulp
     
     # if OSX
+    $ boot2docker init
     $ boot2docker up
     $ $(boot2docker shellinit)
     # endif OSX
