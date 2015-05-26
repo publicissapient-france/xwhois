@@ -19,7 +19,10 @@ module.exports = {
         return lastModifiedDate;
     },
     'updateLastModifiedDate': function (newLastModifiedDate) {
+        var deferred = Q.defer();
         lastModifiedDate = newLastModifiedDate;
+        deferred.fulfill(lastModifiedDate);
+        return deferred.promise;
     },
     'updatePerson': function (person) {
         var deferred = Q.defer();

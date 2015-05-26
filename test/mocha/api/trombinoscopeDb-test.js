@@ -35,12 +35,16 @@ describe('Trombinoscope Db Module', function () {
         assertThat(trombinoscopeDb).isEmpty().lastModifiedDateIsEpoch();
     });
 
-    it('should update modification date', function () {
+    it('should update modification date', function (done) {
         // when
-        trombinoscopeDb.updateLastModifiedDate(new Date(1000));
+        trombinoscopeDb.updateLastModifiedDate(new Date(1000))
+            .then(function () {
 
-        // then
-        assertThat(trombinoscopeDb).lastModifiedDateIs(new Date(1000));
+                // then
+                assertThat(trombinoscopeDb).lastModifiedDateIs(new Date(1000));
+                done();
+            })
+            .fail(done);
     });
 
     it('should find a person by name', function (done) {
@@ -119,13 +123,15 @@ describe('Trombinoscope Db Module', function () {
 
     it('should reset', function (done) {
         // given
-        trombinoscopeDb.updateLastModifiedDate(new Date(1000));
-        trombinoscopeDb.updatePerson({
-            'name': 'name',
-            'image': new Buffer('abc'),
-            'contentType': 'image/jpeg',
-            'lastModifiedDate': new Date(0)
-        })
+        trombinoscopeDb.updateLastModifiedDate(new Date(1000))
+            .then(function () {
+                return trombinoscopeDb.updatePerson({
+                    'name': 'name',
+                    'image': new Buffer('abc'),
+                    'contentType': 'image/jpeg',
+                    'lastModifiedDate': new Date(0)
+                });
+            })
             .then(function () {
 
                 // when
