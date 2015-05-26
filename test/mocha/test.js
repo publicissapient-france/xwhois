@@ -19,8 +19,7 @@ describe('API Test', function () {
         }
         resetPrevious('TESTDB', testDb);
         resetPrevious('NOLISTEN', noListen);
-        trombinoscopeDb.reset();
-        done();
+        trombinoscopeDb.reset().fin(done);
     });
 
     it('should return 200 and a message', function (done) {
