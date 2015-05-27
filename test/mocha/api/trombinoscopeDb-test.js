@@ -4,8 +4,16 @@ var assert = require('assert'),
 var assertThat = function (actualTrombinoscopeDb) {
     return {
         'isEmpty': function () {
-            assert.ok(actualTrombinoscopeDb.isEmpty(), 'trombinoscope is empty');
-            return this;
+            var self = this;
+            return actualTrombinoscopeDb.isNotEmpty()
+                .then(function () {
+                    assert.fail(true, false, 'trombinoscope db is not empty');
+                    return self;
+                })
+                .fail(function (reason) {
+                    assert.strictEqual(reason, 'database is empty', 'failure message');
+                    return self;
+                });
         },
         'lastModifiedDateIsEpoch': function () {
             return this.lastModifiedDateIs(new Date(0));
@@ -19,7 +27,10 @@ var assertThat = function (actualTrombinoscopeDb) {
                 });
         },
         'isReseted': function () {
-            return this.isEmpty().lastModifiedDateIsEpoch();
+            return this.isEmpty()
+                .then(function (assertThatTrombinoscopeDb) {
+                    return assertThatTrombinoscopeDb.lastModifiedDateIsEpoch();
+                });
         },
         'containsExactly': function (person) {
             assert.deepEqual(actualTrombinoscopeDb.getAllPeople()[0], person, 'people');
@@ -35,7 +46,10 @@ describe('Trombinoscope Db Module', function () {
 
     it('should be initialized', function (done) {
         // then
-        assertThat(trombinoscopeDb).isEmpty().lastModifiedDateIsEpoch()
+        assertThat(trombinoscopeDb).isEmpty()
+            .then(function (assertThatTrombinoscopeDb) {
+                return assertThatTrombinoscopeDb.lastModifiedDateIsEpoch();
+            })
             .then(function () {
                 done();
             })

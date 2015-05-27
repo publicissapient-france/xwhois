@@ -4,11 +4,15 @@ var assert = require("assert"),
     sinon = require('sinon');
 
 describe("Challenge Module Test", function () {
-    var trombinoscopeIsEmptyStub,
+    var trombinoscopeIsNotEmptyStub,
         trombinoscopeGetAllPeople;
 
     beforeEach(function (done) {
-        trombinoscopeIsEmptyStub = sinon.stub(trombinoscopeDb, 'isEmpty').returns(false);
+        trombinoscopeIsNotEmptyStub = sinon.stub(trombinoscopeDb, 'isNotEmpty').returns({
+            'then': function (callback) {
+                return callback();
+            }
+        });
         trombinoscopeGetAllPeople = sinon.stub(trombinoscopeDb, 'getAllPeople')
             .returns([
                 {'name': 'Firstname1 Lastname1'},
@@ -18,7 +22,7 @@ describe("Challenge Module Test", function () {
     });
 
     afterEach(function (done) {
-        trombinoscopeIsEmptyStub.restore();
+        trombinoscopeIsNotEmptyStub.restore();
         trombinoscopeGetAllPeople.restore();
         done();
     });
@@ -46,14 +50,15 @@ describe("Challenge Module Test", function () {
     });
 
     it('should not create challenge if database is empty', function () {
-        trombinoscopeIsEmptyStub.returns(true);
+        trombinoscopeIsNotEmptyStub.returns({
+            'then': function (callback) {
+                // do not execute then callback if database is empty
+            }
+        });
 
-        try {
-            var challenge = challengeModule.createChallenge();
-            assert.fail(challenge, undefined, 'created challenge');
-        } catch (errorMessage) {
-            assert.strictEqual(errorMessage, 'database is empty', 'error message');
-        }
+        var challenge = challengeModule.createChallenge();
+
+        assert.ok(!trombinoscopeGetAllPeople.called, 'trombinoscopeDb.getAllPeople has never been called');
     });
 
     it('should not create challenge if database has only one person', function () {

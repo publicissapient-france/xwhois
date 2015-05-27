@@ -12,8 +12,14 @@ module.exports = {
             return person.name === name;
         }).shift();
     },
-    'isEmpty': function () {
-        return people.length === 0;
+    'isNotEmpty': function () {
+        var deferred = Q.defer();
+        if (people.length === 0) {
+            deferred.reject('database is empty');
+        } else {
+            deferred.fulfill();
+        }
+        return deferred.promise;
     },
     'getLastModifiedDate': function () {
         var deferred = Q.defer();
