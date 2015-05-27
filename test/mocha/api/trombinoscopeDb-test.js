@@ -33,8 +33,12 @@ var assertThat = function (actualTrombinoscopeDb) {
                 });
         },
         'containsExactly': function (person) {
-            assert.deepEqual(actualTrombinoscopeDb.getAllPeople()[0], person, 'people');
-            return this;
+            var self = this;
+            return actualTrombinoscopeDb.getAllPeople()
+                .then(function (people) {
+                    assert.deepEqual(people[0], person, 'person');
+                    return self;
+                });
         }
     };
 };
@@ -113,7 +117,9 @@ describe('Trombinoscope Db Module', function () {
             .then(function () {
 
                 // then
-                assertThat(trombinoscopeDb).containsExactly(newPerson);
+                return assertThat(trombinoscopeDb).containsExactly(newPerson);
+            })
+            .then(function () {
                 done();
             })
             .fail(done);
@@ -141,7 +147,9 @@ describe('Trombinoscope Db Module', function () {
             .then(function () {
 
                 // then
-                assertThat(trombinoscopeDb).containsExactly(updatedPerson);
+                return assertThat(trombinoscopeDb).containsExactly(updatedPerson);
+            })
+            .then(function () {
                 done();
             })
             .fail(done);

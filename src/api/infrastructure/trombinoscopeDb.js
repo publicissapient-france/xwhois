@@ -5,7 +5,9 @@ var people = [],
 
 module.exports = {
     'getAllPeople': function () {
-        return people;
+        var deferred = Q.defer();
+        deferred.fulfill(people);
+        return deferred.promise;
     },
     'findPerson': function (name) {
         var deferred = Q.defer();

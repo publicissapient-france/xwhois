@@ -5,8 +5,9 @@ module.exports = function (path) {
         createChallenge: function () {
             return trombinoscopeDb.isNotEmpty()
                 .then(function () {
-                    var people = trombinoscopeDb.getAllPeople();
-
+                    return trombinoscopeDb.getAllPeople();
+                })
+                .then(function (people) {
                     if (people.length === 1) {
                         throw 'database has only one element';
                     }
