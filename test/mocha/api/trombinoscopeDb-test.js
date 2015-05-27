@@ -8,12 +8,15 @@ var assertThat = function (actualTrombinoscopeDb) {
             return this;
         },
         'lastModifiedDateIsEpoch': function () {
-            assert.strictEqual(actualTrombinoscopeDb.getLastModifiedDate().getTime(), 0, 'last modified date as millis from epoch');
-            return this;
+            return this.lastModifiedDateIs(new Date(0));
         },
         'lastModifiedDateIs': function (expectedDate) {
-            assert.strictEqual(actualTrombinoscopeDb.getLastModifiedDate().getTime(), expectedDate.getTime(), 'last modified date as millis from epoch');
-            return this;
+            var self = this;
+            return actualTrombinoscopeDb.getLastModifiedDate()
+                .then(function (lastModifiedDate) {
+                    assert.strictEqual(lastModifiedDate.getTime(), expectedDate.getTime(), 'last modified date as millis from epoch');
+                    return self;
+                });
         },
         'isReseted': function () {
             return this.isEmpty().lastModifiedDateIsEpoch();
@@ -30,9 +33,13 @@ describe('Trombinoscope Db Module', function () {
         trombinoscopeDb.reset().fin(done);
     });
 
-    it('should be initialized', function () {
+    it('should be initialized', function (done) {
         // then
-        assertThat(trombinoscopeDb).isEmpty().lastModifiedDateIsEpoch();
+        assertThat(trombinoscopeDb).isEmpty().lastModifiedDateIsEpoch()
+            .then(function () {
+                done();
+            })
+            .fail(done);
     });
 
     it('should update modification date', function (done) {
@@ -140,7 +147,9 @@ describe('Trombinoscope Db Module', function () {
             .then(function () {
 
                 // then
-                assertThat(trombinoscopeDb).isReseted();
+                return assertThat(trombinoscopeDb).isReseted();
+            })
+            .then(function () {
                 done();
             })
             .fail(done);

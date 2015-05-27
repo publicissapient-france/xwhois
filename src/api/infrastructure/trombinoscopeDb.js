@@ -16,7 +16,9 @@ module.exports = {
         return people.length === 0;
     },
     'getLastModifiedDate': function () {
-        return lastModifiedDate;
+        var deferred = Q.defer();
+        deferred.fulfill(lastModifiedDate);
+        return deferred.promise;
     },
     'updateLastModifiedDate': function (newLastModifiedDate) {
         var deferred = Q.defer();

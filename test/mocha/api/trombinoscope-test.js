@@ -41,7 +41,15 @@ describe('Trombinoscope Module Test', function () {
         confluenceAttachmentsStub = sinon.stub(confluence, 'attachments');
         confluenceDownloadStub = sinon.stub(confluence, 'download');
         trombinoscopeDbLastModifiedDateStub = sinon.stub(trombinoscopeDb, 'getLastModifiedDate');
-        trombinoscopeDbLastModifiedDateStub.returns(new Date(0));
+        trombinoscopeDbLastModifiedDateStub.returns({
+            'then': function (callback) {
+                callback(new Date(0));
+                return {
+                    'fail': function () {
+                    }
+                };
+            }
+        });
         trombinoscopeDbUpdatePersonStub = sinon.stub(trombinoscopeDb, 'updatePerson');
         trombinoscopeDbUpdateLastModifiedDateStub = sinon.stub(trombinoscopeDb, 'updateLastModifiedDate');
         previousProcessEnvTITLE = process.env.TITLE;
@@ -98,7 +106,15 @@ describe('Trombinoscope Module Test', function () {
 
     it('should not update because last modified date from database is same as last modified date from confluence', function () {
         var lastModifiedDate = '1981-12-24T09:30:00+0100';
-        trombinoscopeDbLastModifiedDateStub.returns(new Date(lastModifiedDate));
+        trombinoscopeDbLastModifiedDateStub.returns({
+            'then': function (callback) {
+                callback(new Date(lastModifiedDate));
+                return {
+                    'fail': function () {
+                    }
+                }
+            }
+        });
         confluenceContentStub.yieldsOn(trombinoscope, '<content><lastModifiedDate date="' + lastModifiedDate + '"/></content>');
 
         trombinoscope.parsePeople();
