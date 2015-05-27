@@ -8,9 +8,18 @@ module.exports = {
         return people;
     },
     'findPerson': function (name) {
-        return people.filter(function (person) {
+        var deferred = Q.defer();
+        var found = people.filter(function (person) {
             return person.name === name;
         }).shift();
+
+        if (found) {
+            deferred.fulfill(found);
+        } else {
+            deferred.reject(name + ' was not found');
+        }
+
+        return deferred.promise;
     },
     'isNotEmpty': function () {
         var deferred = Q.defer();
@@ -34,17 +43,23 @@ module.exports = {
     },
     'updatePerson': function (person) {
         var deferred = Q.defer();
-        var personFromDb = this.findPerson(person.name);
 
-        if (personFromDb === undefined) {
-            people.push(person);
-        } else {
-            personFromDb.image = person.image;
-            personFromDb.contentType = person.contentType;
-            personFromDb.lastModifiedDate = person.lastModifiedDate;
-        }
+        this.findPerson(person.name)
+            .then(function (personFromDb) {
+                personFromDb.image = person.image;
+                personFromDb.contentType = person.contentType;
+                personFromDb.lastModifiedDate = person.lastModifiedDate;
+                deferred.resolve(personFromDb);
+            })
+            .fail(function (reason) {
+                if (person.name + ' was not found' === reason) {
+                    people.push(person);
+                    deferred.resolve(person);
+                    return;
+                }
+                deferred.reject(reason);
+            });
 
-        deferred.resolve(person);
         return deferred.promise;
     },
     'reset': function () {

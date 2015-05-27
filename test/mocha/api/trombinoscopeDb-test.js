@@ -77,7 +77,9 @@ describe('Trombinoscope Db Module', function () {
             .then(function () {
 
                 // when
-                var found = trombinoscopeDb.findPerson('name');
+                return trombinoscopeDb.findPerson('name');
+            })
+            .then(function (found) {
 
                 // then
                 assert.strictEqual(found, person);
@@ -86,12 +88,15 @@ describe('Trombinoscope Db Module', function () {
             .fail(done);
     });
 
-    it('should not find unknown person', function () {
+    it('should not find unknown person', function (done) {
         // when
-        var found = trombinoscopeDb.findPerson('name');
+        var found = trombinoscopeDb.findPerson('name')
+            .then(function (found) {
 
-        // then
-        assert.strictEqual(found, undefined);
+                // then
+                assert.fail(found, undefined, 'found person');
+            })
+            .fin(done);
     });
 
     it('should insert person', function (done) {
