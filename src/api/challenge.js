@@ -3,29 +3,29 @@ var trombinoscopeDb = require('./infrastructure/trombinoscopeDb');
 module.exports = function (path) {
     return {
         createChallenge: function () {
-            if (trombinoscopeDb.isEmpty()) {
-                throw 'database is empty';
-            }
+            return trombinoscopeDb.isNotEmpty()
+                .then(function () {
+                    return trombinoscopeDb.getAllPeople();
+                })
+                .then(function (people) {
+                    if (people.length === 1) {
+                        throw 'database has only one element';
+                    }
 
-            var people = trombinoscopeDb.getAllPeople();
+                    var answearFirst = Math.random() < 0.5,
+                        first = people[Math.floor(Math.random() * people.length)],
+                        second = {};
 
-            if (people.length === 1) {
-                throw 'database has only one element';
-            }
+                    do {
+                        second = people[Math.floor(Math.random() * people.length)];
+                    } while (first === second);
 
-            var answearFirst = Math.random() < 0.5,
-                first = people[Math.floor(Math.random() * people.length)],
-                second = {};
-
-            do {
-                second = people[Math.floor(Math.random() * people.length)];
-            } while (first === second);
-
-            return {
-                firstImage: path + '/' + first.name,
-                secondImage: path + '/' + second.name,
-                name: answearFirst ? first.name : second.name
-            };
+                    return {
+                        firstImage: path + '/' + first.name,
+                        secondImage: path + '/' + second.name,
+                        name: answearFirst ? first.name : second.name
+                    };
+                });
         },
         'validAnswer': function (answer) {
             var imagePathArray = answer.image.split('/');

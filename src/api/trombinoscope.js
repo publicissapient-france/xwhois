@@ -99,33 +99,36 @@ module.exports = {
             var $ = cheerio.load(content),
                 lastModifiedDateFromConfluence = new Date($('lastModifiedDate').attr('date'));
 
-            if (lastModifiedDateFromConfluence.getTime() === trombinoscopeDb.getLastModifiedDate().getTime()) {
-                console.log('no need to update because last modified date hasn\'t change since last update:', lastModifiedDateFromConfluence);
-                return;
-            }
+            trombinoscopeDb.getLastModifiedDate()
+                .then(function (lastModifiedDate) {
+                    if (lastModifiedDateFromConfluence.getTime() === lastModifiedDate.getTime()) {
+                        console.log('no need to update because last modified date hasn\'t change since last update:', lastModifiedDateFromConfluence);
+                        return;
+                    }
+                    var attachmentsSize = $('attachments').attr('size');
 
-            var attachmentsSize = $('attachments').attr('size');
+                    $ = cheerio.load($.root().text());
 
-            $ = cheerio.load($.root().text());
-
-            $('th').each(function (index) {
-                people[index] = person($(this).html());
-                console.log('discovered', people[index].getName());
-            });
-
-            $('ac\\:image').each(function (index) {
-                prepareDownload($(this), index);
-            });
-
-            confluence.attachments(process.env.CONFLUENCE_RESOURCE_ID, function (content) {
-                downloadByAttachment(cheerio.load(content), function () {
-                    downloadByUrl(function () {
-                        trombinoscopeDb.updateLastModifiedDate(lastModifiedDateFromConfluence);
+                    $('th').each(function (index) {
+                        people[index] = person($(this).html());
+                        console.log('discovered', people[index].getName());
                     });
-                });
-            }, function (error) {
-                console.log(error);
-            }, attachmentsSize);
+
+                    $('ac\\:image').each(function (index) {
+                        prepareDownload($(this), index);
+                    });
+
+                    confluence.attachments(process.env.CONFLUENCE_RESOURCE_ID, function (content) {
+                        downloadByAttachment(cheerio.load(content), function () {
+                            downloadByUrl(function () {
+                                trombinoscopeDb.updateLastModifiedDate(lastModifiedDateFromConfluence);
+                            });
+                        });
+                    }, function (error) {
+                        console.log(error);
+                    }, attachmentsSize);
+                })
+                .fail(console.log('Unable to get last modified date'));
         }, function (error) {
             console.log(error);
         });

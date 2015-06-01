@@ -1,4 +1,3 @@
-
 var express = require('express');
 var path = require('path');
 var logger = require('morgan');
@@ -33,19 +32,23 @@ app.set('port', process.argv[2] || process.env.PORT || 8081);
 }
 
 app.get('/api/challenge', jsonParser, function (req, res) {
-    try {
-        res.send(challenge.createChallenge());
-    } catch (errorMessage) {
-        res.writeHead(400, errorMessage);
-    }
-    res.end();
+    challenge.createChallenge()
+        .then(function (challenge) {
+            res.send(challenge);
+        })
+        .fail(function (reason) {
+            res.writeHead(400, reason);
+        })
+        .fin(function () {
+            res.end();
+        });
 });
 
 app.post('/api/challenge/answer', jsonParser, function (req, res) {
     var challengeResponse = req.body;
-    if(challengeResponse.image && challengeResponse.name){
-        res.send({result : challenge.validAnswer(challengeResponse)});
-    // stockage du challenge
+    if (challengeResponse.image && challengeResponse.name) {
+        res.send({result: challenge.validAnswer(challengeResponse)});
+        // stockage du challenge
     } else {
         res.writeHead(400);
         res.end();

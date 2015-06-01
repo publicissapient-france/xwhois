@@ -4,23 +4,41 @@ var assert = require('assert'),
 var assertThat = function (actualTrombinoscopeDb) {
     return {
         'isEmpty': function () {
-            assert.ok(actualTrombinoscopeDb.isEmpty(), 'trombinoscope is empty');
-            return this;
+            var self = this;
+            return actualTrombinoscopeDb.isNotEmpty()
+                .then(function () {
+                    assert.fail(true, false, 'trombinoscope db is not empty');
+                    return self;
+                })
+                .fail(function (reason) {
+                    assert.strictEqual(reason, 'database is empty', 'failure message');
+                    return self;
+                });
         },
         'lastModifiedDateIsEpoch': function () {
-            assert.strictEqual(actualTrombinoscopeDb.getLastModifiedDate().getTime(), 0, 'last modified date as millis from epoch');
-            return this;
+            return this.lastModifiedDateIs(new Date(0));
         },
         'lastModifiedDateIs': function (expectedDate) {
-            assert.strictEqual(actualTrombinoscopeDb.getLastModifiedDate().getTime(), expectedDate.getTime(), 'last modified date as millis from epoch');
-            return this;
+            var self = this;
+            return actualTrombinoscopeDb.getLastModifiedDate()
+                .then(function (lastModifiedDate) {
+                    assert.strictEqual(lastModifiedDate.getTime(), expectedDate.getTime(), 'last modified date as millis from epoch');
+                    return self;
+                });
         },
         'isReseted': function () {
-            return this.isEmpty().lastModifiedDateIsEpoch();
+            return this.isEmpty()
+                .then(function (assertThatTrombinoscopeDb) {
+                    return assertThatTrombinoscopeDb.lastModifiedDateIsEpoch();
+                });
         },
         'containsExactly': function (person) {
-            assert.deepEqual(actualTrombinoscopeDb.getAllPeople()[0], person, 'people');
-            return this;
+            var self = this;
+            return actualTrombinoscopeDb.getAllPeople()
+                .then(function (people) {
+                    assert.deepEqual(people[0], person, 'person');
+                    return self;
+                });
         }
     };
 };
@@ -30,17 +48,28 @@ describe('Trombinoscope Db Module', function () {
         trombinoscopeDb.reset().fin(done);
     });
 
-    it('should be initialized', function () {
+    it('should be initialized', function (done) {
         // then
-        assertThat(trombinoscopeDb).isEmpty().lastModifiedDateIsEpoch();
+        assertThat(trombinoscopeDb).isEmpty()
+            .then(function (assertThatTrombinoscopeDb) {
+                return assertThatTrombinoscopeDb.lastModifiedDateIsEpoch();
+            })
+            .then(function () {
+                done();
+            })
+            .fail(done);
     });
 
-    it('should update modification date', function () {
+    it('should update modification date', function (done) {
         // when
-        trombinoscopeDb.updateLastModifiedDate(new Date(1000));
+        trombinoscopeDb.updateLastModifiedDate(new Date(1000))
+            .then(function () {
 
-        // then
-        assertThat(trombinoscopeDb).lastModifiedDateIs(new Date(1000));
+                // then
+                assertThat(trombinoscopeDb).lastModifiedDateIs(new Date(1000));
+                done();
+            })
+            .fail(done);
     });
 
     it('should find a person by name', function (done) {
@@ -52,7 +81,9 @@ describe('Trombinoscope Db Module', function () {
             .then(function () {
 
                 // when
-                var found = trombinoscopeDb.findPerson('name');
+                return trombinoscopeDb.findPerson('name');
+            })
+            .then(function (found) {
 
                 // then
                 assert.strictEqual(found, person);
@@ -61,12 +92,15 @@ describe('Trombinoscope Db Module', function () {
             .fail(done);
     });
 
-    it('should not find unknown person', function () {
+    it('should not find unknown person', function (done) {
         // when
-        var found = trombinoscopeDb.findPerson('name');
+        var found = trombinoscopeDb.findPerson('name')
+            .then(function (found) {
 
-        // then
-        assert.strictEqual(found, undefined);
+                // then
+                assert.fail(found, undefined, 'found person');
+            })
+            .fin(done);
     });
 
     it('should insert person', function (done) {
@@ -83,7 +117,9 @@ describe('Trombinoscope Db Module', function () {
             .then(function () {
 
                 // then
-                assertThat(trombinoscopeDb).containsExactly(newPerson);
+                return assertThat(trombinoscopeDb).containsExactly(newPerson);
+            })
+            .then(function () {
                 done();
             })
             .fail(done);
@@ -111,7 +147,9 @@ describe('Trombinoscope Db Module', function () {
             .then(function () {
 
                 // then
-                assertThat(trombinoscopeDb).containsExactly(updatedPerson);
+                return assertThat(trombinoscopeDb).containsExactly(updatedPerson);
+            })
+            .then(function () {
                 done();
             })
             .fail(done);
@@ -119,13 +157,15 @@ describe('Trombinoscope Db Module', function () {
 
     it('should reset', function (done) {
         // given
-        trombinoscopeDb.updateLastModifiedDate(new Date(1000));
-        trombinoscopeDb.updatePerson({
-            'name': 'name',
-            'image': new Buffer('abc'),
-            'contentType': 'image/jpeg',
-            'lastModifiedDate': new Date(0)
-        })
+        trombinoscopeDb.updateLastModifiedDate(new Date(1000))
+            .then(function () {
+                return trombinoscopeDb.updatePerson({
+                    'name': 'name',
+                    'image': new Buffer('abc'),
+                    'contentType': 'image/jpeg',
+                    'lastModifiedDate': new Date(0)
+                });
+            })
             .then(function () {
 
                 // when
@@ -134,7 +174,9 @@ describe('Trombinoscope Db Module', function () {
             .then(function () {
 
                 // then
-                assertThat(trombinoscopeDb).isReseted();
+                return assertThat(trombinoscopeDb).isReseted();
+            })
+            .then(function () {
                 done();
             })
             .fail(done);
