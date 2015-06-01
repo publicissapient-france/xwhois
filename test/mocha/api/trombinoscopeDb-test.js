@@ -1,5 +1,6 @@
 var assert = require('assert'),
-    trombinoscopeDb = require('../../../src/api/infrastructure/trombinoscopeDb');
+    trombinoscopeDb = require('../../../src/api/infrastructure/trombinoscopeDb'),
+    Q = require('q');
 
 var assertThat = function (actualTrombinoscopeDb) {
     return {
@@ -15,8 +16,13 @@ var assertThat = function (actualTrombinoscopeDb) {
                     return self;
                 });
         },
-        'lastModifiedDateIsEpoch': function () {
-            return this.lastModifiedDateIs(new Date(0));
+        "lastModifiedDateIsEmpty": function () {
+            var self = this;
+            return actualTrombinoscopeDb.getLastModifiedDate()
+                .then(function (lastModifiedDate) {
+                    assert.ok(!lastModifiedDate, 'last modified date is undefined');
+                    return self;
+                });
         },
         'lastModifiedDateIs': function (expectedDate) {
             var self = this;
@@ -29,7 +35,7 @@ var assertThat = function (actualTrombinoscopeDb) {
         'isReseted': function () {
             return this.isEmpty()
                 .then(function (assertThatTrombinoscopeDb) {
-                    return assertThatTrombinoscopeDb.lastModifiedDateIsEpoch();
+                    return assertThatTrombinoscopeDb.lastModifiedDateIsEmpty();
                 });
         },
         'containsExactly': function (person) {
@@ -52,7 +58,7 @@ describe('Trombinoscope Db Module', function () {
         // then
         assertThat(trombinoscopeDb).isEmpty()
             .then(function (assertThatTrombinoscopeDb) {
-                return assertThatTrombinoscopeDb.lastModifiedDateIsEpoch();
+                return assertThatTrombinoscopeDb.lastModifiedDateIsEmpty();
             })
             .then(function () {
                 done();
@@ -63,11 +69,14 @@ describe('Trombinoscope Db Module', function () {
     it('should update modification date', function (done) {
         // when
         trombinoscopeDb.updateLastModifiedDate(new Date(1000))
-            .then(function () {
+            .then(function (value) {
 
                 // then
-                assertThat(trombinoscopeDb).lastModifiedDateIs(new Date(1000));
-                done();
+                assert.strictEqual(value.getTime(), new Date(1000).getTime());
+                return assertThat(trombinoscopeDb).lastModifiedDateIs(new Date(1000));
+            })
+            .then(function () {
+                done()
             })
             .fail(done);
     });

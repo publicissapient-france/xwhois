@@ -1,7 +1,8 @@
-var Q = require('q');
+var Q = require('q'),
+    mongoose = require('mongoose');
 
 var people = [],
-    lastModifiedDate = new Date(0);
+    LastModifiedDate = mongoose.model('lastModifiedDate', {id: {type: Number, index: true}, value: Date});
 
 module.exports = {
     'getAllPeople': function () {
@@ -34,13 +35,40 @@ module.exports = {
     },
     'getLastModifiedDate': function () {
         var deferred = Q.defer();
-        deferred.fulfill(lastModifiedDate);
+        mongoose.connect('mongodb://localhost/xwhois-test')
+            .connection.once('open', function () {
+                LastModifiedDate.findOne({id: 0}, function (error, lastModifiedDate) {
+                    mongoose.connection.close(function () {
+                        if (error) {
+                            deferred.reject(error);
+                            return;
+                        }
+                        if (lastModifiedDate === null) {
+                            deferred.fulfill();
+                            return;
+                        }
+                        deferred.fulfill(lastModifiedDate.value);
+                    });
+                });
+            });
         return deferred.promise;
     },
     'updateLastModifiedDate': function (newLastModifiedDate) {
         var deferred = Q.defer();
-        lastModifiedDate = newLastModifiedDate;
-        deferred.fulfill(lastModifiedDate);
+        mongoose.connect('mongodb://localhost/xwhois-test')
+            .connection.once('open', function () {
+                new LastModifiedDate({id: 0, value: newLastModifiedDate}).save()
+                    .then(function (lastModifiedDate) {
+                        mongoose.connection.close(function () {
+                            deferred.fulfill(lastModifiedDate.value);
+                        })
+                    })
+                    .onReject(function (error) {
+                        mongoose.connection.close(function () {
+                            deferred.reject(error);
+                        })
+                    });
+            });
         return deferred.promise;
     },
     'updatePerson': function (person) {
@@ -66,9 +94,19 @@ module.exports = {
     },
     'reset': function () {
         var deferred = Q.defer();
-        people = [];
-        lastModifiedDate = new Date(0);
-        deferred.resolve();
+        mongoose.connect('mongodb://localhost/xwhois-test')
+            .connection.once('open', function () {
+                LastModifiedDate.findOneAndRemove(0, function (err, lastModifiedDate) {
+                    mongoose.connection.close(function () {
+                        if (err) {
+                            deferred.reject(err);
+                            return;
+                        }
+                        people = [];
+                        deferred.fulfill();
+                    });
+                });
+            });
         return deferred.promise;
     }
 };
