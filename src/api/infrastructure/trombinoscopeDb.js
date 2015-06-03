@@ -1,36 +1,82 @@
 var Q = require('q'),
     mongoose = require('mongoose');
 
-var people = [],
-    LastModifiedDate = mongoose.model('lastModifiedDate', {id: {type: Number, index: true}, value: Date});
+var LastModifiedDate = mongoose.model('lastModifiedDate', {id: {type: Number, index: true}, value: Date}),
+    Person = mongoose.model('person', {
+        name: {type: String, index: true},
+        image: Buffer,
+        contentType: String,
+        lastModifiedDate: Date
+    });
 
 module.exports = {
     'getAllPeople': function () {
         var deferred = Q.defer();
-        deferred.fulfill(people);
+        mongoose.connect('mongodb://localhost/xwhois-test')
+            .connection.once('open', function () {
+                Person.find({}, 'name image contentType lastModifiedDate', function (error, people) {
+                    mongoose.connection.close(function () {
+                        if (error) {
+                            deferred.reject(error);
+                            return;
+                        }
+                        if (people === null) {
+                            deferred.fulfill();
+                            return;
+                        }
+                        var extractedPeople = [];
+                        for (var i = 0; i < people.length; i++) {
+                            extractedPeople.push({
+                                'name': people[i].get('name'),
+                                'image': people[i].get('image'),
+                                'contentType': people[i].get('contentType'),
+                                'lastModifiedDate': people[i].get('lastModifiedDate')
+                            });
+                        }
+                        deferred.fulfill(extractedPeople);
+                    });
+                });
+            });
         return deferred.promise;
     },
     'findPerson': function (name) {
         var deferred = Q.defer();
-        var found = people.filter(function (person) {
-            return person.name === name;
-        }).shift();
-
-        if (found) {
-            deferred.fulfill(found);
-        } else {
-            deferred.reject(name + ' was not found');
-        }
-
+        mongoose.connect('mongodb://localhost/xwhois-test')
+            .connection.once('open', function () {
+                Person.findOne({name: name}, function (error, person) {
+                    mongoose.connection.close(function () {
+                        if (error) {
+                            deferred.reject(person + 'was not found');
+                            return;
+                        }
+                        if (person === null) {
+                            deferred.reject();
+                            return;
+                        }
+                        deferred.fulfill(person);
+                    });
+                });
+            });
         return deferred.promise;
     },
     'isNotEmpty': function () {
         var deferred = Q.defer();
-        if (people.length === 0) {
-            deferred.reject('database is empty');
-        } else {
-            deferred.fulfill();
-        }
+        mongoose.connect('mongodb://localhost/xwhois-test')
+            .connection.once('open', function () {
+                Person.count({}, function (err, count) {
+                    mongoose.connection.close(function () {
+                        if (err) {
+                            deferred.reject(err);
+                            return;
+                        }
+                        if (count === 0) {
+                            deferred.reject('database is empty');
+                            return;
+                        }
+                        deferred.fulfill();
+                    });
+                });
+            });
         return deferred.promise;
     },
     'getLastModifiedDate': function () {
@@ -74,20 +120,17 @@ module.exports = {
     'updatePerson': function (person) {
         var deferred = Q.defer();
 
-        this.findPerson(person.name)
-            .then(function (personFromDb) {
-                personFromDb.image = person.image;
-                personFromDb.contentType = person.contentType;
-                personFromDb.lastModifiedDate = person.lastModifiedDate;
-                deferred.resolve(personFromDb);
-            })
-            .fail(function (reason) {
-                if (person.name + ' was not found' === reason) {
-                    people.push(person);
-                    deferred.resolve(person);
-                    return;
-                }
-                deferred.reject(reason);
+        mongoose.connect('mongodb://localhost/xwhois-test')
+            .connection.once('open', function () {
+                Person.findOneAndUpdate({name: person.name}, person, {upsert: true}, function (error, person) {
+                    mongoose.connection.close(function () {
+                        if (error) {
+                            deferred.reject(error);
+                        } else {
+                            deferred.fulfill(person);
+                        }
+                    });
+                });
             });
 
         return deferred.promise;
@@ -96,16 +139,18 @@ module.exports = {
         var deferred = Q.defer();
         mongoose.connect('mongodb://localhost/xwhois-test')
             .connection.once('open', function () {
-                LastModifiedDate.findOneAndRemove(0, function (err, lastModifiedDate) {
-                    mongoose.connection.close(function () {
-                        if (err) {
-                            deferred.reject(err);
-                            return;
-                        }
-                        people = [];
-                        deferred.fulfill();
+                Person.remove({})
+                    .then(function () {
+                        LastModifiedDate.findOneAndRemove(0, function (err, lastModifiedDate) {
+                            mongoose.connection.close(function () {
+                                if (err) {
+                                    deferred.reject(err);
+                                    return;
+                                }
+                                deferred.fulfill();
+                            });
+                        });
                     });
-                });
             });
         return deferred.promise;
     }

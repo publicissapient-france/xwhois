@@ -95,7 +95,7 @@ describe('Trombinoscope Db Module', function () {
             .then(function (found) {
 
                 // then
-                assert.strictEqual(found, person);
+                assert.strictEqual(found.name, person.name);
                 done();
             })
             .fail(done);
