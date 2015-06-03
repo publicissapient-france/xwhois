@@ -19,7 +19,7 @@ var imagePath = '/assets/images/xebians',
     fs = require('fs'),
     Q = require('q');
 
-app.set('port', process.argv[2] || process.env.PORT || 8081);
+app.set('port', process.env.PORT || 8081);
 
 { // configure server with error handlers, etc.
     app.use(cookieParser());
@@ -69,7 +69,11 @@ app.get(imagePath + '/:name', function (req, res) {
 app.use(express.static(path.join(root, './build/')));
 
 if (process.env.TESTDB !== undefined) {
-    setupDatabaseForTestingPurpose();
+    setupDatabaseForTestingPurpose()
+        .then(listen)
+        .fail(function (error) {
+            console.log(error);
+        });
 } else {
     confluence.checkEnvironmentVariables();
     trombinoscope.checkEnvironmentVariable();
@@ -82,10 +86,14 @@ if (process.env.TESTDB !== undefined) {
         },
         start: true
     });
+
+    listen();
 }
 
-if (process.env.NOLISTEN === undefined) {
-    app.listen(app.get('port'));
+function listen() {
+    app.set('port', process.env.PORT || 8081);
+    var server = app.listen(app.get('port'));
+    app.emit('done', server);
 }
 
 function setupDatabaseForTestingPurpose() {
@@ -100,7 +108,7 @@ function setupDatabaseForTestingPurpose() {
             });
     }
 
-    trombinoscopeDb.reset()
+    return trombinoscopeDb.reset()
         .then(function () {
             return updatePerson({
                 name: 'Pretty Bear',
@@ -116,9 +124,5 @@ function setupDatabaseForTestingPurpose() {
                 contentType: 'image/gif',
                 lastModifiedDate: new Date()
             });
-        })
-        .fail(function (error) {
-            console.log(error);
-        })
-        .done();
+        });
 }

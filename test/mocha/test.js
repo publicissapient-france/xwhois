@@ -7,10 +7,11 @@ describe('API Test', function () {
 
     before(function (done) {
         testDb = savePreviousAndSet('TESTDB');
-        noListen = savePreviousAndSet('NOLISTEN');
         app = require("../../server");
-        server = app.listen(8081);
-        done();
+        app.addListener('done', function (initServer) {
+            server = initServer;
+            done();
+        });
     });
 
     after(function (done) {
@@ -18,12 +19,11 @@ describe('API Test', function () {
             server.close();
         }
         resetPrevious('TESTDB', testDb);
-        resetPrevious('NOLISTEN', noListen);
         trombinoscopeDb.reset().fin(done);
     });
 
     it('should return 200 and a message', function (done) {
-        var url = 'http://localhost:8081/index.html',
+        var url = 'http://localhost:' + app.get('port') + '/index.html',
             home = http.get(url, function (res) {
                 assert.equal(200, res.statusCode);
                 var data = '';
@@ -41,7 +41,7 @@ describe('API Test', function () {
     });
 
     it('should get a challenge', function (done) {
-        var url = 'http://localhost:8081/api/challenge',
+        var url = 'http://localhost:' + app.get('port') + '/api/challenge',
             challenge = http.get(url, function (res) {
             assert.equal(200, res.statusCode);
             var data = '';
@@ -75,7 +75,7 @@ describe('API Test', function () {
         };
         var options = {
             host: 'localhost',
-            port: 8081,
+            port: app.get('port'),
             path: '/api/challenge/answer',
             method: 'POST',
             headers: headers
@@ -112,7 +112,7 @@ describe('API Test', function () {
         };
         var options = {
             host: 'localhost',
-            port: 8081,
+            port: app.get('port'),
             path: '/api/challenge/answer',
             method: 'POST',
             headers: headers
@@ -141,11 +141,11 @@ describe('API Test', function () {
 
     it('should not valid challenge answer', function (done) {
         var headers = {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/json'
         };
         var options = {
             host: 'localhost',
-            port: 8081,
+            port: app.get('port'),
             path: '/api/challenge/answer',
             method: 'POST',
             headers: headers
