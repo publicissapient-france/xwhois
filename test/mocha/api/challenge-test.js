@@ -13,11 +13,14 @@ describe("Challenge Module Test", function () {
                 return callback();
             }
         });
-        trombinoscopeGetAllPeople = sinon.stub(trombinoscopeDb, 'getAllPeople')
-            .returns([
-                {'name': 'Firstname1 Lastname1'},
-                {'name': 'Firstname2 Lastname2'}
-            ]);
+        trombinoscopeGetAllPeople = sinon.stub(trombinoscopeDb, 'getAllPeople').returns({
+            'then': function (callback) {
+                return callback([
+                    {'name': 'Firstname1 Lastname1'},
+                    {'name': 'Firstname2 Lastname2'}
+                ]);
+            }
+        });
         done();
     });
 
@@ -51,8 +54,13 @@ describe("Challenge Module Test", function () {
 
     it('should not create challenge if database is empty', function () {
         trombinoscopeIsNotEmptyStub.returns({
-            'then': function (callback) {
+            'then': function () {
                 // do not execute then callback if database is empty
+                return {
+                    'then': function () {
+                        // do not execute then callback if database is empty
+                    }
+                }
             }
         });
 
@@ -62,11 +70,15 @@ describe("Challenge Module Test", function () {
     });
 
     it('should not create challenge if database has only one person', function () {
-        trombinoscopeGetAllPeople.returns([{'name': 'Firstname1 Lastname1'}]);
+        trombinoscopeGetAllPeople.returns({
+            'then': function (callback) {
+                return callback([{'name': 'Firstname1 Lastname1'}]);
+            }
+        });
 
         try {
             challengeModule.createChallenge();
-            fail();
+            assert.fail();
         } catch (errorMessage) {
             assert.strictEqual(errorMessage, 'database has only one element', 'error message');
         }
