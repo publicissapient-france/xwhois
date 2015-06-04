@@ -7,12 +7,13 @@ var LastModifiedDate = mongoose.model('lastModifiedDate', {id: {type: Number, in
         image: Buffer,
         contentType: String,
         lastModifiedDate: Date
-    });
+    }),
+    uri = process.env.MONGODB_URI || 'mongodb://localhost/xwhois-test';
 
 module.exports = {
     'getAllPeople': function () {
         var deferred = Q.defer();
-        mongoose.connect('mongodb://localhost/xwhois-test')
+        mongoose.connect(uri)
             .connection.once('open', function () {
                 Person.find({}, 'name image contentType lastModifiedDate', function (error, people) {
                     mongoose.connection.close(function () {
@@ -41,7 +42,7 @@ module.exports = {
     },
     'findPerson': function (name) {
         var deferred = Q.defer();
-        mongoose.connect('mongodb://localhost/xwhois-test')
+        mongoose.connect(uri)
             .connection.once('open', function () {
                 Person.findOne({name: name}, function (error, person) {
                     mongoose.connection.close(function () {
@@ -61,7 +62,7 @@ module.exports = {
     },
     'isNotEmpty': function () {
         var deferred = Q.defer();
-        mongoose.connect('mongodb://localhost/xwhois-test')
+        mongoose.connect(uri)
             .connection.once('open', function () {
                 Person.count({}, function (err, count) {
                     mongoose.connection.close(function () {
@@ -81,7 +82,7 @@ module.exports = {
     },
     'getLastModifiedDate': function () {
         var deferred = Q.defer();
-        mongoose.connect('mongodb://localhost/xwhois-test')
+        mongoose.connect(uri)
             .connection.once('open', function () {
                 LastModifiedDate.findOne({id: 0}, function (error, lastModifiedDate) {
                     mongoose.connection.close(function () {
@@ -101,7 +102,7 @@ module.exports = {
     },
     'updateLastModifiedDate': function (newLastModifiedDate) {
         var deferred = Q.defer();
-        mongoose.connect('mongodb://localhost/xwhois-test')
+        mongoose.connect(uri)
             .connection.once('open', function () {
                 new LastModifiedDate({id: 0, value: newLastModifiedDate}).save()
                     .then(function (lastModifiedDate) {
@@ -120,7 +121,7 @@ module.exports = {
     'updatePerson': function (person) {
         var deferred = Q.defer();
 
-        mongoose.connect('mongodb://localhost/xwhois-test')
+        mongoose.connect(uri)
             .connection.once('open', function () {
                 Person.findOneAndUpdate({name: person.name}, person, {upsert: true}, function (error, person) {
                     mongoose.connection.close(function () {
@@ -137,7 +138,7 @@ module.exports = {
     },
     'reset': function () {
         var deferred = Q.defer();
-        mongoose.connect('mongodb://localhost/xwhois-test')
+        mongoose.connect(uri)
             .connection.once('open', function () {
                 Person.remove({})
                     .then(function () {
