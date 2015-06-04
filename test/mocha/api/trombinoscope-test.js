@@ -121,4 +121,21 @@ describe('Trombinoscope Module Test', function () {
 
         assert.strictEqual(trombinoscope.getPerson(0), undefined);
     });
+
+    it('should not fail even if last modified date from database is undefined', function () {
+        trombinoscopeDbLastModifiedDateStub.returns({
+            'then': function (callback) {
+                callback();
+                return {
+                    'fail': function () {
+                    }
+                }
+            }
+        });
+        confluenceContentStub.yieldsOn(trombinoscope, '');
+
+        trombinoscope.parsePeople();
+
+        assert.strictEqual(trombinoscope.getPerson(0), undefined);
+    });
 });

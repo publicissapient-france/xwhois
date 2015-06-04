@@ -101,7 +101,7 @@ module.exports = {
 
             trombinoscopeDb.getLastModifiedDate()
                 .then(function (lastModifiedDate) {
-                    if (lastModifiedDateFromConfluence.getTime() === lastModifiedDate.getTime()) {
+                    if (lastModifiedDate && lastModifiedDateFromConfluence.getTime() === lastModifiedDate.getTime()) {
                         console.log('no need to update because last modified date hasn\'t change since last update:', lastModifiedDateFromConfluence);
                         return;
                     }
