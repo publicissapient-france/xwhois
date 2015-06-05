@@ -68,13 +68,16 @@ app.get(imagePath + '/:name', function (req, res) {
 });
 app.use(express.static(path.join(root, './build/')));
 
-if (process.env.TESTDB !== undefined) {
+if (process.env.TESTDB) {
     setupDatabaseForTestingPurpose()
         .then(listen)
         .fail(function (error) {
             console.log(error);
         });
-} else {
+    return;
+}
+
+if (process.env.CONFLUENCE) {
     confluence.checkEnvironmentVariables();
     trombinoscope.checkEnvironmentVariable();
 
@@ -86,9 +89,9 @@ if (process.env.TESTDB !== undefined) {
         },
         start: true
     });
-
-    listen();
 }
+
+listen();
 
 function listen() {
     app.set('port', process.env.PORT || 8081);

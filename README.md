@@ -24,9 +24,11 @@ On a linux machine:
 $ npm install
 $ npm install --global gulp
 $ docker run --name=xwhois-mongo --detach --publish=27017:27017 mongo
-$ gulp && CONFLUENCE_HOSTNAME=<hostname> CONFLUENCE_USER=<user> CONFLUENCE_PASSWORD=<password> CONFLUENCE_RESOURCE_ID=<trombinoscipePageId> node server.js
+$ gulp && CONFLUENCE=true CONFLUENCE_HOSTNAME=<hostname> CONFLUENCE_USER=<user> CONFLUENCE_PASSWORD=<password> CONFLUENCE_RESOURCE_ID=<trombinoscipePageId> node server.js
 or
 $ gulp && TESTDB=true node server.js
+or
+$ gulp && node server.js
 ```
 
 On a OS X machine:
@@ -38,9 +40,11 @@ $ boot2docker up
 $ $(boot2docker shellinit)
 $ docker run --name=xwhois-mongo --detach --publish=27017:27017 mongo
 $ VBoxManage controlvm "boot2docker-vm" natpf1 "tcp-port27017,tcp,,27017,,27017"
-$ gulp && CONFLUENCE_HOSTNAME=<hostname> CONFLUENCE_USER=<user> CONFLUENCE_PASSWORD=<password> CONFLUENCE_RESOURCE_ID=<trombinoscipePageId> node server.js
+$ gulp && CONFLUENCE=true CONFLUENCE_HOSTNAME=<hostname> CONFLUENCE_USER=<user> CONFLUENCE_PASSWORD=<password> CONFLUENCE_RESOURCE_ID=<trombinoscipePageId> node server.js
 or
 $ gulp && TESTDB=true node server.js
+or
+$ gulp && node server.js
 ```
 
 Then go to [http://localhost:8081](http://localhost:8081)
