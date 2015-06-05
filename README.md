@@ -18,34 +18,32 @@ Please go to [wiki page](https://github.com/xebia-france/xwhois/wiki).
 
 ### Launch ###
 
-On a linux machine:
-
-```
-$ npm install
-$ npm install --global gulp
-$ docker run --name=xwhois-mongo --detach --publish=27017:27017 mongo
-$ gulp && CONFLUENCE=true CONFLUENCE_HOSTNAME=<hostname> CONFLUENCE_USER=<user> CONFLUENCE_PASSWORD=<password> CONFLUENCE_RESOURCE_ID=<trombinoscipePageId> node server.js
-or
-$ gulp && TESTDB=true node server.js
-or
-$ gulp && node server.js
-```
-
-On a OS X machine:
-
-```
-$ npm install
-$ npm install --global gulp
-$ boot2docker up
-$ $(boot2docker shellinit)
-$ docker run --name=xwhois-mongo --detach --publish=27017:27017 mongo
-$ VBoxManage controlvm "boot2docker-vm" natpf1 "tcp-port27017,tcp,,27017,,27017"
-$ gulp && CONFLUENCE=true CONFLUENCE_HOSTNAME=<hostname> CONFLUENCE_USER=<user> CONFLUENCE_PASSWORD=<password> CONFLUENCE_RESOURCE_ID=<trombinoscipePageId> node server.js
-or
-$ gulp && TESTDB=true node server.js
-or
-$ gulp && node server.js
-```
+    $ npm install
+    $ npm install --global gulp
+    
+    # if OSX
+    $ boot2docker up
+    $ $(boot2docker shellinit)
+    # endif OSX
+    
+    $ docker run --name=xwhois-mongo --detach --publish=27017:27017 mongo
+    
+    # if OSX
+    $ VBoxManage controlvm "boot2docker-vm" natpf1 "tcp-port27017,tcp,,27017,,27017"
+    # endif OSX
+    
+    # synchronize with confluence at startup
+    $ gulp && CONFLUENCE=true CONFLUENCE_HOSTNAME=<hostname> CONFLUENCE_USER=<user> CONFLUENCE_PASSWORD=<password> CONFLUENCE_RESOURCE_ID=<trombinoscipePageId> node server.js
+    
+    # or
+    
+    # use test dataset
+    $ gulp && TESTDB=true node server.js
+    
+    # or
+    
+    # use existing database
+    $ gulp && node server.js
 
 Then go to [http://localhost:8081](http://localhost:8081)
 
