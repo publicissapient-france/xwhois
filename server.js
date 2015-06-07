@@ -56,15 +56,19 @@ app.post('/api/challenge/answer', jsonParser, function (req, res) {
 });
 
 app.get(imagePath + '/:name', function (req, res) {
-    var person = trombinoscopeDb.findPerson(req.params.name);
+    var person = trombinoscopeDb.findPerson(req.params.name)
+        .then(function (person) {
+            if (!person) {
+                res.sendStatus(404);
+                return;
+            }
 
-    if (person === undefined) {
-        res.sendStatus(404);
-        return;
-    }
-
-    res.set('Content-Type', person['contentType']);
-    res.end(person.image);
+            res.set('Content-Type', person.contentType);
+            res.end(person.image);
+        })
+        .fail(function (reason) {
+            res.send(500).send(reason);
+        });
 });
 app.use(express.static(path.join(root, './build/')));
 
