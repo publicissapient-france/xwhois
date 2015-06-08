@@ -11,12 +11,27 @@ var LastModifiedDate = mongoose.model('lastModifiedDate', {id: {type: Number, in
     uri = process.env.MONGODB_URI || 'mongodb://localhost/xwhois-test';
 
 module.exports = {
+    'connect': function () {
+        var deferred = Q.defer();
+        var connection = mongoose.connect(uri).connection;
+        connection.once('open', function () {
+                deferred.fulfill();
+            });
+        connection.once('error', function (error) {
+                deferred.reject(error);
+            });
+        return deferred.promise;
+    },
+    'close': function () {
+        var deferred = Q.defer();
+        mongoose.connection.close(function () {
+            deferred.fulfill();
+        });
+        return deferred.promise;
+    },
     'getAllPeople': function () {
         var deferred = Q.defer();
-        mongoose.connect(uri)
-            .connection.once('open', function () {
                 Person.find({}, 'name image contentType lastModifiedDate', function (error, people) {
-                    mongoose.connection.close(function () {
                         if (error) {
                             deferred.reject(error);
                             return;
@@ -35,17 +50,12 @@ module.exports = {
                             });
                         }
                         deferred.fulfill(extractedPeople);
-                    });
                 });
-            });
         return deferred.promise;
     },
     'findPerson': function (name) {
         var deferred = Q.defer();
-        mongoose.connect(uri)
-            .connection.once('open', function () {
                 Person.findOne({name: name}, function (error, person) {
-                    mongoose.connection.close(function () {
                         if (error) {
                             deferred.reject(person + 'was not found');
                             return;
@@ -55,17 +65,12 @@ module.exports = {
                             return;
                         }
                         deferred.fulfill(person);
-                    });
                 });
-            });
         return deferred.promise;
     },
     'isNotEmpty': function () {
         var deferred = Q.defer();
-        mongoose.connect(uri)
-            .connection.once('open', function () {
                 Person.count({}, function (err, count) {
-                    mongoose.connection.close(function () {
                         if (err) {
                             deferred.reject(err);
                             return;
@@ -75,17 +80,12 @@ module.exports = {
                             return;
                         }
                         deferred.fulfill();
-                    });
                 });
-            });
         return deferred.promise;
     },
     'getLastModifiedDate': function () {
         var deferred = Q.defer();
-        mongoose.connect(uri)
-            .connection.once('open', function () {
                 LastModifiedDate.findOne({id: 0}, function (error, lastModifiedDate) {
-                    mongoose.connection.close(function () {
                         if (error) {
                             deferred.reject(error);
                             return;
@@ -95,64 +95,43 @@ module.exports = {
                             return;
                         }
                         deferred.fulfill(lastModifiedDate.value);
-                    });
                 });
-            });
         return deferred.promise;
     },
     'updateLastModifiedDate': function (newLastModifiedDate) {
         var deferred = Q.defer();
-        mongoose.connect(uri)
-            .connection.once('open', function () {
                 new LastModifiedDate({id: 0, value: newLastModifiedDate}).save()
                     .then(function (lastModifiedDate) {
-                        mongoose.connection.close(function () {
                             deferred.fulfill(lastModifiedDate.value);
-                        })
                     })
                     .onReject(function (error) {
-                        mongoose.connection.close(function () {
                             deferred.reject(error);
-                        })
                     });
-            });
         return deferred.promise;
     },
     'updatePerson': function (person) {
         var deferred = Q.defer();
-
-        mongoose.connect(uri)
-            .connection.once('open', function () {
                 Person.findOneAndUpdate({name: person.name}, person, {upsert: true}, function (error, person) {
-                    mongoose.connection.close(function () {
                         if (error) {
                             deferred.reject(error);
                         } else {
                             deferred.fulfill(person);
                         }
-                    });
                 });
-            });
-
         return deferred.promise;
     },
     'reset': function () {
         var deferred = Q.defer();
-        mongoose.connect(uri)
-            .connection.once('open', function () {
                 Person.remove({})
                     .then(function () {
                         LastModifiedDate.findOneAndRemove(0, function (err, lastModifiedDate) {
-                            mongoose.connection.close(function () {
                                 if (err) {
                                     deferred.reject(err);
                                     return;
                                 }
                                 deferred.fulfill();
-                            });
                         });
                     });
-            });
         return deferred.promise;
     }
 };

@@ -51,7 +51,22 @@ var assertThat = function (actualTrombinoscopeDb) {
 
 describe('Trombinoscope Db Module', function () {
     beforeEach(function (done) {
-        trombinoscopeDb.reset().fin(done);
+        trombinoscopeDb.connect()
+            .then(function() {
+                return trombinoscopeDb.reset();
+            })
+            .then(done)
+            .fail(function (error) {
+                done(new Error(error));
+            });
+    });
+
+    afterEach(function (done) {
+        trombinoscopeDb.close()
+            .then(done)
+            .fail(function (error) {
+                done(new Error(error));
+            })
     });
 
     it('should be initialized', function (done) {

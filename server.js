@@ -72,6 +72,8 @@ app.get(imagePath + '/:name', function (req, res) {
 });
 app.use(express.static(path.join(root, './build/')));
 
+trombinoscopeDb.connect()
+    .then(function () {
 if (process.env.TESTDB) {
     setupDatabaseForTestingPurpose()
         .then(listen)
@@ -96,6 +98,10 @@ if (process.env.CONFLUENCE) {
 }
 
 listen();
+    })
+    .fail(function (reason) {
+        console.log(reason);
+    });
 
 function listen() {
     app.set('port', process.env.PORT || 8081);
