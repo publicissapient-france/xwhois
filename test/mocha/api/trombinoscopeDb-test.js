@@ -52,7 +52,7 @@ var assertThat = function (actualTrombinoscopeDb) {
 describe('Trombinoscope Db Module', function () {
     beforeEach(function (done) {
         trombinoscopeDb.connect()
-            .then(function() {
+            .then(function () {
                 return trombinoscopeDb.reset();
             })
             .then(done)
