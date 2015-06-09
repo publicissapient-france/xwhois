@@ -22,6 +22,7 @@ Please go to [wiki page](https://github.com/xebia-france/xwhois/wiki).
     $ npm install --global gulp
     
     # if OSX
+    $ boot2docker init
     $ boot2docker up
     $ $(boot2docker shellinit)
     # endif OSX
@@ -33,17 +34,17 @@ Please go to [wiki page](https://github.com/xebia-france/xwhois/wiki).
     # endif OSX
     
     # synchronize with confluence at startup
-    $ gulp && CONFLUENCE=true CONFLUENCE_HOSTNAME=<hostname> CONFLUENCE_USER=<user> CONFLUENCE_PASSWORD=<password> CONFLUENCE_RESOURCE_ID=<trombinoscipePageId> node server.js
+    $ gulp && CONFLUENCE=true CONFLUENCE_HOSTNAME=<hostname> CONFLUENCE_USER=<user> CONFLUENCE_PASSWORD=<password> CONFLUENCE_RESOURCE_ID=<trombinoscipePageId> MONGODB_URI=mongodb://localhost/xwhois node server.js
     
     # or
     
     # use test dataset
-    $ gulp && TESTDB=true node server.js
+    $ gulp && TESTDB=true MONGODB_URI=mongodb://localhost/xwhois-test node server.js
     
     # or
     
     # use existing database
-    $ gulp && node server.js
+    $ gulp && MONGODB_URI=mongodb://localhost/xwhois node server.js
 
 Then go to [http://localhost:8081](http://localhost:8081)
 

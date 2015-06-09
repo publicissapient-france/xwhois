@@ -72,30 +72,36 @@ app.get(imagePath + '/:name', function (req, res) {
 });
 app.use(express.static(path.join(root, './build/')));
 
-if (process.env.TESTDB) {
-    setupDatabaseForTestingPurpose()
-        .then(listen)
-        .fail(function (error) {
-            console.log(error);
-        });
-    return;
-}
+trombinoscopeDb.connect()
+    .then(function () {
+        if (process.env.TESTDB) {
+            setupDatabaseForTestingPurpose()
+                .then(listen)
+                .fail(function (error) {
+                    console.log(error);
+                });
+            return;
+        }
 
-if (process.env.CONFLUENCE) {
-    confluence.checkEnvironmentVariables();
-    trombinoscope.checkEnvironmentVariable();
+        if (process.env.CONFLUENCE) {
+            confluence.checkEnvironmentVariables();
+            trombinoscope.checkEnvironmentVariable();
 
-    trombinoscope.parsePeople();
-    new CronJob({
-        cronTime: '0 0 1 * * *',
-        onTick: function () {
             trombinoscope.parsePeople();
-        },
-        start: true
-    });
-}
+            new CronJob({
+                cronTime: '0 0 1 * * *',
+                onTick: function () {
+                    trombinoscope.parsePeople();
+                },
+                start: true
+            });
+        }
 
-listen();
+        listen();
+    })
+    .fail(function (reason) {
+        console.log(reason);
+    });
 
 function listen() {
     app.set('port', process.env.PORT || 8081);

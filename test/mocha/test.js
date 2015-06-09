@@ -43,7 +43,7 @@ describe('API Test', function () {
     it('should get a challenge', function (done) {
         var url = 'http://localhost:' + app.get('port') + '/api/challenge',
             challenge = http.get(url, function (res) {
-            assert.equal(200, res.statusCode);
+            assert.equal(res.statusCode, 200);
             var data = '';
             res.on('data', function (chunk) {
                 data += chunk;
