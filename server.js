@@ -6,6 +6,8 @@ var bodyParser = require('body-parser');
 var errorHandler = require('errorhandler');
 var methodOverride = require('method-override');
 var favicon = require('serve-favicon');
+var passport = require('passport');
+var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 
 var root = __dirname;
 var imagePath = '/assets/images/xebians',
@@ -21,6 +23,16 @@ var imagePath = '/assets/images/xebians',
 
 app.set('port', process.env.PORT || 8081);
 
+passport.use(new GoogleStrategy({
+    clientID: '13229706518-ema0fpupgshq56jdu6ib2e4j4tea6a90.apps.googleusercontent.com',
+    clientSecret: 'GX0cLjPGU6SiRBLk8l-y4DwS',
+    callbackURL: 'http://localhost:8081/auth/google/callback'
+}, function (accessToken, refreshToken, profile, done) {
+    if (/@xebia\.fr$/.matches(profile.userId)) {
+        return done(null, profile);
+    }
+}));
+
 { // configure server with error handlers, etc.
     app.use(cookieParser());
     app.use(methodOverride('_method'));
@@ -29,26 +41,35 @@ app.set('port', process.env.PORT || 8081);
         app.use(logger('dev'));
         app.use(errorHandler());
     }
+    app.use(require('express-session')({
+        secret: 'secret cat',
+        resave: true,
+        saveUninitialized: true
+    }));
+    app.use(passport.initialize());
+    app.use(passport.session());
 }
 
-passport.use('provider', new OAuth2Strategy({
-    authorizationURL: 'https://provider.com/oauth2/authorize',
-    tokenURL: 'https://provider.com/oauth2/token',
-    clientID: '123-456-789',
-    clientSecret: 'mySecret',
-    callbackURL: 'https://localhost:3000'
-}, function (accessToken, refreshToken, profile, done) {
-    if (profile.indexOf('xebia.fr') !== -1) {
-        done();
-    }
-}));
+app.get('/auth/google',
+    passport.authenticate('google', {scope: 'https://www.googleapis.com/auth/plus.login'}));
 
-app.get('/auth/provider', password.authenticate('provider', {scope: 'email'}));
+app.get('/auth/google/callback',
+    passport.authenticate('google', {failureRedirect: '/login'}),
+    function (req, res) {
+        res.redirect('/');
+    });
 
-app.get('/auth/provider/callback', passport.authenticate('provider', {
-    successRedirect: '/',
-    failureRedirect: '/login'
-}));
+app.get(
+    '/api/challenge',
+    jsonParser,
+    function (req, res) {
+        try {
+            res.send(challenge.createChallenge());
+        } catch (errorMessage) {
+            res.writeHead(400, errorMessage);
+        }
+        res.end();
+    });
 
 app.get('/api/challenge', jsonParser, function (req, res) {
     challenge.createChallenge()
@@ -61,6 +82,16 @@ app.get('/api/challenge', jsonParser, function (req, res) {
         .fin(function () {
             res.end();
         });
+
+function ensureAuthenticated(req, res, next) {
+    if (req.isAuthenticated()) {
+        return next();
+    }
+    res.redirect('/login');
+}
+
+app.get('/hello', ensureAuthenticated, function (req, res) {
+    res.send('Hello!');
 });
 
 app.post('/api/challenge/answer', jsonParser, function (req, res) {
