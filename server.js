@@ -24,8 +24,8 @@ var imagePath = '/assets/images/xebians',
 app.set('port', process.env.PORT || 8081);
 
 passport.use(new GoogleStrategy({
-    clientID: '13229706518-ema0fpupgshq56jdu6ib2e4j4tea6a90.apps.googleusercontent.com',
-    clientSecret: 'GX0cLjPGU6SiRBLk8l-y4DwS',
+    clientID: '13229706518-7q72jrhasf3lhprslqaiejg716arcivf.apps.googleusercontent.com',
+    clientSecret: 'Ex6D4zkQu6SmPBQgohhJoUAC',
     callbackURL: 'http://localhost:8081/auth/google/callback'
 }, function (accessToken, refreshToken, profile, done) {
     if (/@xebia\.fr$/.matches(profile.userId)) {
@@ -54,21 +54,10 @@ app.get('/auth/google',
     passport.authenticate('google', {scope: 'https://www.googleapis.com/auth/plus.login'}));
 
 app.get('/auth/google/callback',
-    passport.authenticate('google', {failureRedirect: '/login'}),
+    passport.authenticate('google', {failureRedirect: '/'}),
     function (req, res) {
+        console.log('Auth Ok in google callback, redirecting to root');
         res.redirect('/');
-    });
-
-app.get(
-    '/api/challenge',
-    jsonParser,
-    function (req, res) {
-        try {
-            res.send(challenge.createChallenge());
-        } catch (errorMessage) {
-            res.writeHead(400, errorMessage);
-        }
-        res.end();
     });
 
 app.get('/api/challenge', jsonParser, function (req, res) {
@@ -82,12 +71,15 @@ app.get('/api/challenge', jsonParser, function (req, res) {
         .fin(function () {
             res.end();
         });
+});
 
 function ensureAuthenticated(req, res, next) {
     if (req.isAuthenticated()) {
+        console.log('Req is authenticated in ensureAuth, letting user pass');
         return next();
     }
-    res.redirect('/login');
+    console.log('Req not authenticated in ensureAuth, redirecting to root');
+    res.redirect('/');
 }
 
 app.get('/hello', ensureAuthenticated, function (req, res) {
