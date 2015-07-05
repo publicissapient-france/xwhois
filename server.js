@@ -13,6 +13,7 @@ var imagePath = '/assets/images/xebians',
     confluence = require('./src/api/infrastructure/confluence'),
     trombinoscope = require('./src/api/trombinoscope'),
     trombinoscopeDb = require('./src/api/infrastructure/trombinoscopeDb'),
+    challengeDb = require('./src/api/infrastructure/challengeDb'),
     CronJob = require('cron').CronJob,
     app = module.exports = express(),
     jsonParser = bodyParser.json(),
@@ -47,8 +48,14 @@ app.get('/api/challenge', jsonParser, function (req, res) {
 app.post('/api/challenge/answer', jsonParser, function (req, res) {
     var challengeResponse = req.body;
     if (challengeResponse.image && challengeResponse.name) {
-        res.send({result: challenge.validAnswer(challengeResponse)});
-        // stockage du challenge
+        var result = challenge.validAnswer(challengeResponse);
+        challengeDb.saveChallenge('toto', challengeResponse, result ? 1 : -1)
+            .then(function () {
+                res.send({result: result});
+            })
+            .fail(function (reason) {
+                res.send(500).send(reason);
+            });
     } else {
         res.writeHead(400);
         res.end();
@@ -72,6 +79,21 @@ app.get(imagePath + '/:name', function (req, res) {
 });
 app.use(express.static(path.join(root, './build/')));
 
+/*
+app.get('/api/score/:name', jsonParser, function (req, res) {
+    var challenges = challengeDb.getChallengesByName(req.params.name).then(function (challenges) {
+        if (!challenges) {
+            res.sendStatus(404);
+            return;
+        }
+        res.set('Content-Type', "application/json");
+        res.end(challenges);
+    })
+        .fail(function (reason) {
+            res.send(500).send(reason);
+        });
+});
+*/
 trombinoscopeDb.connect()
     .then(function () {
         if (process.env.TESTDB) {
