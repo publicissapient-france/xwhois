@@ -28,7 +28,7 @@ passport.use(new GoogleStrategy({
     clientSecret: 'Ex6D4zkQu6SmPBQgohhJoUAC',
     callbackURL: 'http://localhost:8081/auth/google/callback'
 }, function (accessToken, refreshToken, profile, done) {
-    if (/@xebia\.fr$/.matches(profile.userId)) {
+    if (/@xebia\.fr$/.test(profile.userId)) {
         return done(null, profile);
     }
 }));
@@ -60,6 +60,24 @@ app.get('/auth/google/callback',
         res.redirect('/');
     });
 
+// Route to check if the user is logged in
+app.get('/loggedin', function (req, res) {
+    res.send(req.isAuthenticated ? req.user : '0');
+});
+
+// Route to log in
+app.get('/login',
+    passport.authenticate('google', {scope: 'https://www.googleapis.com/auth/plus.login'},
+        function (req, res) {
+            res.send('Ok');
+        }));
+
+// Route to log out
+app.post('/logout', function (req, res) {
+    req.logOut();
+    res.send(200);
+});
+
 app.get('/api/challenge', jsonParser, function (req, res) {
     challenge.createChallenge()
         .then(function (challenge) {
@@ -74,12 +92,13 @@ app.get('/api/challenge', jsonParser, function (req, res) {
 });
 
 function ensureAuthenticated(req, res, next) {
-    if (req.isAuthenticated()) {
+    if (!req.isAuthenticated()) {
+        console.log('Req not authenticated in ensureAuth, sending 401');
+        res.send(401);
+    } else {
         console.log('Req is authenticated in ensureAuth, letting user pass');
         return next();
     }
-    console.log('Req not authenticated in ensureAuth, redirecting to root');
-    res.redirect('/');
 }
 
 app.get('/hello', ensureAuthenticated, function (req, res) {
