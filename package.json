@@ -1,6 +1,6 @@
 {
     "name": "xwhois",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Please go to [wiki page](https://github.com/xebia-france/xwhois/wiki).",
     "main": "server.js",
     "directories": {
