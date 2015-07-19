@@ -15,11 +15,14 @@ module.exports = {
         var deferred = Q.defer();
         var connection = mongoose.connect(uri).connection;
         connection.once('open', function () {
+            console.log('Connection to mongodb ' + uri + ' fulfilled');
             deferred.fulfill();
         });
         connection.once('error', function (error) {
+            console.log('Connection to mongodb ' + uri + ' failed due to ' + error);
             deferred.reject(error);
         });
+        console.log('Trying to connect to mongodb ' + uri);
         return deferred.promise;
     },
     'close': function () {
