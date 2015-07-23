@@ -19,13 +19,11 @@ div(ng-class="{'slide-out': $navigation.leaving}").splash-screen
         div#play
             a(href='' ng-click="$navigation.to('match', 600)") PLAY
     div#signin
-        // See https://doorkeeper-provider.herokuapp.com/oauth/applications/252
-        oauth(site="https://accounts.google.com/o"
-            authorize-path="/oauth2/auth?hd=xebia.fr"
-            client-id="13229706518-7q72jrhasf3lhprslqaiejg716arcivf.apps.googleusercontent.com"
-            redirect-uri="http://localhost:8081"
-            scope="profile"
-            template="/assets/templates/oauth-template.html") SIGN IN
+        div
+            // TODO redirect to google login
+            a(href="#" class="logged-out" ng-show="!loggedIn()'" ng-click="login()") Sign in
+            a(href="#" class="logged-in" ng-show="loggedIn()" ng-click="logout()") Logout
+            //a(href="#" class="denied" ng-show="!loggedIn()" ng-click="login()") Signin
 
 footer.footer(ng-class="{'slide-out': $navigation.leaving}")
     ul

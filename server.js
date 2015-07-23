@@ -6,6 +6,7 @@ var bodyParser = require('body-parser');
 var errorHandler = require('errorhandler');
 var methodOverride = require('method-override');
 var favicon = require('serve-favicon');
+var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 
 var root = __dirname;
 var imagePath = '/assets/images/xebians',
@@ -22,17 +23,96 @@ var imagePath = '/assets/images/xebians',
 
 app.set('port', process.env.PORT || 8081);
 
-{ // configure server with error handlers, etc.
-    app.use(cookieParser());
-    app.use(methodOverride('_method'));
-    app.use(favicon(path.join(root, './build/favicon.ico')));
-    if (app.get('env') === 'development') {
-        app.use(logger('dev'));
-        app.use(errorHandler());
+app.use(cookieParser());
+app.use(methodOverride('_method'));
+app.use(favicon(path.join(root, './build/favicon.ico')));
+if (app.get('env') === 'development') {
+    app.use(logger('dev'));
+    app.use(errorHandler());
+}
+app.use(require('express-session')({
+    secret: 'secret cat',
+    resave: true,
+    saveUninitialized: true
+}));
+
+var passport = require('passport');
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.use(new GoogleStrategy({
+    clientID: '13229706518-7q72jrhasf3lhprslqaiejg716arcivf.apps.googleusercontent.com',
+    clientSecret: 'Ex6D4zkQu6SmPBQgohhJoUAC',
+    callbackURL: 'http://localhost:8081/auth/google/callback'
+}, function (accessToken, refreshToken, profile, done) {
+    process.nextTick(function () {
+        console.log('User is from:', JSON.stringify(profile._json.domain));
+        if (/^xebia\.fr$/.test(profile._json.domain)) {
+            console.log('User is from xebia.fr, letting pass');
+            return done(null, profile);
+        } else {
+            console.log('User is not from xebia.fr');
+            return done('User is not from xebia.fr!');
+        }
+    });
+}));
+
+passport.serializeUser(function (user, done) {
+    done(null, user);
+});
+
+passport.deserializeUser(function (obj, done) {
+    done(null, obj);
+});
+
+// Route to log out
+app.get('/logout', function (req, res) {
+    req.logOut();
+    res.send(200);
+});
+
+// Route to log in
+app.get(
+    '/auth/google',
+    passport.authenticate('google', {
+        scope: [
+            'https://www.googleapis.com/auth/userinfo.profile',
+            'https://www.googleapis.com/auth/userinfo.email'
+        ]
+    }),
+    function (req, res) {
+        // This never gets called
+    }
+);
+
+// TODO redirect to frontend home with token as parameter
+app.get(
+    '/auth/google/callback',
+    function (req, res, next) {
+        passport.authenticate(
+            'google', function (err, user, info) {
+                if (err) {
+                    return next(err);
+                }
+                if (!user) {
+                    return res.redirect('/login');
+                }
+                res.writeHead(302, {'Location': 'http://localhost:4000?authToken=' + user.token});
+            })(req, res, next);
+    });
+
+function ensureAuthenticated(req, res, next) {
+    if (req.isAuthenticated()) {
+        console.log('Req is authenticated in ensureAuth, letting user pass');
+        return next();
+    } else {
+        console.log('Req not authenticated in ensureAuth, redirecting to login');
+        res.redirect('/auth/google');
     }
 }
 
-app.get('/api/challenge', jsonParser, function (req, res) {
+app.get('/api/challenge', jsonParser, ensureAuthenticated, function (req, res) {
     challenge.createChallenge()
         .then(function (challenge) {
             res.send(challenge);
@@ -45,7 +125,7 @@ app.get('/api/challenge', jsonParser, function (req, res) {
         });
 });
 
-app.post('/api/challenge/answer', jsonParser, function (req, res) {
+app.post('/api/challenge/answer', jsonParser, ensureAuthenticated, function (req, res) {
     var challengeResponse = req.body;
     if (challengeResponse.image && challengeResponse.name) {
         var result = challenge.validAnswer(challengeResponse);
@@ -62,8 +142,8 @@ app.post('/api/challenge/answer', jsonParser, function (req, res) {
     }
 });
 
-app.get(imagePath + '/:name', function (req, res) {
-    var person = trombinoscopeDb.findPerson(req.params.name)
+app.get(imagePath + '/:name', ensureAuthenticated, function (req, res) {
+    trombinoscopeDb.findPerson(req.params.name)
         .then(function (person) {
             if (!person) {
                 res.sendStatus(404);
@@ -110,6 +190,7 @@ trombinoscopeDb.connect()
             trombinoscope.checkEnvironmentVariable();
 
             trombinoscope.parsePeople();
+            //noinspection JSUnusedGlobalSymbols
             new CronJob({
                 cronTime: '0 0 1 * * *',
                 onTick: function () {
@@ -161,3 +242,5 @@ function setupDatabaseForTestingPurpose() {
             });
         });
 }
+
+module.exports = app;
