@@ -54,7 +54,7 @@ Then go to [http://localhost:8081](http://localhost:8081)
 
 ```
 $ gulp test
-$ gulp test:mocha
+$ MONGODB_URI=mongodb://$(docker-machine ip xwhois)/xwhois-test gulp test:mocha
 ```
 
 For tests driven development :
