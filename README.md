@@ -25,7 +25,7 @@ Please go to [wiki page](https://github.com/xebia-france/xwhois/wiki).
     $ docker-machine create --driver virtualbox xwhois
     # or if already created
     $ docker-machine start xwhois
-    $ eval "$(docker-machine env xwhois)
+    $ eval "$(docker-machine env xwhois)"
     # endif OSX
     
     $ docker run --name=xwhois-mongo --detach --publish=27017:27017 mongo
@@ -45,10 +45,15 @@ Please go to [wiki page](https://github.com/xebia-france/xwhois/wiki).
 
 Then go to [http://localhost:8081](http://localhost:8081)
 
+## Dev/debug ##
 
 ### Connect to database ###
 
     $ docker run --interactive --tty --link xwhois-mongo:mongo --rm mongo sh -c 'exec mongo "$MONGO_PORT_27017_TCP_ADDR:$MONGO_PORT_27017_TCP_PORT/xwhois-test"'
+
+### Get confluence content ###
+
+    $ CONFLUENCE_PASSWORD=$(cat pass.txt) http --auth "${CONFLUENCE_USER}:${CONFLUENCE_PASSWORD}" --output content.json https://${CONFLUENCE_HOSTNAME}/rest/api/content/${CONFLUENCE_RESOURCE_ID}\?expand=body.view
 
 ### Tests ###
 
