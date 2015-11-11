@@ -99,6 +99,25 @@ describe('Trombinoscope Module Test', function () {
         assert(trombinoscopeDbUpdateLastModifiedDateStub.calledWithExactly(new Date('2015-02-24T15:21:57+0100')), 'once downloaded and parsed, last modified date from confluence shoulb be written to database');
     });
 
+    it('should filter empty column', function () {
+        var emptyColumnImage = '<td class=\\\"confluenceTd\\\"> </td>',
+            emptyColumnName = '<th class=\\\"confluenceTh\\\"><p> </p></th>';
+        confluenceContentStub.yieldsOn(trombinoscope, '{"version":{"when":"2015-02-24T15:21:57.000+01:00"},"body":{"view":{"value":"<div class=\\\"table-wrap\\\"><table class=\\\"confluenceTable\\\"><tbody><tr>' + emptyColumnImage + '</tr><tr>' + emptyColumnName + '</tr></tbody></table></div>"}}}');
+
+        trombinoscope.parsePeople();
+
+        assert.strictEqual(trombinoscope.getPerson(0), undefined);
+    });
+
+    it('should ignore br html tag', function () {
+        var nameWithBrHtmlTag = '<th class=\\\"confluenceTh\\\"><span style=\\\"color: rgb(0,51,102);\\\"><span style=\\\"color: rgb(0,51,102);\\\">Firstname LASTNAME</span><br /></span></th>';
+        confluenceContentStub.yieldsOn(trombinoscope, '{"version":{"when":"2015-02-24T15:21:57.000+01:00"},"body":{"view":{"value":"<div class=\\\"table-wrap\\\"><table class=\\\"confluenceTable\\\"><tbody><tr>' + nameWithBrHtmlTag + '</tr></tbody></table></div>"}}}');
+
+        trombinoscope.parsePeople();
+
+        assertThat(trombinoscope.getPerson(0)).hasName('Firstname LASTNAME', 'name that contains br html tag');
+    });
+
     it('should not update because last modified date from database is same as last modified date from confluence', function () {
         var lastModifiedDate = '1981-12-24T09:30:00.000+0100';
         trombinoscopeDbLastModifiedDateStub.returns({

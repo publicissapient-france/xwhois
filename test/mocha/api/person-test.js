@@ -33,4 +33,10 @@ describe("Person Module Test", function () {
 
         assert.strictEqual(p.getName(), 'Firstname LASTNAME');
     });
+
+    it('should ignore <br>', function () {
+        var p = person('Firstname LASTNAME<br>');
+
+        assert.strictEqual(p.getName(), 'Firstname LASTNAME');
+    });
 });

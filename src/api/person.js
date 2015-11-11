@@ -6,7 +6,7 @@ function sanitize(content) {
     while (sanitizedContent.indexOf('<') !== -1 && infiniteLoopGuardCount < 10) {
         sanitizedContent = sanitizedContent.replace(/<[a-zA-Z =":(0-9,);]+>(.+)/gi, '$1');
         sanitizedContent = sanitizedContent.replace(/(.+)<\/[a-zA-Z]+>/gi, '$1');
-        sanitizedContent = sanitizedContent.replace(/(.+)<br>(.+)/gi, '$1$2');
+        sanitizedContent = sanitizedContent.replace(/(.*)<br>(.*)/gi, '$1$2');
         infiniteLoopGuardCount++;
     }
     return entities.decode(sanitizedContent).trim();

@@ -126,6 +126,10 @@ module.exports = {
                     }
 
                     $('th').each(function (index) {
+                        if ($(this).text().trim() === "") {
+                            return;
+                        }
+
                         people[index] = person($(this).html());
                         console.log('discovered', people[index].getName());
                     });
