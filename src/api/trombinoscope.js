@@ -6,10 +6,19 @@ var cheerio = require('cheerio'),
 
 function prepareDownload(element, index) {
     var dataImageSrc = element.attr('data-image-src');
-    if (dataImageSrc !== undefined) {
-        people[index].setHref(dataImageSrc);
-        console.log(people[index].getName(), 'has url', dataImageSrc);
+    if (dataImageSrc === undefined) {
+        console.error('data-image-src attribute is not present on <img src="' + element.attr('src') + '">');
+        return;
     }
+
+    var person = people[index];
+    if (person === undefined) {
+        console.error('data-image-src has no mapped person', dataImageSrc);
+        return;
+    }
+
+    person.setHref(dataImageSrc);
+    console.log(person.getName(), 'has url', dataImageSrc);
 }
 
 function findPerson(href) {
@@ -127,6 +136,7 @@ module.exports = {
 
                     $('th').each(function (index) {
                         if ($(this).text().trim() === "") {
+                            people[index] = person("#" + index);
                             return;
                         }
 

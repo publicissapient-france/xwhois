@@ -28,6 +28,10 @@ describe('Trombinoscope Module Test', function () {
                 'hasContentType': function (expectedContentType) {
                     assert.strictEqual(actual.getContentType(), expectedContentType, 'content type of image of parsed person');
                     return this;
+                },
+                'isNotReadyToDownload': function () {
+                    assert.strictEqual(actual.isReadyToDownload(), false, 'is person ready to download');
+                    return this;
                 }
             };
         };
@@ -106,7 +110,7 @@ describe('Trombinoscope Module Test', function () {
 
         trombinoscope.parsePeople();
 
-        assert.strictEqual(trombinoscope.getPerson(0), undefined);
+        assertThat(trombinoscope.getPerson(0)).hasName('').isNotReadyToDownload();
     });
 
     it('should ignore br html tag', function () {
