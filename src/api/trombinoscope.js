@@ -145,10 +145,12 @@ module.exports = {
                             });
                         });
                     }, function (error) {
-                        console.log(error);
+                        console.error(error);
                     }, ATTACHMENTS_SIZE);
                 })
-                .fail(console.log('Unable to get last modified date'));
+                .fail(function (reason) {
+                    console.error('Unable to get last modified date because', reason);
+                })
         }, function (error) {
             console.log(error);
         }, ["body.view", "version"]);
