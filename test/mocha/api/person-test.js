@@ -5,7 +5,7 @@ describe("Person Module Test", function () {
     it('should replace plus to spaces into href', function () {
         var p = person('name');
 
-        p.prepareDownloadByUrl('https://intarnet/confluence/download/attachments/1234/some+nice+image.jpg?version=1&modificationDate=1234');
+        p.prepareDownload('image/jpeg', 'https://intarnet/confluence/download/attachments/1234/some+nice+image.jpg?version=1&modificationDate=1234');
 
         assert.strictEqual(p.getHref(), 'https://intarnet/confluence/download/attachments/1234/some%20nice%20image.jpg?version=1&modificationDate=1234');
     });
@@ -13,7 +13,7 @@ describe("Person Module Test", function () {
     it('should export', function () {
         var p = person('name');
         var lastModifiedDate = new Date(0);
-        p.prepareDownloadByAttachment('image/jpeg', 'https://intarnet/confluence/download/attachments/1234/image.jpg?version=1&modificationDate=1234', lastModifiedDate);
+        p.prepareDownload('image/jpeg', 'https://intarnet/confluence/download/attachments/1234/image.jpg?version=1&modificationDate=1234', lastModifiedDate);
 
         var personAsJson = p.exportToJSON();
 
@@ -30,6 +30,12 @@ describe("Person Module Test", function () {
 
     it('should trim', function () {
         var p = person(' Firstname LASTNAME  ');
+
+        assert.strictEqual(p.getName(), 'Firstname LASTNAME');
+    });
+
+    it('should ignore <br>', function () {
+        var p = person('Firstname LASTNAME<br>');
 
         assert.strictEqual(p.getName(), 'Firstname LASTNAME');
     });

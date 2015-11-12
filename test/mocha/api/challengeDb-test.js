@@ -7,7 +7,7 @@ describe('Challenge Db Module', function () {
     beforeEach(function (done) {
         trombinoscopeDb.connect()
             .then(function () {
-                return trombinoscopeDb.reset();
+                return challengeDb.reset();
             })
             .then(done)
             .fail(function (error) {
@@ -33,10 +33,10 @@ describe('Challenge Db Module', function () {
             .then(function () {
                 // then
                 return challengeDb.getChallengesByName("name").then(function(challenges) {
-                        assert.equal(challenges[0].name, 'name');
+                        assert.equal(challenges[0].playerName, 'name');
                         assert.equal(challenges[0].challengeName, challenge.name);
                         assert.equal(challenges[0].score, 1);
-                        assert.notNull(challenges[0].date);
+                        assert.notStrictEqual(challenges[0].date, null);
                 });
             })
             .then(function () {

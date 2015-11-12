@@ -122,7 +122,7 @@ trombinoscopeDb.connect()
         listen();
     })
     .fail(function (reason) {
-        console.log(reason);
+        console.error(reason);
     });
 
 function listen() {

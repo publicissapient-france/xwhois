@@ -4,37 +4,25 @@ var cheerio = require('cheerio'),
     person = require('./person'),
     people = [];
 
-function prepareDownload(element, index) {
-    var image = element.find('ri\\:attachment').attr('ri:filename');
-    if (image !== undefined) {
-        people[index].setFilename(image);
-        console.log(people[index].getName(), 'has filename', image);
-        return;
-    }
-    people[index].prepareDownloadByUrl(element.find('ri\\:url').attr('ri:value'));
-    console.log(people[index].getName(), 'has url', people[index].getHref());
-}
-
-function findPerson(filename) {
+function findPerson(href) {
     return people.filter(function (person) {
-        return person.getFilename() === filename;
+        return person.getHref() === href;
     }).shift();
 }
 
-function downloadByAttachment($, done) {
+function downloadByAttachment(attachments, done) {
     var peopleReadyToDownload = [];
 
-    $('attachment').each(function () {
-        var attachment = $(this),
-            filename = attachment.attr('filename'),
-            person = findPerson(filename);
+    attachments.results.forEach(function (attachment) {
+        var url = attachment._links.download,
+            person = findPerson(url);
 
         if (person === undefined) {
-            console.log(filename, 'is not bound to anyone');
+            console.log(url, 'is not bound to anyone');
             return;
         }
 
-        person.prepareDownloadByAttachment(attachment.attr('contenttype'), attachment.find('link[rel=download]').attr('href'), attachment.find('lastModifiedDate').attr('date'));
+        person.prepareDownload(attachment.metadata.mediaType, url, attachment.version.when);
         peopleReadyToDownload.push(person);
         console.log(person.getName(), 'has url', person.getHref(), 'last updated at', person.getLastModifiedDate());
     });
@@ -96,8 +84,21 @@ module.exports = {
 
     'parsePeople': function () {
         confluence.content(process.env.CONFLUENCE_RESOURCE_ID, function (content) {
-            var $ = cheerio.load(content),
-                lastModifiedDateFromConfluence = new Date($('lastModifiedDate').attr('date'));
+            var resource, lastModifiedDateFromConfluence;
+
+            try {
+                resource = JSON.parse(content);
+            } catch (error) {
+                console.error("error when parsing ", error, content);
+                return;
+            }
+
+            try {
+                lastModifiedDateFromConfluence = new Date(resource.version.when);
+            } catch (error) {
+                console.error(error);
+                return;
+            }
 
             trombinoscopeDb.getLastModifiedDate()
                 .then(function (lastModifiedDate) {
@@ -105,32 +106,57 @@ module.exports = {
                         console.log('no need to update because last modified date hasn\'t change since last update:', lastModifiedDateFromConfluence);
                         return;
                     }
-                    var attachmentsSize = $('attachments').attr('size');
+                    const ATTACHMENTS_SIZE = 1000;
 
-                    $ = cheerio.load($.root().text());
+                    var $;
 
-                    $('th').each(function (index) {
-                        people[index] = person($(this).html());
-                        console.log('discovered', people[index].getName());
-                    });
+                    try {
+                        $ = cheerio.load(resource.body.view.value);
+                    } catch (error) {
+                        console.error(error);
+                        return;
+                    }
 
-                    $('ac\\:image').each(function (index) {
-                        prepareDownload($(this), index);
+                    var index = 0;
+                    $('table').each(function () {
+                        var names = $(this).find('th'),
+                            images = $(this).find('img'),
+                            imagesIndex = 0;
+                        for (var namesIndex = 0; namesIndex < names.length; namesIndex++) {
+                            var name = $(names[namesIndex]).text().trim();
+                            if (name === "") {
+                                continue;
+                            }
+
+                            var dataImageSrc = $(images[imagesIndex]).attr('data-image-src');
+                            if (dataImageSrc === undefined) {
+                               console.error('data-image-src attribute is not present for ' + name);
+                               continue;
+                            }
+
+                            people[index] = person($(names[namesIndex]).html());
+                            people[index].setHref(dataImageSrc);
+                            console.log('discovered', people[index].getName(), 'with url', dataImageSrc);
+                            index++;
+                            imagesIndex++;
+                        }
                     });
 
                     confluence.attachments(process.env.CONFLUENCE_RESOURCE_ID, function (content) {
-                        downloadByAttachment(cheerio.load(content), function () {
+                        downloadByAttachment(JSON.parse(content), function () {
                             downloadByUrl(function () {
                                 trombinoscopeDb.updateLastModifiedDate(lastModifiedDateFromConfluence);
                             });
                         });
                     }, function (error) {
-                        console.log(error);
-                    }, attachmentsSize);
+                        console.error(error);
+                    }, ATTACHMENTS_SIZE);
                 })
-                .fail(console.log('Unable to get last modified date'));
+                .fail(function (reason) {
+                    console.error('Unable to get last modified date because', reason);
+                })
         }, function (error) {
             console.log(error);
-        });
+        }, ["body.view", "version"]);
     }
 };

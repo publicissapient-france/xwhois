@@ -88,10 +88,10 @@ module.exports = {
         checkEnvironmentVariable('CONFLUENCE_HOSTNAME', process.env.CONFLUENCE_HOSTNAME);
     },
     'content': function (id, onCompleted, onError, expand) {
-        confluenceRequest('/confluence/rest/prototype/1/content/' + id, onCompleted, onError, expand);
+        confluenceRequest('/rest/api/content/' + id, onCompleted, onError, expand);
     },
     'attachments': function (id, onCompleted, onError, maxResults) {
-        confluenceRequest('/confluence/rest/prototype/1/content/' + id + '/attachments' + (maxResults === undefined ? '' : '?max-results=' + maxResults), onCompleted, onError);
+        confluenceRequest('/rest/api/content/' + id + '/child/attachment?expand=version' + (maxResults === undefined ? '' : '&limit=' + maxResults), onCompleted, onError);
     },
     'download': function (downloadURL, onCompleted, onError) {
         binaryConfluenceRequest(url.parse(downloadURL).path, onCompleted, onError);

@@ -9,6 +9,14 @@ ChallengeDb = mongoose.model('challenge', {
 });
 
 module.exports = {
+    'reset': function () {
+        var deferred = Q.defer();
+        ChallengeDb.remove({})
+            .then(function () {
+                deferred.fulfill();
+            });
+        return deferred.promise;
+    },
     'getChallengesByName': function (name) {
         var deferred = Q.defer();
         ChallengeDb.find({playerName: name}, function (error, challenges) {
