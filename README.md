@@ -69,6 +69,31 @@ $ gulp test:loop
 ```
 
 
+### Deploy ###
+
+    $ heroku apps:create xwhois
+    $ heroku config:set "CONFLUENCE=true"
+    $ heroku config:set "CONFLUENCE_HOSTNAME=${CONFLUENCE_HOSTNAME}"
+    $ heroku config:set "CONFLUENCE_PASSWORD=${CONFLUENCE_PASSWORD}"
+    $ heroku config:set "CONFLUENCE_RESOURCE_ID=${CONFLUENCE_RESOURCE_ID}"
+    $ heroku config:set "CONFLUENCE_USER=${CONFLUENCE_USER}"
+    $ heroku config:set "MONGODB_URI=mongodb://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}/xwhois"
+
+or
+
+    $ heroku config
+
+then
+
+    $ git checkout heroku
+    $ git reset HEAD^
+    $ rm -r build/
+    $ git rebase master
+    $ gulp build
+    $ git add build/
+    $ git commit -m "release"
+    $ git push --force heroku heroku:master
+
 ### Routes ###
 
 File 'src/app/conf/routes.yml' contains all routes.
