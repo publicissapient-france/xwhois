@@ -4,23 +4,6 @@ var cheerio = require('cheerio'),
     person = require('./person'),
     people = [];
 
-function prepareDownload(element, index) {
-    var dataImageSrc = element.attr('data-image-src');
-    if (dataImageSrc === undefined) {
-        console.error('data-image-src attribute is not present on <img src="' + element.attr('src') + '">');
-        return;
-    }
-
-    var person = people[index];
-    if (person === undefined) {
-        console.error('data-image-src has no mapped person', dataImageSrc);
-        return;
-    }
-
-    person.setHref(dataImageSrc);
-    console.log(person.getName(), 'has url', dataImageSrc);
-}
-
 function findPerson(href) {
     return people.filter(function (person) {
         return person.getHref() === href;
@@ -134,18 +117,29 @@ module.exports = {
                         return;
                     }
 
-                    $('th').each(function (index) {
-                        if ($(this).text().trim() === "") {
-                            people[index] = person("#" + index);
-                            return;
+                    var index = 0;
+                    $('table').each(function () {
+                        var names = $(this).find('th'),
+                            images = $(this).find('img'),
+                            imagesIndex = 0;
+                        for (var namesIndex = 0; namesIndex < names.length; namesIndex++) {
+                            var name = $(names[namesIndex]).text().trim();
+                            if (name === "") {
+                                continue;
+                            }
+
+                            var dataImageSrc = $(images[imagesIndex]).attr('data-image-src');
+                            if (dataImageSrc === undefined) {
+                               console.error('data-image-src attribute is not present for ' + name);
+                               continue;
+                            }
+
+                            people[index] = person($(names[namesIndex]).html());
+                            people[index].setHref(dataImageSrc);
+                            console.log('discovered', people[index].getName(), 'with url', dataImageSrc);
+                            index++;
+                            imagesIndex++;
                         }
-
-                        people[index] = person($(this).html());
-                        console.log('discovered', people[index].getName());
-                    });
-
-                    $('img').each(function (index) {
-                        prepareDownload($(this), index);
                     });
 
                     confluence.attachments(process.env.CONFLUENCE_RESOURCE_ID, function (content) {

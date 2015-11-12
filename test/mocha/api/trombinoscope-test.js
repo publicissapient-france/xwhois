@@ -17,6 +17,10 @@ describe('Trombinoscope Module Test', function () {
                     assert.strictEqual(actual.getLastModifiedDate(), expected, 'last modified date of image of parsed person');
                     return this;
                 },
+                'hasHref': function (expected) {
+                    assert.strictEqual(actual.getHref(), expected, 'href of image of parsed person');
+                    return this;
+                },
                 'hrefIsUndefined': function () {
                     assert.strictEqual(actual.getHref(), undefined, 'href of image of parsed person');
                     return this;
@@ -27,10 +31,6 @@ describe('Trombinoscope Module Test', function () {
                 },
                 'hasContentType': function (expectedContentType) {
                     assert.strictEqual(actual.getContentType(), expectedContentType, 'content type of image of parsed person');
-                    return this;
-                },
-                'isNotReadyToDownload': function () {
-                    assert.strictEqual(actual.isReadyToDownload(), false, 'is person ready to download');
                     return this;
                 }
             };
@@ -104,17 +104,24 @@ describe('Trombinoscope Module Test', function () {
     });
 
     it('should filter empty column', function () {
-        var emptyColumnImage = '<td class=\\\"confluenceTd\\\"> </td>',
-            emptyColumnName = '<th class=\\\"confluenceTh\\\"><p> </p></th>';
-        confluenceContentStub.yieldsOn(trombinoscope, '{"version":{"when":"2015-02-24T15:21:57.000+01:00"},"body":{"view":{"value":"<div class=\\\"table-wrap\\\"><table class=\\\"confluenceTable\\\"><tbody><tr>' + emptyColumnImage + '</tr><tr>' + emptyColumnName + '</tr></tbody></table></div>"}}}');
+        var imagesColumn = '' +
+                '<td><img src=\\\"first.jpg\\\" data-image-src=\\\"first.jpg\\\"/></td>' +
+                '<td><p> </p></td>' +
+                '<td><img src=\\\"second.jpg\\\" data-image-src=\\\"second.jpg\\\"/></td>',
+            namesColumn = '' +
+                '<th>first</th>' +
+                '<th> </th>' +
+                '<th>second</th>';
+        confluenceContentStub.yieldsOn(trombinoscope, '{"version":{"when":"2015-02-24T15:21:57.000+01:00"},"body":{"view":{"value":"<div class=\\\"table-wrap\\\"><table class=\\\"confluenceTable\\\"><tbody><tr>' + imagesColumn + '</tr><tr>' + namesColumn + '</tr></tbody></table></div>"}}}');
 
         trombinoscope.parsePeople();
 
-        assertThat(trombinoscope.getPerson(0)).hasName('').isNotReadyToDownload();
+        assertThat(trombinoscope.getPerson(0)).hasName('first').hasHref('first.jpg');
+        assertThat(trombinoscope.getPerson(1)).hasName('second').hasHref('second.jpg');
     });
 
     it('should ignore br html tag', function () {
-        var nameWithBrHtmlTag = '<th class=\\\"confluenceTh\\\"><span style=\\\"color: rgb(0,51,102);\\\"><span style=\\\"color: rgb(0,51,102);\\\">Firstname LASTNAME</span><br /></span></th>';
+        var nameWithBrHtmlTag = '<th class=\\\"confluenceTh\\\"><span style=\\\"color: rgb(0,51,102);\\\"><span style=\\\"color: rgb(0,51,102);\\\">Firstname LASTNAME</span><br /></span></th><td><img data-image-src=\\\"fake\\\"/></td>';
         confluenceContentStub.yieldsOn(trombinoscope, '{"version":{"when":"2015-02-24T15:21:57.000+01:00"},"body":{"view":{"value":"<div class=\\\"table-wrap\\\"><table class=\\\"confluenceTable\\\"><tbody><tr>' + nameWithBrHtmlTag + '</tr></tbody></table></div>"}}}');
 
         trombinoscope.parsePeople();
