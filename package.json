@@ -92,6 +92,7 @@
         "html-entities": "1.1.2",
         "method-override": "^2.3.1",
         "morgan": "~1.5.1",
+        "pure-uuid": "1.0.7",
         "q": "1.4.1",
         "serve-favicon": "^2.2.0",
         "mongoose": "4.0.3"

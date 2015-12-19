@@ -164,6 +164,36 @@ describe('API Test', function () {
         req.end();
     });
 
+    it('should get all xebians', function (done) {
+        var url = 'http://localhost:' + app.get('port') + '/api/all',
+            req = http.get(url, function (res) {
+                assert.equal(200, res.statusCode);
+                var data = '';
+                res.on('data', function (chunk) {
+                    data += chunk;
+                });
+
+                res.on('end', function () {
+                    var jsonData = JSON.parse(data);
+                    assert.equal(jsonData.xebians.length, 2, 'There should be two people');
+                    assert.equal(jsonData.xebians[0].uuid, '95f02eed-d278-57a3-a018-688c1baa159b', 'First person\'s uuid');
+                    assert.equal(jsonData.xebians[0].name, 'Pretty Bear', 'First person\'s name');
+                    assert.equal(jsonData.xebians[0].image, 'http://localhost:' + app.get('port') + '/assets/images/xebians/Pretty Bear', 'First person\'s image url');
+                    assert.equal(jsonData.xebians[0].lastModifiedDate, '1981-12-24T08:30:00.000Z', 'First person\'s last modified date');
+                    assert.equal(jsonData.xebians[1].uuid, '45662418-173f-5537-acfc-0871e07ce38e', 'Second person\'s uuid');
+                    assert.equal(jsonData.xebians[1].name, 'Cute Aligator', 'Second person\'s name');
+                    assert.equal(jsonData.xebians[1].image, 'http://localhost:' + app.get('port') + '/assets/images/xebians/Cute Aligator', 'Second person\'s image url');
+                    assert.equal(jsonData.xebians[1].lastModifiedDate, '1982-02-24T17:10:00.000Z', 'Second person\'s last modified date');
+                    done();
+                });
+            });
+        req.on('error', function (error) {
+            assert.fail(error.message, '', 'There was a error during connection to ' + options);
+            done();
+        });
+        req.end();
+    });
+
     function savePreviousAndSet(environmentVariableName) {
         var previous = process.env[environmentVariableName];
         process.env[environmentVariableName] = true;

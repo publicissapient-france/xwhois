@@ -18,6 +18,7 @@ var imagePath = '/assets/images/xebians',
     app = module.exports = express(),
     jsonParser = bodyParser.json(),
     fs = require('fs'),
+    UUID = require('pure-uuid'),
     Q = require('q');
 
 app.set('port', process.env.PORT || 8081);
@@ -60,6 +61,26 @@ app.post('/api/challenge/answer', jsonParser, function (req, res) {
         res.writeHead(400);
         res.end();
     }
+});
+
+app.get('/api/all', jsonParser, function (req, res) {
+    console.log(app);
+    trombinoscopeDb.getAllPeople()
+        .then(function (people) {
+            var peopleWithoutBinaryImage = [];
+            people.forEach(function (person) {
+                peopleWithoutBinaryImage.push({
+                    "uuid": new UUID(5, 'xwhois', person.name).format(),
+                    "name": person.name,
+                    "image": req.protocol + '://' + req.get('host') + '/assets/images/xebians/' + person.name,
+                    "lastModifiedDate": person.lastModifiedDate
+                })
+            });
+            res.send({"xebians": peopleWithoutBinaryImage});
+        })
+        .fail(function (reason) {
+            res.sendStatus(500).send(reason);
+        });
 });
 
 app.get(imagePath + '/:name', function (req, res) {
@@ -149,7 +170,7 @@ function setupDatabaseForTestingPurpose() {
                 name: 'Pretty Bear',
                 image: './test' + imagePath + '/Pretty Bear.png',
                 contentType: 'image/png',
-                lastModifiedDate: new Date()
+                lastModifiedDate: new Date("1981-12-24T08:30:00.000Z")
             });
         })
         .then(function () {
@@ -157,7 +178,7 @@ function setupDatabaseForTestingPurpose() {
                 name: 'Cute Aligator',
                 image: './test' + imagePath + '/Cute Aligator.gif',
                 contentType: 'image/gif',
-                lastModifiedDate: new Date()
+                lastModifiedDate: new Date("1982-02-24T17:10:00.000Z")
             });
         });
 }
