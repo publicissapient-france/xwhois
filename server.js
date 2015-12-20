@@ -64,7 +64,6 @@ app.post('/api/challenge/answer', jsonParser, function (req, res) {
 });
 
 app.get('/api/all', jsonParser, function (req, res) {
-    console.log(app);
     trombinoscopeDb.getAllPeople()
         .then(function (people) {
             var peopleWithoutBinaryImage = [];
