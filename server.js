@@ -75,7 +75,7 @@ app.get('/api/all', jsonParser, function (req, res) {
                     "lastModifiedDate": person.lastModifiedDate
                 })
             });
-            res.send({"xebians": peopleWithoutBinaryImage});
+            res.send(peopleWithoutBinaryImage);
         })
         .fail(function (reason) {
             res.sendStatus(500).send(reason);
