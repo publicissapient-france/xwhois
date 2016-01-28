@@ -99,21 +99,6 @@ app.get(imagePath + '/:name', function (req, res) {
 });
 app.use(express.static(path.join(root, './build/')));
 
-/*
-app.get('/api/score/:name', jsonParser, function (req, res) {
-    var challenges = challengeDb.getChallengesByName(req.params.name).then(function (challenges) {
-        if (!challenges) {
-            res.sendStatus(404);
-            return;
-        }
-        res.set('Content-Type', "application/json");
-        res.end(challenges);
-    })
-        .fail(function (reason) {
-            res.send(500).send(reason);
-        });
-});
-*/
 trombinoscopeDb.connect()
     .then(function () {
         if (process.env.TESTDB) {
