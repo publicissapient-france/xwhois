@@ -97,6 +97,11 @@ app.get(imagePath + '/:name', function (req, res) {
             res.send(500).send(reason);
         });
 });
+
+app.post('/api/admin/parsePeople', jsonParser, function (req, res) {
+    trombinoscope.parsePeople();
+});
+
 app.use(express.static(path.join(root, './build/')));
 
 trombinoscopeDb.connect()
