@@ -55,7 +55,7 @@ function download(peopleReadyToDownload, done) {
             .then(function () {
                 download(peopleReadyToDownload, done);
             })
-            .fail(function (reason) {
+            .catch(function (reason) {
                 console.log('download of', person.getName(), 'has failed:', reason);
                 person.downloadFailed();
                 download(peopleReadyToDownload, done);
@@ -152,7 +152,7 @@ module.exports = {
                         console.error(error);
                     }, ATTACHMENTS_SIZE);
                 })
-                .fail(function (reason) {
+                .catch(function (reason) {
                     console.error('Unable to get last modified date because', reason);
                 })
         }, function (error) {

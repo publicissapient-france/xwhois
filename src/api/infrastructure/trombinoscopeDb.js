@@ -1,5 +1,5 @@
-var Q = require('q'),
-    mongoose = require('mongoose');
+var Promise = require('bluebird'),
+    mongoose = Promise.promisifyAll(require('mongoose'));
 
 var LastModifiedDate = mongoose.model('lastModifiedDate', {id: {type: Number, index: true}, value: Date}),
     Person = mongoose.model('person', {
@@ -12,129 +12,110 @@ var LastModifiedDate = mongoose.model('lastModifiedDate', {id: {type: Number, in
 
 module.exports = {
     'connect': function () {
-        var deferred = Q.defer();
-        var connection = mongoose.connect(uri).connection;
-        connection.once('open', function () {
-            console.log('Connection to mongodb ' + uri + ' fulfilled');
-            deferred.fulfill();
-        });
-        connection.once('error', function (error) {
-            console.log('Connection to mongodb ' + uri + ' failed due to ' + error);
-            deferred.reject(error);
-        });
-        console.log('Trying to connect to mongodb ' + uri);
-        return deferred.promise;
+        return mongoose.connectAsync(uri);
     },
     'close': function () {
-        var deferred = Q.defer();
-        mongoose.connection.close(function () {
-            deferred.fulfill();
-        });
-        return deferred.promise;
+        return mongoose.connection.closeAsync();
     },
     'getAllPeople': function () {
-        var deferred = Q.defer();
-        Person.find({}, 'name image contentType lastModifiedDate', function (error, people) {
-            if (error) {
-                deferred.reject(error);
-                return;
-            }
-            if (people === null) {
-                deferred.fulfill();
-                return;
-            }
-            var extractedPeople = [];
-            for (var i = 0; i < people.length; i++) {
-                extractedPeople.push({
-                    'name': people[i].get('name'),
-                    'image': people[i].get('image'),
-                    'contentType': people[i].get('contentType'),
-                    'lastModifiedDate': people[i].get('lastModifiedDate')
-                });
-            }
-            deferred.fulfill(extractedPeople);
+        return new Promise(function (resolve, reject) {
+            Person.find({}, 'name image contentType lastModifiedDate', function (error, people) {
+                if (error) {
+                    reject(error);
+                    return;
+                }
+                if (people === null) {
+                    resolve();
+                    return;
+                }
+                var extractedPeople = [];
+                for (var i = 0; i < people.length; i++) {
+                    extractedPeople.push({
+                        'name': people[i].get('name'),
+                        'image': people[i].get('image'),
+                        'contentType': people[i].get('contentType'),
+                        'lastModifiedDate': people[i].get('lastModifiedDate')
+                    });
+                }
+                resolve(extractedPeople);
+            });
         });
-        return deferred.promise;
     },
     'findPerson': function (name) {
-        var deferred = Q.defer();
-        Person.findOne({name: name}, function (error, person) {
-            if (error) {
-                deferred.reject(person + 'was not found');
-                return;
-            }
-            if (person === null) {
-                deferred.reject();
-                return;
-            }
-            deferred.fulfill(person);
+        return new Promise(function (resolve, reject) {
+            Person.findOne({name: name}, function (error, person) {
+                if (error || person === null) {
+                    reject('person identified by ' + name + ' was not found');
+                    return;
+                }
+                resolve(person);
+            });
         });
-        return deferred.promise;
     },
     'isNotEmpty': function () {
-        var deferred = Q.defer();
-        Person.count({}, function (err, count) {
-            if (err) {
-                deferred.reject(err);
-                return;
-            }
-            if (count === 0) {
-                deferred.reject('database is empty');
-                return;
-            }
-            deferred.fulfill();
+        return new Promise(function (resolve, reject) {
+            Person.count({}, function (err, count) {
+                if (err) {
+                    reject(err);
+                    return;
+                }
+                if (count === 0) {
+                    reject('database is empty');
+                    return;
+                }
+                resolve();
+            });
         });
-        return deferred.promise;
     },
     'getLastModifiedDate': function () {
-        var deferred = Q.defer();
-        LastModifiedDate.findOne({id: 0}, function (error, lastModifiedDate) {
-            if (error) {
-                deferred.reject(error);
-                return;
-            }
-            if (lastModifiedDate === null) {
-                deferred.fulfill();
-                return;
-            }
-            deferred.fulfill(lastModifiedDate.value);
+        return new Promise(function (resolve, reject) {
+            LastModifiedDate.findOne({id: 0}, function (error, lastModifiedDate) {
+                if (error) {
+                    reject(error);
+                    return;
+                }
+                if (lastModifiedDate === null) {
+                    resolve();
+                    return;
+                }
+                resolve(lastModifiedDate.value);
+            });
         });
-        return deferred.promise;
     },
     'updateLastModifiedDate': function (newLastModifiedDate) {
-        var deferred = Q.defer();
-        new LastModifiedDate({id: 0, value: newLastModifiedDate}).save()
-            .then(function (lastModifiedDate) {
-                deferred.fulfill(lastModifiedDate.value);
-            })
-            .onReject(function (error) {
-                deferred.reject(error);
-            });
-        return deferred.promise;
+        return new Promise(function (resolve, reject) {
+            new LastModifiedDate({id: 0, value: newLastModifiedDate}).save()
+                .then(function (lastModifiedDate) {
+                    resolve(lastModifiedDate.value);
+                })
+                .onReject(function (error) {
+                    reject(error);
+                });
+        });
     },
     'updatePerson': function (person) {
-        var deferred = Q.defer();
-        Person.findOneAndUpdate({name: person.name}, person, {upsert: true}, function (error, person) {
-            if (error) {
-                deferred.reject(error);
-            } else {
-                deferred.fulfill(person);
-            }
+        return new Promise(function (resolve, reject) {
+            Person.findOneAndUpdate({name: person.name}, person, {upsert: true}, function (error, person) {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(person);
+                }
+            });
         });
-        return deferred.promise;
     },
     'reset': function () {
-        var deferred = Q.defer();
-        Person.remove({})
-            .then(function () {
-                LastModifiedDate.findOneAndRemove(0, function (err, lastModifiedDate) {
-                    if (err) {
-                        deferred.reject(err);
-                        return;
-                    }
-                    deferred.fulfill();
+        return new Promise(function (resolve, reject) {
+            Person.remove({})
+                .then(function () {
+                    LastModifiedDate.findOneAndRemove(0, function (err, lastModifiedDate) {
+                        if (err) {
+                            reject(err);
+                            return;
+                        }
+                        resolve();
+                    });
                 });
-            });
-        return deferred.promise;
+        });
     }
 };

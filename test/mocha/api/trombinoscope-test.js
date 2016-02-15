@@ -45,7 +45,7 @@ describe('Trombinoscope Module Test', function () {
             'then': function (callback) {
                 callback(new Date(0));
                 return {
-                    'fail': function () {
+                    'catch': function () {
                     }
                 };
             }
@@ -81,7 +81,7 @@ describe('Trombinoscope Module Test', function () {
             'then': function (callback) {
                 callback();
                 return {
-                    'fail': function () {
+                    'catch': function () {
                     }
                 };
             }
@@ -135,7 +135,7 @@ describe('Trombinoscope Module Test', function () {
             'then': function (callback) {
                 callback(new Date(lastModifiedDate));
                 return {
-                    'fail': function () {
+                    'catch': function () {
                     }
                 }
             }
@@ -152,7 +152,7 @@ describe('Trombinoscope Module Test', function () {
             'then': function (callback) {
                 callback();
                 return {
-                    'fail': function () {
+                    'catch': function () {
                     }
                 }
             }

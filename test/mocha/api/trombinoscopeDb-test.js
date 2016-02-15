@@ -1,6 +1,5 @@
 var assert = require('assert'),
-    trombinoscopeDb = require('../../../src/api/infrastructure/trombinoscopeDb'),
-    Q = require('q');
+    trombinoscopeDb = require('../../../src/api/infrastructure/trombinoscopeDb');
 
 var assertThat = function (actualTrombinoscopeDb) {
     return {
@@ -11,7 +10,7 @@ var assertThat = function (actualTrombinoscopeDb) {
                     assert.fail(true, false, 'trombinoscope db is not empty');
                     return self;
                 })
-                .fail(function (reason) {
+                .catch(function (reason) {
                     assert.strictEqual(reason, 'database is empty', 'failure message');
                     return self;
                 });
@@ -56,7 +55,7 @@ describe('Trombinoscope Db Module', function () {
                 return trombinoscopeDb.reset();
             })
             .then(done)
-            .fail(function (error) {
+            .catch(function (error) {
                 done(new Error(error));
             });
     });
@@ -64,7 +63,7 @@ describe('Trombinoscope Db Module', function () {
     afterEach(function (done) {
         trombinoscopeDb.close()
             .then(done)
-            .fail(function (error) {
+            .catch(function (error) {
                 done(new Error(error));
             })
     });
@@ -78,7 +77,7 @@ describe('Trombinoscope Db Module', function () {
             .then(function () {
                 done();
             })
-            .fail(done);
+            .catch(done);
     });
 
     it('should update modification date', function (done) {
@@ -93,7 +92,7 @@ describe('Trombinoscope Db Module', function () {
             .then(function () {
                 done()
             })
-            .fail(done);
+            .catch(done);
     });
 
     it('should find a person by name', function (done) {
@@ -113,7 +112,7 @@ describe('Trombinoscope Db Module', function () {
                 assert.strictEqual(found.name, person.name);
                 done();
             })
-            .fail(done);
+            .catch(done);
     });
 
     it('should not find unknown person', function (done) {
@@ -124,7 +123,10 @@ describe('Trombinoscope Db Module', function () {
                 // then
                 assert.fail(found, undefined, 'found person');
             })
-            .fin(done);
+            .catch(function (error) {
+                assert.equal(error, 'person identified by name was not found', 'error\'s message')
+            })
+            .finally(done);
     });
 
     it('should insert person', function (done) {
@@ -146,7 +148,7 @@ describe('Trombinoscope Db Module', function () {
             .then(function () {
                 done();
             })
-            .fail(done);
+            .catch(done);
     });
 
     it('should update person', function (done) {
@@ -176,7 +178,7 @@ describe('Trombinoscope Db Module', function () {
             .then(function () {
                 done();
             })
-            .fail(done);
+            .catch(done);
     });
 
     it('should reset', function (done) {
@@ -203,6 +205,6 @@ describe('Trombinoscope Db Module', function () {
             .then(function () {
                 done();
             })
-            .fail(done);
+            .catch(done);
     });
 });

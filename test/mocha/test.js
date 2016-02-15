@@ -21,7 +21,7 @@ describe('API Test', function () {
         resetPrevious('TESTDB', testDb);
         trombinoscopeDb.reset().then(function () {
             return trombinoscopeDb.close()
-        }).fin(done);
+        }).finally(done);
     });
 
     it('should return 200 and a message', function (done) {

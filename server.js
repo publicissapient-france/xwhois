@@ -19,7 +19,9 @@ var imagePath = '/assets/images/xebians',
     jsonParser = bodyParser.json(),
     fs = require('fs'),
     UUID = require('pure-uuid'),
-    Q = require('q');
+    Promise = require('bluebird');
+
+Promise.promisifyAll(fs);
 
 app.set('port', process.env.PORT || 8081);
 
@@ -38,10 +40,10 @@ app.get('/api/challenge', jsonParser, function (req, res) {
         .then(function (challenge) {
             res.send(challenge);
         })
-        .fail(function (reason) {
+        .catch(function (reason) {
             res.writeHead(400, reason);
         })
-        .fin(function () {
+        .finally(function () {
             res.end();
         });
 });
@@ -54,7 +56,7 @@ app.post('/api/challenge/answer', jsonParser, function (req, res) {
             .then(function () {
                 res.send({result: result});
             })
-            .fail(function (reason) {
+            .catch(function (reason) {
                 res.send(500).send(reason);
             });
     } else {
@@ -77,13 +79,13 @@ app.get('/api/all', jsonParser, function (req, res) {
             });
             res.send(peopleWithoutBinaryImage);
         })
-        .fail(function (reason) {
+        .catch(function (reason) {
             res.sendStatus(500).send(reason);
         });
 });
 
 app.get(imagePath + '/:name', function (req, res) {
-    var person = trombinoscopeDb.findPerson(req.params.name)
+    trombinoscopeDb.findPerson(req.params.name)
         .then(function (person) {
             if (!person) {
                 res.sendStatus(404);
@@ -93,7 +95,7 @@ app.get(imagePath + '/:name', function (req, res) {
             res.set('Content-Type', person.contentType);
             res.end(person.image);
         })
-        .fail(function (reason) {
+        .catch(function (reason) {
             res.send(500).send(reason);
         });
 });
@@ -109,7 +111,7 @@ trombinoscopeDb.connect()
         if (process.env.TESTDB) {
             setupDatabaseForTestingPurpose()
                 .then(listen)
-                .fail(function (error) {
+                .catch(function (error) {
                     console.log(error);
                 });
             return;
@@ -131,7 +133,7 @@ trombinoscopeDb.connect()
 
         listen();
     })
-    .fail(function (reason) {
+    .catch(function (reason) {
         console.error(reason);
     });
 
@@ -143,7 +145,7 @@ function listen() {
 
 function setupDatabaseForTestingPurpose() {
     function updatePerson(person) {
-        return Q.nfcall(fs.readFile, person.image)
+        return fs.readFileAsync(person.image)
             .then(function (data) {
                 person.image = new Buffer(data);
                 return person;

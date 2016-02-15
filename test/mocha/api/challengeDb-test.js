@@ -1,7 +1,6 @@
 var assert = require('assert'),
     challengeDb = require('../../../src/api/infrastructure/challengeDb'),
-    trombinoscopeDb = require('../../../src/api/infrastructure/trombinoscopeDb'),
-    Q = require('q');
+    trombinoscopeDb = require('../../../src/api/infrastructure/trombinoscopeDb');
 
 describe('Challenge Db Module', function () {
     beforeEach(function (done) {
@@ -10,7 +9,7 @@ describe('Challenge Db Module', function () {
                 return challengeDb.reset();
             })
             .then(done)
-            .fail(function (error) {
+            .catch(function (error) {
                 done(new Error(error));
             });
     });
@@ -18,7 +17,7 @@ describe('Challenge Db Module', function () {
     afterEach(function (done) {
         trombinoscopeDb.close()
             .then(done)
-            .fail(function (error) {
+            .catch(function (error) {
                 done(new Error(error));
             })
     });
@@ -42,6 +41,6 @@ describe('Challenge Db Module', function () {
             .then(function () {
                 done();
             })
-            .fail(done);
+            .catch(done);
     });
 });
