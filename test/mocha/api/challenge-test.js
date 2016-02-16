@@ -64,7 +64,7 @@ describe("Challenge Module Test", function () {
             }
         });
 
-        var challenge = challengeModule.createChallenge();
+        challengeModule.createChallenge();
 
         assert.ok(!trombinoscopeGetAllPeople.called, 'trombinoscopeDb.getAllPeople has never been called');
     });
