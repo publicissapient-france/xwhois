@@ -67,6 +67,18 @@ function download(peopleReadyToDownload, done) {
     });
 }
 
+function removeOldPeople() {
+    trombinoscopeDb.getAllPeople().then(function (peopleFromDatabase) {
+        peopleFromDatabase.filter(function (personFromDatabase) {
+            return people.filter(function (person) {
+                return person.getName() === personFromDatabase.name
+            }).length !== 1;
+        }).forEach(function (personToRemove) {
+            trombinoscopeDb.removePerson(personToRemove);
+        });
+    })
+}
+
 module.exports = {
     'checkEnvironmentVariable': function () {
         if (process.env.CONFLUENCE_RESOURCE_ID === undefined) {
@@ -141,6 +153,8 @@ module.exports = {
                             imagesIndex++;
                         }
                     });
+
+                    removeOldPeople();
 
                     confluence.attachments(process.env.CONFLUENCE_RESOURCE_ID, function (content) {
                         downloadByAttachment(JSON.parse(content), function () {

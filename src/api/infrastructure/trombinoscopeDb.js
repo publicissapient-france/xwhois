@@ -104,6 +104,17 @@ module.exports = {
             });
         });
     },
+    'removePerson': function (person) {
+        return new Promise(function (resolve, reject) {
+            Person.remove({name: person.name}, function (error) {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve();
+                }
+            });
+        });
+    },
     'reset': function () {
         return new Promise(function (resolve, reject) {
             Person.remove({})

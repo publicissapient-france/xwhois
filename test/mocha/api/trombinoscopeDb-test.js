@@ -181,6 +181,32 @@ describe('Trombinoscope Db Module', function () {
             .catch(done);
     });
 
+    it('should remove person', function (done) {
+        // given
+        var newPerson = {
+            'name': 'name',
+            'image': new Buffer('abc'),
+            'contentType': 'image/jpeg',
+            'lastModifiedDate': new Date(0)
+        };
+
+        trombinoscopeDb.updatePerson(newPerson)
+            .then(function () {
+
+                // when
+                return trombinoscopeDb.removePerson(newPerson)
+            })
+            .then(function () {
+
+                // then
+                return assertThat(trombinoscopeDb).isEmpty();
+            })
+            .then(function () {
+                done();
+            })
+            .catch(done);
+    });
+
     it('should reset', function (done) {
         // given
         trombinoscopeDb.updateLastModifiedDate(new Date(1000))

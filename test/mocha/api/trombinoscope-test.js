@@ -5,7 +5,15 @@ var assert = require('assert'),
     trombinoscope = require('../../../src/api/trombinoscope');
 
 describe('Trombinoscope Module Test', function () {
-    var confluenceContentStub, confluenceAttachmentsStub, confluenceDownloadStub, trombinoscopeDbLastModifiedDateStub, trombinoscopeDbUpdatePersonStub, trombinoscopeDbUpdateLastModifiedDateStub, previousProcessEnvTITLE,
+    var confluenceContentStub,
+        confluenceAttachmentsStub,
+        confluenceDownloadStub,
+        trombinoscopeDbLastModifiedDateStub,
+        trombinoscopeDbUpdatePersonStub,
+        trombinoscopeDbUpdateLastModifiedDateStub,
+        trombinoscopeDbGetAllPeopleStub,
+        trombinoscopeDbRemovePersonStub,
+        previousProcessEnvTITLE,
 
         assertThat = function (actual) {
             return {
@@ -52,6 +60,17 @@ describe('Trombinoscope Module Test', function () {
         });
         trombinoscopeDbUpdatePersonStub = sinon.stub(trombinoscopeDb, 'updatePerson');
         trombinoscopeDbUpdateLastModifiedDateStub = sinon.stub(trombinoscopeDb, 'updateLastModifiedDate');
+        trombinoscopeDbGetAllPeopleStub = sinon.stub(trombinoscopeDb, 'getAllPeople');
+        trombinoscopeDbGetAllPeopleStub.returns({
+            'then': function (callback) {
+                callback([]);
+                return {
+                    'catch': function () {
+                    }
+                }
+            }
+        });
+        trombinoscopeDbRemovePersonStub = sinon.stub(trombinoscopeDb, 'removePerson');
         previousProcessEnvTITLE = process.env.TITLE;
         process.env.TITLE = 'Child1';
         done();
@@ -65,6 +84,8 @@ describe('Trombinoscope Module Test', function () {
         trombinoscopeDbLastModifiedDateStub.restore();
         trombinoscopeDbUpdatePersonStub.restore();
         trombinoscopeDbUpdateLastModifiedDateStub.restore();
+        trombinoscopeDbGetAllPeopleStub.restore();
+        trombinoscopeDbRemovePersonStub.restore();
         if (previousProcessEnvTITLE === undefined) {
             delete process.env.TITLE;
         } else {
@@ -101,6 +122,27 @@ describe('Trombinoscope Module Test', function () {
         assertThat(trombinoscope.getPerson(3)).hrefIsUndefined();
         assert.strictEqual(trombinoscope.getPerson(4), undefined);
         assert(trombinoscopeDbUpdateLastModifiedDateStub.calledWithExactly(new Date('2015-02-24T15:21:57+0100')), 'once downloaded and parsed, last modified date from confluence shoulb be written to database');
+    });
+
+    it('should remove old people', function () {
+        confluenceContentStub.yieldsOn(trombinoscope, '{"id":"1234","type":"page","status":"current","title":"title","version":{"by":{"type":"known","profilePicture":{"path":"/s/en_GB/5987/7f4d200af80c8d2bb74491844d32cdca053c56a4.3/_/download/attachments/4915287/user-avatar?version=1&modificationDate=1446570788000&api=v2","width":48,"height":48,"isDefault":false},"username":"user","displayName":"User","userKey":"d51e4ea250cd4f6e0150cd7aa52100f0"},"when":"2015-02-24T15:21:57.000+01:00","message":"new photo","number":417,"minorEdit":false},"body":{"view":{"value":"<div class=\\\"table-wrap\\\"><table class=\\\"confluenceTable\\\"><tbody><tr><td class=\\\"confluenceTd\\\"><p><span class=\\\"confluence-embedded-file-wrapper confluence-embedded-manual-size\\\"><img class=\\\"confluence-embedded-image\\\" width=\\\"200\\\" src=\\\"/download/attachments/1234/file1.jpg?version=1&amp;modificationDate=1317907672000&amp;api=v2\\\" data-image-src=\\\"/download/attachments/1234/file1.jpg?version=1&amp;modificationDate=1317907672000&amp;api=v2\\\" data-unresolved-comment-count=\\\"0\\\" data-linked-resource-id=\\\"4066191\\\" data-linked-resource-version=\\\"1\\\" data-linked-resource-type=\\\"attachment\\\" data-linked-resource-default-alias=\\\"file1.jpg\\\" data-base-url=\\\"https://host\\\" data-linked-resource-content-type=\\\"image/jpeg\\\" data-linked-resource-container-id=\\\"1234\\\" data-linked-resource-container-version=\\\"417\\\"></span></p></td></tr><tr><th class=\\\"confluenceTh\\\"><p>existing PERSON</p></th></tr></tbody></table></div>","representation":"view","_expandable":{"content":"/rest/api/content/1234"}},"_expandable":{"editor":"","export_view":"","storage":"","anonymous_export_view":""}},"extensions":{"position":"none"},"_links":{"webui":"/display/space-id/title","tinyui":"/x/owA_/","collection":"/rest/api/content","base":"https://host","context":"","self":"https://host/rest/api/content/1234"},"_expandable":{"container":"","metadata":"","operations":"","children":"/rest/api/content/1234/child","history":"/rest/api/content/1234/history","ancestors":"","descendants":"/rest/api/content/1234/descendant","space":"/rest/api/space/space-id"}}');
+        trombinoscopeDbGetAllPeopleStub.returns({
+            'then': function (callback) {
+                callback([{
+                    'name': 'old person to be deleted'
+                },{
+                    'name': 'existing PERSON'
+                }]);
+                return {
+                    'catch': function () {
+                    }
+                }
+            }
+        });
+
+        trombinoscope.parsePeople();
+
+        assert(trombinoscopeDbRemovePersonStub.calledWithExactly({'name': 'old person to be deleted'}), 'person that doesn\'t exists anymore should be removed');
     });
 
     it('should filter empty column', function () {
