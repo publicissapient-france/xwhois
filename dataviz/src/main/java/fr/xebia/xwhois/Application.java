@@ -1,6 +1,7 @@
 package fr.xebia.xwhois;
 
 import fr.xebia.xwhois.infrastructure.MongoDbAnswers;
+import fr.xebia.xwhois.infrastructure.WebServer;
 import fr.xebia.xwhois.model.HitsPerDay;
 import fr.xebia.xwhois.model.inbound.Answers;
 
@@ -13,7 +14,9 @@ public class Application {
             System.getenv("DATABASE_PASSWORD")
         );
 
-        System.out.println(new HitsPerDay(answers).json());
+        String hitsPerDayAsJson = new HitsPerDay(answers).json();
+
+        new WebServer(hitsPerDayAsJson).start();
     }
 
 }

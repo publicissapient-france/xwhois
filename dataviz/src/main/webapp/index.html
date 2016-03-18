@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <script type="text/javascript" src="http://code.jquery.com/jquery-2.2.2.js"></script>
+    <title>xwhois - dataviz</title>
+    <script type="text/javascript">
+        $(function () {
+            $.get('/hits-per-day.json', function (data) {
+                $('#container').highcharts('StockChart', {
+                    rangeSelector: {
+                        selected: 1
+                    },
+                    title: {
+                        text: 'xwhois - hits per day'
+                    },
+                    series: [{
+                        name: 'hits per day',
+                        data: data
+                    }]
+                });
+            });
+        });
+    </script>
+</head>
+
+<body>
+
+<script src="https://code.highcharts.com/stock/highstock.js"></script>
+
+<div id="container" style="height: 400px; min-width: 310px"></div>
+
+</body>
+</html>
