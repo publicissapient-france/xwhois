@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Optional;
 
 public class WebServer {
 
@@ -30,7 +31,9 @@ public class WebServer {
             new DefaultHandler()});
         GzipHandler gzip = new GzipHandler();
         gzip.setHandler(handlers);
-        server = new Server(8080);
+        server = new Server(Optional.ofNullable(System.getenv("PORT"))
+            .map(Integer::parseInt)
+            .orElseThrow(() -> new IllegalStateException("environment variable PORT \"" + System.getenv("PORT") + "\" is invalid")));
         server.setHandler(gzip);
     }
 
